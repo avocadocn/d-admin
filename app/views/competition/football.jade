@@ -1,30 +1,26 @@
 extends ../layouts/manager
 
 block panel
-  #competition_content
+  #competition_content(ng-app='group' ng-controller='competitionController' ng-init="ngcompetition = #{JSON.stringify(competition)}")
     .row
       .teamInfo.col-xs-4
         img.teamLogo(src='/img/icons/facebook.png')
         div
           a.teamName= competition.camp_b.tname
         div
-          each teamAMember in competition.camp_a.member
-            img.size_50.teamMember(draggable="true" ondragstart='drag(event)' ondragend='dragend(event)' src='/img/icons/facebook.png' id='#{teamAMember.username}')
+          img.size_50.teamMember(ng-repeat='teamAMember in ngcompetition.camp_a.member' formatdrag="true" src='/img/icons/facebook.png' id='{{teamAMember.username}}')
       .vs.col-xs-4
-        h1.text-center VS
+        h1.text-center vs
       .teamInfo.col-xs-4
         img.teamLogo(src='/img/icons/google.png')
         div
           a.teamName= competition.camp_b.tname
         div
-          each teamBMember in competition.camp_b.member
-            img.size_50.teamMember(draggable="false" src='/img/icons/google.png' id='#{teamBMember.username}')
+          img.size_50.teamMember(ng-repeat='teamBMember in ngcompetition.camp_b.member' draggable="false" src='/img/icons/google.png' id='{{teamBMember.username}}')
     .row.formatField.field
-      img#formatField.col-xs-12.img_contain.field(draggable="false" ondrop='drop(event)' ondragover='allowDrop(event)' src='/img/field.png')
-      each teamAMember in competition.camp_a.formation
-        img.size_50.teamMember.onemberA(draggable="true" ondragstart='drag(event)' ondragend='dragend(event)' src='/img/icons/facebook.png' id='on_#{teamAMember.username}' style='top:#{teamAMember.y}%;left:#{teamAMember.x}%')
-      each teamBMember in competition.camp_b.formation
-        img.size_50.teamMember.onemberB(draggable="false" ondragstart='drag(event)' ondragend='dragend(event)' src='/img/icons/google.png' id='on_#{teamBMember.username}' style='top:#{teamBMember.y}%;left:#{teamBMember.x}%')
+      img#formatField.col-xs-12.img_contain.field(draggable="false" formatdrop="true"  src='/img/field.png')
+      img.size_50.teamMember.onemberA(ng-repeat='teamAMember in ngcompetition.camp_a.formation' formatdrag="true" src='/img/icons/facebook.png' id='on_{{teamAMember.username}}' style='top:{{teamAMember.y}}%;left:{{teamAMember.x}}%')
+      img.size_50.teamMember.onemberB(ng-repeat='teamBMember in ngcompetition.camp_b.formation' draggable="false" src='/img/icons/google.png' id='on_{{teamBMember.username}}' style='top:{{teamBMember.y}}%;left:{{teamBMember.x}}%')
 block aside
   .infoHead.row
     h4.pull-left 活动简介
@@ -36,7 +32,7 @@ block aside
     label.col-xs-4.control-label 赛制：
     label.col-xs-8.control-label= competition.brief.number
   .row
-    label.col-xs-4.control-label 人数：
+    label.col-xs-4.control-label 人数：7
     label.col-xs-8.control-label= competition.brief.competition_format
   .row
     label.col-xs-4.control-label 场地：
