@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     LocalStrategy = require('passport-local').Strategy,
-    User = mongoose.model('User');
+    Admin = mongoose.model('Admin');
 
 module.exports = function(passport) {
 
@@ -14,7 +14,7 @@ module.exports = function(passport) {
     // Deserialize the user object based on a pre-serialized token
     // which is the user id
     passport.deserializeUser(function(id, done) {
-        User.findOne({
+        Admin.findOne({
             _id: id
         }, '-salt -hashed_password', function(err, user) {
             done(err, user);
@@ -27,7 +27,7 @@ module.exports = function(passport) {
             passwordField: 'password'
         },
         function(email, password, done) {
-            User.findOne({
+            Admin.findOne({
                 email: email
             }, function(err, user) {
                 if (err) {

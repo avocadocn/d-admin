@@ -10,34 +10,24 @@ var mongoose = require('mongoose'),
 /**
  * User Schema
  */
-var UserSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: String,
-    username: {
+var Admin = new Schema({
+    email: {
         type: String,
         unique: true
     },
     roles: [{
         type: String,
-        default: 'authenticated'
+        default: 'admin'
     }],
     hashed_password: String,
     provider: String,
-    salt: String,
-    facebook: {},
-    twitter: {},
-    github: {},
-    google: {},
-    linkedin: {}
+    salt: String
 });
 
 /**
  * Virtuals
  */
-UserSchema.virtual('password').set(function(password) {
+Admin.virtual('password').set(function(password) {
     this._password = password;
     this.salt = this.makeSalt();
     this.hashed_password = this.encryptPassword(password);
@@ -52,26 +42,15 @@ var validatePresenceOf = function(value) {
     return value && value.length;
 };
 
-// The 4 validations below only apply if you are signing up traditionally.
-UserSchema.path('name').validate(function(name) {
-    // If you are authenticating by any of the oauth strategies, don't validate.
-    if (!this.provider) return true;
-    return (typeof name === 'string' && name.length > 0);
-}, 'Name cannot be blank');
 
-UserSchema.path('email').validate(function(email) {
+Admin.path('email').validate(function(email) {
     // If you are authenticating by any of the oauth strategies, don't validate.
     if (!this.provider) return true;
     return (typeof email === 'string' && email.length > 0);
 }, 'Email cannot be blank');
 
-UserSchema.path('username').validate(function(username) {
-    // If you are authenticating by any of the oauth strategies, don't validate.
-    if (!this.provider) return true;
-    return (typeof username === 'string' && username.length > 0);
-}, 'Username cannot be blank');
 
-UserSchema.path('hashed_password').validate(function(hashed_password) {
+Admin.path('hashed_password').validate(function(hashed_password) {
     // If you are authenticating by any of the oauth strategies, don't validate.
     if (!this.provider) return true;
     return (typeof hashed_password === 'string' && hashed_password.length > 0);
@@ -81,7 +60,7 @@ UserSchema.path('hashed_password').validate(function(hashed_password) {
 /**
  * Pre-save hook
  */
-UserSchema.pre('save', function(next) {
+Admin.pre('save', function(next) {
     if (!this.isNew) return next();
 
     if (!validatePresenceOf(this.password) && !this.provider)
@@ -93,7 +72,7 @@ UserSchema.pre('save', function(next) {
 /**
  * Methods
  */
-UserSchema.methods = {
+Admin.methods = {
 
     /**
      * HasRole - check if the user has required role
@@ -141,4 +120,4 @@ UserSchema.methods = {
     }
 };
 
-mongoose.model('User', UserSchema);
+mongoose.model('Admin', Admin);
