@@ -6,7 +6,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-
 var InternalMessageSchema = new Schema({
   id: String,
   company: {
