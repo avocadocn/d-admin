@@ -41,10 +41,10 @@ module.exports = function(app, passport, db) {
     }
 
     // assign the template engine to .html files
-    app.engine('html', consolidate[config.templateEngine]);
+    app.engine('jade', consolidate[config.templateEngine]);
 
     // set .html as the default extension
-    app.set('view engine', 'html');
+    app.set('view engine', 'jade');
 
     // Set views path, template engine and default layout
     app.set('views', config.root + '/server/views');
@@ -102,6 +102,8 @@ module.exports = function(app, passport, db) {
 
         // Routes should be at the last
         app.use(app.router);
+
+        app.use(require('stylus').middleware(config.root + '/public'));
 
         // Setting the fav icon and static folder
         app.use(express.favicon());

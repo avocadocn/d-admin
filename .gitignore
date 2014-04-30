@@ -1,12 +1,33 @@
+###############################
+# temp
+###############################
+
 .DS_Store
 .nodemonignore
 .sass-cache/
 .bower-*/
 .idea/
+
+
+
+
+
+###############################
+# lib
+###############################
+
 node_modules/
-public/system/lib
+public/lib/
+
+
+
+###############################
+# others
+###############################
+
 mean.iml
 test/coverage/
 modules/public/
 modules/views/
 /public/build/
+npm-debug.log
