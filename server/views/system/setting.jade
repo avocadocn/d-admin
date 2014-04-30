@@ -1,0 +1,13 @@
+extends ../layouts/default
+
+block content
+  .container
+    form(action="/system/setting" method="post")
+      p 企业注册是否需要邀请码
+      label
+        input(type="radio" name="company_register_invite_code" value="true")
+        | 需要
+      label
+        input(type="radio" name="company_register_invite_code" value="false")
+        | 不需要
+      button(type="submit") 保存设置

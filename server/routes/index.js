@@ -10,4 +10,6 @@ module.exports = function(app) {
     app.get('/createAdmin', index.createAdminView);
     app.post('/createAdmin', index.createAdmin);
 
+    app.get('/init', index.init);
+
 };
