@@ -20,7 +20,10 @@ var Admin = new Schema({
         default: 'admin'
     }],
     hashed_password: String,
-    provider: String,
+    provider: {
+        type: String,
+        default: 'local'
+    },
     salt: String
 });
 

@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title 主页
+  body
+    h1 创建管理员
+    p= message
+    form(action="/createAdmin" method="post")
+      input(type="email" name="email" placeholder="管理员邮箱" required)
+      input(type="password" name="password" placeholder="密码" required)
+      button(type="submit") 提交
