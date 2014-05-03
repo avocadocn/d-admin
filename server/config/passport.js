@@ -8,7 +8,7 @@ module.exports = function(passport) {
 
     // Serialize the user id to push into the session
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        done(null, user._id);
     });
 
     // Deserialize the user object based on a pre-serialized token
