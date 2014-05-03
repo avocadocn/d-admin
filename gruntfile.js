@@ -14,7 +14,7 @@ module.exports = function(grunt) {
                 }
             },
             html: {
-                files: ['public/views/**', 'server/views/**'],
+                files: ['public/views/**'],
                 options: {
                     livereload: true
                 }
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
                 options: {
                     args: [],
                     ignore: ['public/**'],
-                    ext: 'js,html',
+                    ext: 'js,jade',
                     nodeArgs: ['--debug'],
                     delayTime: 1,
                     env: {

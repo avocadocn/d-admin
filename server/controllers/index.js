@@ -36,4 +36,4 @@ exports.init = function(req, res) {
     if (err) res.send({ r: err });
     else res.send({ r: 'init success' });
   });
-}
+};
