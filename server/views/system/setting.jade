@@ -11,3 +11,10 @@ block content
         input(type="radio" name="company_register_invite_code" value="false")
         | 不需要
       button(type="submit") 保存设置
+
+    form(action="/system/createCompanyRegisterInviteCode" method="post")
+      p 生成邀请码
+      button(type="submit") 生成
+      p 所有邀请码
+      each code in codes
+        p= code.code

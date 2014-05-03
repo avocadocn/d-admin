@@ -6,5 +6,6 @@ module.exports = function(app) {
 
     app.get('/system/setting', system.settingView);
     app.post('/system/setting', system.setNeedCompanyRegisterInviteCode);
+    app.post('/system/createCompanyRegisterInviteCode', system.createCompanyRegisterInviteCode);
 
 };
