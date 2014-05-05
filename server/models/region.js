@@ -22,31 +22,27 @@ var _company = new Schema({
     }
 });
 
-var _county = new Schema({
+var _district = new Schema({
     id: String,
     name: String,
-    company: [_company]      //按县划分的公司
+    company: [_company]      //按县或者区划分的公司
 });
 
 var _city = new Schema({
     id: String,
     name: String,
-    county: [_county],
+    district: [_district],
     company: [_company]      //按市划分的公司,和县无关
 });
 
 
-var _province = new Schema({
+var Province = new Schema({
     id: String,
     name: String,
     city: [_city],
     company: [_company]      //按省划分的公司,与市和县无关
 });
 
-var RegionSchema = new Schema({
-    province: [_province]
-});
 
 
-
-mongoose.model('Region', RegionSchema);
+mongoose.model('Region', Province);
