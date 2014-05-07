@@ -17,7 +17,8 @@ getProvinceList = function (req, res) {
 
 
 //返回某省的所有城市
-exports.getCityByProvince = function (req, res, province) {
+exports.getCityByProvince = function (req, res) {
+  var province = req.body.province;
   Region.findOne({'name':province},{'city':1},function (err, region) {
     if(err || !region) {
       return res.send('ERROR');
@@ -37,9 +38,10 @@ exports.getCityById = function (req, res, id) {
 */
 
 
-
 //返回某省某城市的所有区/县
-exports.getDistrict = function (req, res, province, city) {
+exports.getDistrict = function (req, res) {
+  var province = req.body.province;
+  var city = req.body.city;
   Region.findOne({
     'name':province,
     'city' : {'$elemMatch':{'name':city}},
@@ -59,10 +61,11 @@ exports.getDistrict = function (req, res, province, city) {
 };
 
 
-
-
 //返回某省某城市某区的公司
-exports.getDistrict = function (req, res, province, city, district) {
+exports.getDistrict = function (req, res) {
+  var province = req.body.province;
+  var city = req.body.city;
+  var district = req.body.district;
   Region.findOne({
     'name':province,
     'city' : {
