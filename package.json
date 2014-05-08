@@ -60,6 +60,14 @@
     "karma": "~0.10.4",
     "karma-coverage": "~0.1.0",
     "supertest": "0.8.2",
-    "should": "2.1.1"
+    "should": "2.1.1",
+    "assemble": "^0.4.37",
+    "assemble-less": "^0.7.0",
+    "pretty": "^0.1.2",
+    "screenfull": "^1.1.1",
+    "cssbeautify": "^0.3.1",
+    "epiceditor": "^0.2.0",
+    "less": "^1.7.0",
+    "css-flip": "^0.3.0"
   }
 }

@@ -1,0 +1,47 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title= title
+    meta(http-equiv="X-UA-Compatible" content="IE=edge,chrome=1")
+    meta(name="viewport" content="width=device-width,initial-scale=1")
+    link(rel="stylesheet" href="/public/lib/bootstrap/dist/css/bootstrap.min.css")
+    link(rel="stylesheet" href="/public/lib/font-awesome/css/font-awesome.min.css")
+    link(rel="stylesheet" href="/public/css/main.min.css")
+    link(rel="stylesheet" href="/public/lib/magic/magic.min.css")
+  body.login
+    .container
+      .text-center
+        img(src="assets/img/logo.png" alt="Metis Logo")
+      .tab-content
+        div(id="login" class="tab-pane active")
+          form.form-signin(action="")
+            p.text-muted.text-center Enter your username and password
+            input.form-control(type="text" placeholder="Username")
+            input.form-control(type="password" placeholder="Password")
+            button.btn.btn-lg.btn-primary.btn-block(type="submit") Sign in
+        div(id="forgot" class="tab-pane")
+          form.form-signin(action="")
+            p.text-muted.text-center Enter your valid e-mail
+            input.form-control(type="email" placeholder="mail@domain.com" required="required")
+            br
+            button.btn.btn-lg.btn-danger.btn-block(type="submit") Recover Password
+        div(id="signup" class="tab-pane")
+          form.form-signin(action="")
+            input.form-control(type="text" placeholder="username")
+            input.form-control(type="email" placeholder="mail@domain.com")
+            input.form-control(type="password" placeholder="password")
+            button.btn.btn-lg.btn-success.btn-block(type="submit") Register
+      .text-center
+        .list-inline
+          li
+            a.text-muted(href="#login" data-toggle="tab") Login
+          li
+            a.text-muted(href="#forgot" data-toggle="tab") Forgot Password
+          li
+            a.text-muted(href="#signup" data-toggle="tab") Signup
+
+
+    script(src="/public/lib/jquery/jquery.min.js")
+    script(src="/public/lib/bootstrap/dist/js/bootstrap.min.js")
+

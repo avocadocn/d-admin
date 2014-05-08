@@ -12,4 +12,6 @@ module.exports = function(app) {
 
     app.get('/init', index.init);
 
+    app.get('/login', index.login);
+
 };

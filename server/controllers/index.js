@@ -37,3 +37,10 @@ exports.init = function(req, res) {
     else res.send({ r: 'init success' });
   });
 };
+
+
+
+
+exports.login = function(req, res) {
+  res.render('login');
+};

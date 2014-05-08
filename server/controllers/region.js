@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
 
 
 //获取所有省名字
-getProvinceList = function (req, res) {
+exports.getProvinceList = function (req, res) {
   Region.find(null,{'id':1,'name':1},function (err, all) {
     if(err || !all) {
       return res.send('ERROR');

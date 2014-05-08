@@ -1,7 +1,143 @@
-doctype html
-html
-  head
-    meta(charset="utf-8")
-    title 主页
-  body
-    h1 index
+extends ../views/layouts/default
+
+block content
+  div(ng-app="admin" id="wrap")
+    div#top
+      nav(class="navbar navbar-inverse navbar-static-top")
+        .container-fluid
+          header.navbar-header
+            button.navbar-toggle(data-toggle="collapse" data-target=".navbar-ex1-collapse")
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.navbar-brand(href="index.html")
+              img(src="/public/pic/logo.png" alt="")
+          .topnav
+            .btn-group
+              a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="E-mail" data-toggle="tooltip")
+                i.fa.fa-envelope
+                span.label.label-warning 5
+              a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="Messages" href="#" data-toggle="tooltip")
+                i.fa.fa-comments
+                span.label.label-danger 4
+              a.btn.btn-default.btn-sm(data-toggle="modal" data-original-title="Help" data-placement="bottom" class="btn btn-default btn-sm" href="#helpModal")
+                i.fa.fa-question
+            div.btn-group
+              a.btn.btn-metis-1.btn-sm(href="login.html" data-toggle="tooltip" data-original-title="Logout" data-placement="bottom")
+                i.fa.fa-power-off
+          .collapse.navbar-collapse.navbar-ex1-collapse
+      header.head
+        .search-bar
+          form.main-search(action="")
+            .input-group
+              input.form-control(type="text" placeholder="Live Search ...")
+              span.input-group-btn
+                button.btn.btn-primary.btn-sm.text-muted
+                  i.fa.fa-search
+        .main-bar
+          h3
+            i.fa.fa-home DONLER
+    div(id="left")
+      .media.user-media
+        .user-media-toggleHover
+          span.fa.fa-user
+        .user-wrapper
+          a.user-link(href="")
+            img.media-object.img-thumbnail.user-img(alt="User Picture" src="/public/pic/user.gif")
+            span.label.label-danger.user-label 16
+          .media-body
+            h5.media-heading 后台
+            ul.list-unstyled.user-info
+              li
+                a(href="") Administrator
+              li Last Access:
+                br
+                small
+                  i.fa.fa-calendar 16 Mar 16:32
+
+      <!-- #menu -->
+      ul#menu
+        li.nav-header 菜单
+        li.nav-divider
+        li
+          a(href="#/dashboard")
+            i.fa.fa-dashboard
+            span.link-title 运行状态
+        li
+          ul
+            li
+              a(href="icon.html")
+                i.fa.fa-angle-right
+                &nbsp;Icon
+            li
+              a(href="button.html")
+                i.fa.fa-angle-right
+                &nbsp;Button
+            li
+              a(href="progress.html")
+                i.fa.fa-angle-right
+                &nbsp;Progress
+            li
+              a(href="pricing.html")
+                i.fa.fa-credit-card
+                &nbsp;Pricing Table
+            li
+              a(href="bgimage.html")
+                i.fa.fa-angle-right
+                &nbsp;Bg Image
+            li
+              a(href="bgcolor.html")
+                i.fa.fa-angle-right
+                &nbsp;Bg Color
+        li
+          a(href="javascript:;")
+            i.fa.fa-pencil
+            span.link-title 表单
+            span.fa.arrow
+          ul
+            li
+              a(href="form-general.html")
+                i.fa.fa-angle-right
+                &nbsp;General
+            li
+              a(href="form-validation.html")
+                i.fa.fa-angle-right
+                &nbsp;Validation
+            li
+              a(href="form-wysiwyg.html")
+                i.fa.fa-angle-right
+                &nbsp;WYSIWYG
+            li
+              a(href="form-wizard.html")
+                i.fa.fa-angle-right
+                &nbsp;Wizard &amp; File Upload
+        li
+          a(href="#/region")
+            i.fa.fa-table
+            span.link-title 地区管理
+        li
+          a(href="#/chart")
+            i.fa.fa.fa-bar-chart-o
+            span.link-title Charts
+        li.nav-divider
+        li
+          a(href="/login")
+            i.fa.fa-sign-in
+            span.link-title Login Page
+    div(ng-view id="content")
+      .uter
+        .inner
+          .col-lg-12
+            h1 动梨后台管理
+            h5
+            h5
+            h5
+    div#right
+      .alert.alert-danger
+        button.close(data-dismiss="alert") &times;
+  footer#footer
+    p 2014 &copy; Metis Bootstrap Admin Template
+append footExt
+  script(src="/public/lib/angular-route/angular-route.min.js")
+  script(src="/public/js/controllers/admin.js")
