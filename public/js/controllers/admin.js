@@ -2,7 +2,6 @@
 
 var adminApp = angular.module('admin', ['ngRoute']);
 
-
 adminApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
   $routeProvider
@@ -11,10 +10,10 @@ function($routeProvider, $locationProvider) {
       controller: 'DashboardController',
       controllerAs: 'dashboard'
     })
-    .when('/form', {
-      templateUrl: '/public/views/form.html',
-      controller: 'FormController',
-      controllerAs: 'form'
+    .when('/manager', {
+      templateUrl: '/public/views/manager.html',
+      controller: 'ManagerController',
+      controllerAs: 'manager'
     })
     .when('/region', {
       templateUrl: '/public/views/region.html',
@@ -31,6 +30,56 @@ function($routeProvider, $locationProvider) {
     });
 }]);
 
+adminApp.controller('ManagerController', ['$http','$scope',
+  function ($http, $scope) {
+    $scope.metisTable = function() {
+      /*----------- BEGIN TABLESORTER CODE -------------------------*/
+      /* required jquery.tablesorter.min.js*/
+      $(".sortableTable").tablesorter();
+      /*----------- END TABLESORTER CODE -------------------------*/
+
+      /*----------- BEGIN datatable CODE -------------------------*/
+      $('#dataTable').dataTable({
+        "sDom": "<'pull-right'l>t<'row'<'col-lg-6'f><'col-lg-6'p>>",
+        "sPaginationType": "bootstrap",
+        "oLanguage": {
+            "sLengthMenu": "Show _MENU_ entries"
+        }
+      });
+      /*----------- END datatable CODE -------------------------*/
+
+      /*----------- BEGIN action table CODE -------------------------*/
+      $('#actionTable button.remove').on('click', function() {
+        $(this).closest('tr').remove();
+      });
+      $('#actionTable button.edit').on('click', function() {
+        $('#editModal').modal({
+            show: true
+        });
+        var val1 = $(this).closest('tr').children('td').eq(1),
+                val2 = $(this).closest('tr').children('td').eq(2),
+                val3 = $(this).closest('tr').children('td').eq(3);
+        $('#editModal #fName').val(val1.html());
+        $('#editModal #lName').val(val2.html());
+        $('#editModal #uName').val(val3.html());
+
+
+        $('#editModal #sbmtBtn').on('click', function() {
+            val1.html($('#editModal #fName').val());
+            val2.html($('#editModal #lName').val());
+            val3.html($('#editModal #uName').val());
+        });
+
+      });
+      /*----------- END action table CODE -------------------------*/
+    }
+    function metisSortable() {
+      $('.inner .row').sortable({
+      });
+    }
+    $scope.metisTable();
+    $scope.metisSortable();
+}]);
 
 adminApp.controller('ChartController', ['$http','$scope',
   function ($http, $scope) {
@@ -142,55 +191,224 @@ adminApp.controller('ChartController', ['$http','$scope',
     $scope.metisChart();
 }]);
 
-adminApp.controller('DashboardController', ['$http','$scope',
+
+adminApp.controller('RegionController', ['$http','$scope',
   function ($http, $scope) {
-    $scope.metisTable = function() {
-      /*----------- BEGIN TABLESORTER CODE -------------------------*/
-      /* required jquery.tablesorter.min.js*/
-      $(".sortableTable").tablesorter();
-      /*----------- END TABLESORTER CODE -------------------------*/
 
-      /*----------- BEGIN datatable CODE -------------------------*/
-      $('#dataTable').dataTable({
-        "sDom": "<'pull-right'l>t<'row'<'col-lg-6'f><'col-lg-6'p>>",
-        "sPaginationType": "bootstrap",
-        "oLanguage": {
-            "sLengthMenu": "Show _MENU_ entries"
-        }
-      });
-      /*----------- END datatable CODE -------------------------*/
+    $http.get('/region/province').success(function(data, status) {
+      $scope.provinces = data;
+      $scope.cities = scope.provinces.city[0];
+      $scope.districts = scope.provinces.city[0].district[0];
+    });
 
-      /*----------- BEGIN action table CODE -------------------------*/
-      $('#actionTable button.remove').on('click', function() {
-        $(this).closest('tr').remove();
-      });
-      $('#actionTable button.edit').on('click', function() {
-        $('#editModal').modal({
-            show: true
-        });
-        var val1 = $(this).closest('tr').children('td').eq(1),
-                val2 = $(this).closest('tr').children('td').eq(2),
-                val3 = $(this).closest('tr').children('td').eq(3);
-        $('#editModal #fName').val(val1.html());
-        $('#editModal #lName').val(val2.html());
-        $('#editModal #uName').val(val3.html());
+    var pid = '';
+    var cid = '';
+    $scope.province_selected='';
+    $scope.city_selected='';
+    $scope.district_selected='';
 
+    $scope.province_new='';
+    $scope.city_new='';
+    $scope.district_new='';
 
-        $('#editModal #sbmtBtn').on('click', function() {
-            val1.html($('#editModal #fName').val());
-            val2.html($('#editModal #lName').val());
-            val3.html($('#editModal #uName').val());
-        });
-
-      });
-      /*----------- END action table CODE -------------------------*/
+    $scope.getCity = function(province) {
+      pid = province.id;
+      try{
+          $http({
+              method: 'post',
+              url: '/region/city',
+              data:{
+                  province_id: pid
+              }
+          }).success(function(data, status) {
+              $scope.cities = data;
+              $scope.districts = [];
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
     };
-    $scope.metisSortable = function() {
-      $('.inner .row').sortable({});
+
+    $scope.getDistrict = function(city) {
+      cid = city.id;
+      try{
+          $http({
+              method: 'post',
+              url: '/region/district',
+              data:{
+                  province_id: pid,
+                  city_id: cid
+              }
+          }).success(function(data, status) {
+              $scope.districts = data;
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
     };
-    $scope.metisTable();
-    $scope.metisSortable();
+
+
+    $scope.add = function(type) {
+      var address = '';
+      var new_name = '';
+      switch(type) {
+        //添加省
+        case 0:
+          address = "/region/add/province";
+          new_name = $scope.province_new;
+          break;
+        //添加市
+        case 1:
+          address = "/region/add/city";
+          new_name = $scope.city_new;
+          break;
+        //添加区
+        case 2:
+          address = "/region/add/district";
+          new_name = $scope.district_new;
+          break;
+        default:break;
+      }
+      try{
+          $http({
+              method: 'post',
+              url: address,
+              data:{
+                  pid : pid,
+                  cid : cid,
+                  name: new_name,
+                  _type: type
+              }
+          }).success(function(data, status) {
+            window.location.reload();
+            /*
+            switch(type) {
+              //添加省
+              case 0:
+                $scope.provinces.push({
+                  'id':'null',
+                  'name':new_name
+                });
+                $scope.cities = [];
+                $scope.districts = [];
+                break;
+              //添加市
+              case 1:
+                $scope.cities.push({
+                  'id':'null',
+                  'name':new_name
+                });
+                $scope.districts = [];
+                break;
+              //添加区
+              case 2:
+                $scope.districts.push({
+                  'id':'null',
+                  'name':new_name
+                });
+                break;
+              default:break;
+            }
+            */
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+
+    $scope._delete = function(type,_id) {
+      var address = '';
+      switch(type) {
+        //添加省
+        case 0:
+          address = "/region/delete/province";
+          break;
+        //添加市
+        case 1:
+          address = "/region/delete/city";
+          break;
+        //添加区
+        case 2:
+          address = "/region/delete/district";
+          break;
+        default:break;
+      }
+
+      try{
+          $http({
+              method: 'post',
+              url: address,
+              data:{
+                  pid : pid,
+                  cid : cid,
+                  id: _id,
+                  _type: type
+              }
+          }).success(function(data, status) {
+            switch(type) {
+              case 0:
+                for(var i = 0; i < $scope.provinces.length; i++) {
+                  if ($scope.provinces[i].id === _id) {
+                    $scope.provinces.splice(i,1);
+                    break;
+                  }
+                }
+                $scope.cities = [];
+                $scope.districts = [];
+                break;
+              //添加市
+              case 1:
+                for(var i = 0; i < $scope.cities.length; i++) {
+                  if ($scope.cities[i].id === _id) {
+                    $scope.cities.splice(i,1);
+                    break;
+                  }
+                }
+                $scope.districts = [];
+                break;
+              //添加区
+              case 2:
+                for(var i = 0; i < $scope.districts.length; i++) {
+                  if ($scope.districts[i].id === _id) {
+                    $scope.districts.splice(i,1);
+                    break;
+                  }
+                }
+                break;
+              default:break;
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+
+    //$scope.formGeneral();
 }]);
+
+
+
+
+
+
+
+
 
 adminApp.controller('DashboardController', ['$http','$scope',
   function ($http, $scope) {
