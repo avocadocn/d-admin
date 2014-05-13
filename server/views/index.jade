@@ -55,7 +55,6 @@ block content
                 br
                 small
                   i.fa.fa-calendar 16 Mar 16:32
-
       <!-- #menu -->
       ul#menu
         li.nav-header 菜单
@@ -81,19 +80,11 @@ block content
           a(href="/login")
             i.fa.fa-sign-in
             span.link-title Login Page
+    div(ng-controller="ManagerController" class="modal fade" id="companyDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+      include ../views/partials/company_detail
     div(ng-view id="content")
-      .uter
-        .inner
-          .col-lg-12
-            h1 动梨后台管理
-            h5
-            h5
-            h5
-    div#right
-      .alert.alert-danger
-        button.close(data-dismiss="alert") &times;
   footer#footer
-    p 2014 &copy; Metis Bootstrap Admin Template
+    p 2014 &copy; DONLER
 append footExt
   script(src="/public/lib/angular-route/angular-route.min.js")
   script(src="/public/js/controllers/admin.js")

@@ -32,6 +32,39 @@ function($routeProvider, $locationProvider) {
 
 adminApp.controller('ManagerController', ['$http','$scope',
   function ($http, $scope) {
+    $scope.detail_show = false;
+    $http.get('/manager/company').success(function(data, status) {
+      $scope.companies = data;
+    });
+
+    $scope.detailBoxShow = function(status) {
+      $scope.detail_show = status;
+    };
+    $scope.sendActiveMail = function() {
+
+    };
+    $scope.getDetail = function(cid) {
+      try{
+          $http({
+              method: 'post',
+              url: '/manager/company/detail',
+              data:{
+                  cid : cid
+              }
+          }).success(function(data, status) {
+            $scope.info = data.info;
+            $scope.detail_show = true;
+            //$('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+
     $scope.metisTable = function() {
       /*----------- BEGIN TABLESORTER CODE -------------------------*/
       /* required jquery.tablesorter.min.js*/
@@ -73,12 +106,12 @@ adminApp.controller('ManagerController', ['$http','$scope',
       });
       /*----------- END action table CODE -------------------------*/
     }
-    function metisSortable() {
+    $scope.metisSortable = function() {
       $('.inner .row').sortable({
       });
-    }
-    $scope.metisTable();
-    $scope.metisSortable();
+    };
+    //$scope.metisTable();
+    //$scope.metisSortable();
 }]);
 
 adminApp.controller('ChartController', ['$http','$scope',
