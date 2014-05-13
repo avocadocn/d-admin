@@ -5,6 +5,11 @@ var adminApp = angular.module('admin', ['ngRoute']);
 adminApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
   $routeProvider
+    .when('/parameter', {
+      templateUrl: '/public/views/parameter.html',
+      controller: 'ParameterController',
+      controllerAs: 'parameter'
+    })
     .when('/dashboard', {
       templateUrl: '/public/views/dashboard.html',
       controller: 'DashboardController',
@@ -30,6 +35,47 @@ function($routeProvider, $locationProvider) {
     });
 }]);
 
+
+
+adminApp.controller('ParameterController', ['$http','$scope',
+  function ($http, $scope) {
+    $scope.host = {
+      'admin':'无',
+      'product':'无'
+    }
+    $http.get('/admin/host/get').success(function(data, status) {
+      $scope.host = data;
+      if(!$scope.host.admin) {
+        $scope.host = {
+          'admin':'无',
+          'product':'无'
+        }
+      }
+    });
+    $scope.setHost = function(type,value) {
+       try{
+          $http({
+              method: 'post',
+              url: '/admin/host/set',
+              data:{
+                  host_type : type,
+                  host_value : type == 0 ? $scope.host.admin : $scope.host.product
+              }
+          }).success(function(data, status) {
+            window.location.reload();
+            //$('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+}]);
+
+
 adminApp.controller('ManagerController', ['$http','$scope',
   function ($http, $scope) {
     $scope.detail_show = false;
@@ -40,8 +86,27 @@ adminApp.controller('ManagerController', ['$http','$scope',
     $scope.detailBoxShow = function(status) {
       $scope.detail_show = status;
     };
-    $scope.sendActiveMail = function() {
-
+    $scope.sendActiveMail = function(who,name,id) {
+       try{
+          $http({
+              method: 'post',
+              url: '/manager/validate',
+              data:{
+                  who : who,
+                  name : name,
+                  id : id
+              }
+          }).success(function(data, status) {
+            window.location.reload();
+            //$('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
     };
     $scope.getDetail = function(cid) {
       try{

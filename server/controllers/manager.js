@@ -2,6 +2,8 @@
 
 var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
+  Config = mongoose.model('Config'),
+  mail = require('../service/mail'),
   UUID = require('../kit/uuid');
 
 exports.getComapnyBasicInfo = function(req, res) {
@@ -30,4 +32,23 @@ exports.getCompanyDetail = function(req, res) {
 
 exports.getCompanyGroup = function(req, res) {
 
+};
+
+
+
+
+
+exports.validate = function(req, res) {
+  var who = req.body.who,
+      name = req.body.name,
+      id = req.body.id;
+  Config.findOne({'name':'admin'}, function(err, config) {
+    if(err || !config) {
+      console.log(err);
+      return res.send('ERR');
+    } else {
+      mail.sendCompanyActiveMail(who, name, id, config.host.product);
+      return res.send('ok');
+    }
+  });
 };

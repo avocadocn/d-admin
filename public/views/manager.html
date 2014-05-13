@@ -29,7 +29,7 @@
                     <td>{{_content.register_date}}</td>
                     <td>{{_content.status.active ? '是' : '否'}}</td>
                     <td>{{_content.login_email}}</td>
-                    <td><a ng-if="!_content.status.active" ng-click="sendActiveMail(_content.id)">验证</a> <a ng-click="getDetail(_content.id)">详情</a></td>
+                    <td><a ng-if="!_content.status.active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content.id)">验证</a> <a ng-click="getDetail(_content.id)">详情</a></td>
                   </tr>
                 </tbody>
               </table>
