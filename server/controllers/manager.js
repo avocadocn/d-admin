@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
   UUID = require('../kit/uuid');
 
 exports.getComapnyBasicInfo = function(req, res) {
-  Company.find(null,{'id':1,'info.name':1,'login_email':1,'register_date':1,'status':1},function(err, companies) {
+  Company.find(null,{'_id':1,'info.name':1,'login_email':1,'register_date':1,'status':1},function(err, companies) {
     if(err || !companies) {
       return res.send([]);
     } else {
@@ -19,8 +19,8 @@ exports.getComapnyBasicInfo = function(req, res) {
 
 
 exports.getCompanyDetail = function(req, res) {
-  var id = req.body.cid;
-  Company.findOne({'id':id},{'info':1},function(err, company_info) {
+  var _id = req.body._id;
+  Company.findOne({'_id': _id},{'info':1},function(err, company_info) {
     if(err || !company_info) {
       return res.send([]);
     } else {
@@ -41,13 +41,13 @@ exports.getCompanyGroup = function(req, res) {
 exports.validate = function(req, res) {
   var who = req.body.who,
       name = req.body.name,
-      id = req.body.id;
+      _id = req.body._id;
   Config.findOne({'name':'admin'}, function(err, config) {
     if(err || !config) {
       console.log(err);
       return res.send('ERR');
     } else {
-      mail.sendCompanyActiveMail(who, name, id, config.host.product);
+      mail.sendCompanyActiveMail(who, name, _id, config.host.product);
       return res.send('ok');
     }
   });

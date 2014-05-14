@@ -86,7 +86,7 @@ adminApp.controller('ManagerController', ['$http','$scope',
     $scope.detailBoxShow = function(status) {
       $scope.detail_show = status;
     };
-    $scope.sendActiveMail = function(who,name,id) {
+    $scope.sendActiveMail = function(who, name, company_id) {
        try{
           $http({
               method: 'post',
@@ -94,7 +94,7 @@ adminApp.controller('ManagerController', ['$http','$scope',
               data:{
                   who : who,
                   name : name,
-                  id : id
+                  _id : company_id
               }
           }).success(function(data, status) {
             window.location.reload();
@@ -108,13 +108,13 @@ adminApp.controller('ManagerController', ['$http','$scope',
           console.log(e);
       }
     };
-    $scope.getDetail = function(cid) {
+    $scope.getDetail = function(company_id) {
       try{
           $http({
               method: 'post',
               url: '/manager/company/detail',
               data:{
-                  cid : cid
+                  _id : company_id
               }
           }).success(function(data, status) {
             $scope.info = data.info;
