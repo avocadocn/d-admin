@@ -79,6 +79,7 @@ adminApp.controller('ParameterController', ['$http','$scope',
 adminApp.controller('ManagerController', ['$http','$scope',
   function ($http, $scope) {
     $scope.detail_show = false;
+
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
     });
@@ -175,9 +176,21 @@ adminApp.controller('ManagerController', ['$http','$scope',
       $('.inner .row').sortable({
       });
     };
-    //$scope.metisTable();
-    //$scope.metisSortable();
+
+    $scope.run = function() {
+      $scope.metisTable();
+      $scope.metisSortable();
+    };
 }]);
+
+
+adminApp.directive('finishRepeatDirective', function() {
+  return function(scope, element, attrs) {
+    $(element).find('.js_ajax_form').ajaxForm(function() {
+      getData();
+    });
+  };
+});
 
 adminApp.controller('ChartController', ['$http','$scope',
   function ($http, $scope) {

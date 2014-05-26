@@ -24,7 +24,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="_content in companies">
+                  <tr ng-repeat="_content in companies" finish-repeat-directive>
                     <td>{{_content.info.name}}</td>
                     <td>{{_content.register_date}}</td>
                     <td>{{_content.status.active ? '是' : '否'}}</td>
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div><!-- /.row -->
-
+      <button ng-click="run()">哈哈</button>
       <!--End Datatables-->
       <div class="row" ng-if="detail_show">
         <div class="row">
