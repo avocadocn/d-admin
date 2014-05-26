@@ -8,35 +8,26 @@ var mongoose = require('mongoose'),
     crypto = require('crypto');
 
 
-var _member = new Schema({
-    _id : {
-        type: String,
-        ref: 'User'
-    },
-    nickname : String
-});
-
-var _group = new Schema({
-    _id: {
-        type: String,
-        ref: 'Group'
-    },
+//小队信息
+var _team = new Schema({
+    gid : String,
     group_type: String,
-    entity_type: String,           //对应的增强组件名字
-    tname: String,                 //小队名称,这是很关键的关键字!
-    leader:[_member]
+    name: String,
+    id: String
 });
 /**
  * Company Schema
  */
 var CompanySchema = new Schema({
 
-    _id: String,
     username: {
         type: String,
         unique: true
     },
-    login_email: String,
+    login_email: {
+        type: String,
+        unique: true
+    },
     hashed_password: String,
 
     email: {
@@ -53,6 +44,7 @@ var CompanySchema = new Schema({
         date: Number
     },
 
+    team:[_team],
     //公司信息
     info: {
         name: {
@@ -83,22 +75,21 @@ var CompanySchema = new Schema({
             default: '/img/icons/default_company_logo.png'
         },
 
-        membernumber: Number
+        membernumber: {
+            type: Number,
+            default: 0
+        }
     },
 
     register_date: {
         type: Date,
         default: Date.now()
     },
-    //公司内部组件
-    group: [_group],
     provider: {
         type: String,
         default: 'company'
     },
     salt: String,
-
-
     // 企业注册用的邀请码
     register_invite_code: [String]
 });
