@@ -16,6 +16,9 @@ module.exports = function(app) {
     app.post('/region/delete/city', region._delete);
     app.post('/region/delete/district', region._delete);
 
+    app.post('/region/edit/province', region._edit);
+    app.post('/region/edit/city', region._edit);
+    app.post('/region/edit/district', region._edit);
 
     app.get('/region/json', region.regionAsJSON);
 };

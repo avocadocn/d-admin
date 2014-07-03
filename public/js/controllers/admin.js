@@ -439,6 +439,83 @@ adminApp.controller('RegionController', ['$http','$scope',
       }
     };
 
+    $scope._edit = function(type,_id) {
+      var address = '';
+      var new_name = '';
+      switch(type) {
+        //添加省
+        case 0:
+          address = "/region/edit/province";
+          new_name = $scope.province_new;
+          break;
+        //添加市
+        case 1:
+          address = "/region/edit/city";
+          new_name = $scope.city_new;
+          break;
+        //添加区
+        case 2:
+          address = "/region/edit/district";
+          new_name = $scope.district_new;
+          break;
+        default:break;
+      }
+
+      try{
+          $http({
+              method: 'post',
+              url: address,
+              data:{
+                  pid : pid,
+                  cid : cid,
+                  id: _id,
+                  _type: type,
+                  name : new_name
+              }
+          }).success(function(data, status) {
+            switch(type) {
+              case 0:
+                for(var i = 0; i < $scope.provinces.length; i++) {
+                  if ($scope.provinces[i].id === _id) {
+                    $scope.provinces.name = $scope.province_new;
+                    break;
+                  }
+                }
+                $scope.cities = [];
+                $scope.districts = [];
+                break;
+              //修改市
+              case 1:
+                for(var i = 0; i < $scope.cities.length; i++) {
+                  if ($scope.cities[i].id === _id) {
+                    $scope.cities.name = $scope.city_new;
+                    break;
+                  }
+                }
+                $scope.districts = [];
+                break;
+              //修改区
+              case 2:
+                for(var i = 0; i < $scope.districts.length; i++) {
+                  if ($scope.districts[i].id === _id) {
+                    $scope.districts.name = $scope.district_new;
+                    break;
+                  }
+                }
+                break;
+              default:break;
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+
+    }
+
     $scope._delete = function(type,_id) {
       var address = '';
       switch(type) {

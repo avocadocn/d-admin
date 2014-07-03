@@ -170,6 +170,69 @@ exports._delete = function(req, res) {
 }
 
 
+exports._edit = function(req, res) {
+  var _type = req.body._type;
+  var pid = req.body.pid;
+  var cid = req.body.cid;
+  var id = req.body.id;
+  var name = req.body.name;
+
+  switch(_type) {
+    case 0:
+      Region.update({'id':id}, {'$set':{'name':name}}).run();
+      break;
+    case 1:
+      Region.findOne({'id':pid}, function(err, region) {
+        if(err || !region) {
+          return res.send([]);
+        } else {
+          for(var i = 0; i < region.city.length; i++) {
+            if (region.city[i].id === id) {
+              region.city[i].name = name;
+              break;
+            }
+          }
+          region.save(function(err) {
+            if(err) {
+              return res.send([]);
+            } else {
+              return res.send('ok');
+            }
+          });
+        }
+      })
+      break;
+    case 2:
+      Region.findOne({'id':pid}, function(err,region) {
+        if(err || !region) {
+          return res.send([]);
+        } else {
+          for(var i = 0; i < region.city.length; i ++) {
+            if(region.city[i].id == cid) {
+              for(var j = 0; j < region.city[i].district.length; j++) {
+                if (region.city[i].district[j].id === id) {
+                  region.city[i].district[j].name = name;
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          region.save(function(err) {
+            if(err) {
+              return res.send([]);
+            } else {
+              return res.send('ok');
+            }
+          })
+        }
+      })
+      break;
+    default:break;
+  }
+}
+
+
 exports.add = function(req, res) {
   var _type = req.body._type;
   var pid = req.body.pid;
