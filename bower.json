@@ -18,7 +18,7 @@
         "formwizard": "https://github.com/thecodemine/formwizard.git#~3.0.7",
         "jquery-ui-touch-punch": "https://github.com/furf/jquery-ui-touch-punch.git",
         "elfinder": "https://github.com/downloads/Studio-42/elFinder/elfinder-2.0-rc1.tar.gz",
-        "jquery-validation": "http://jqueryvalidation.org/files/jquery-validation-1.12.0.zip",
+        "jquery-validation": "latest",
         "html5shiv": "~3.7.1",
         "respond": "~1.4.2",
         "font-awesome": "~4.0.3",
