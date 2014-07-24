@@ -23,6 +23,7 @@
         "respond": "~1.4.2",
         "font-awesome": "~4.0.3",
         "gmaps": "~0.4.11",
+        "jquery-ui":"latest",
         "jquery.tablesorter": "~2.15.14",
         "jquery-autosize": "~1.18.7",
         "flot": "~0.8.3",

@@ -13,17 +13,21 @@ var _team = new Schema({
     gid : String,
     group_type: String,
     name: String,
-    id: String
+    id: {
+        type: Schema.Types.ObjectId
+    }
+});
+
+var _department = new Schema({
+    parent_id:Schema.Types.ObjectId,
+    name: String,
+    department: [_department]
 });
 /**
  * Company Schema
  */
 var CompanySchema = new Schema({
-
-    username: {
-        type: String,
-        unique: true
-    },
+    username: String,               //用户名，登录用
     login_email: {
         type: String,
         unique: true
@@ -33,7 +37,7 @@ var CompanySchema = new Schema({
     email: {
         domain: Array               //邮箱后缀(多个)
     },
-
+    department:[_department],
     //是否激活
     status: {
         active: {
@@ -43,18 +47,14 @@ var CompanySchema = new Schema({
 
         date: Number
     },
-
     team:[_team],
     //公司信息
     info: {
-        name: {
-            type: String,
-            unique: true
-        },                           //公司名
-
+        name: String,               //公司全称
         city: {
             province: String,
-            city: String
+            city: String,
+            district: String
         },
         address: String,
         phone: String,
@@ -68,7 +68,7 @@ var CompanySchema = new Schema({
         linkman: String,              //联系人
         email: String,
         brief: String,
-        official_name: String,
+        official_name: String,        //公司官方用户名（简称）
 
         logo:{
             type:String,
@@ -80,10 +80,9 @@ var CompanySchema = new Schema({
             default: 0
         }
     },
-
     register_date: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     provider: {
         type: String,

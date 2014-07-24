@@ -1,0 +1,13 @@
+{
+  "name": "elfinder",
+  "_cacheHeaders": {
+    "ETag": "\"e4ea1d1d0f8acb40bd99d4abb89f912b\"",
+    "Last-Modified": "Tue, 10 Apr 2012 14:23:09 GMT",
+    "Content-Length": "236594",
+    "Content-Type": ".gz"
+  },
+  "_release": "e-tag:e4ea1d1d0",
+  "_source": "https://github.com/downloads/Studio-42/elFinder/elfinder-2.0-rc1.tar.gz",
+  "_target": "*",
+  "_originalSource": "https://github.com/downloads/Studio-42/elFinder/elfinder-2.0-rc1.tar.gz"
+}

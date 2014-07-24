@@ -1,0 +1,32 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 公司管理
+            #collapse4.body
+              table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 公司名
+                    th 注册日期
+                    th 是否验证
+                    th 公司邮箱
+                    th 操作
+                tbody
+                  tr(ng-repeat="_content in companies")
+                    td {{_content.info.name}}
+                    td {{_content.register_date}}
+                    td {{_content.status.active ? '是' : '否'}}
+                    td {{_content.login_email}}
+                    td
+                      a(ng-if="!_content.status.active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content._id)") 验证
+                      span(ng-if="!_content.status.active") |
+                      a(ng-click="getDetail(_content._id)") 详情
+div(class="modal fade" id="companyDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/company_detail

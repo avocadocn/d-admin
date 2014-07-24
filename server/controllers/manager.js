@@ -20,9 +20,7 @@ exports.getComapnyBasicInfo = function(req, res) {
 
 exports.getCompanyDetail = function(req, res) {
   var _id = req.body._id;
-  console.log(_id);
   Company.findOne({'_id': _id},{'info':1},function(err, company_info) {
-    console.log(company_info);
     if(err || !company_info) {
       return res.send([]);
     } else {
@@ -37,7 +35,9 @@ exports.getCompanyGroup = function(req, res) {
 };
 
 
-
+exports.home = function(req,res){
+  res.render('system/manager');
+}
 
 
 exports.validate = function(req, res) {

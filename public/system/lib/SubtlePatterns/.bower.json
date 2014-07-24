@@ -1,0 +1,13 @@
+{
+  "name": "SubtlePatterns",
+  "homepage": "https://github.com/subtlepatterns/SubtlePatterns",
+  "_release": "ad43c4b87c",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ad43c4b87cac2ed0c449218d0b7808e51d1b6ce3"
+  },
+  "_source": "https://github.com/subtlepatterns/SubtlePatterns.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/subtlepatterns/SubtlePatterns.git"
+}

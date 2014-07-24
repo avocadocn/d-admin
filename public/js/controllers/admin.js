@@ -16,7 +16,7 @@ function($routeProvider, $locationProvider) {
       controllerAs: 'dashboard'
     })
     .when('/manager', {
-      templateUrl: '/public/views/manager.html',
+      templateUrl: '/manager/home',
       controller: 'ManagerController',
       controllerAs: 'manager'
     })
@@ -82,6 +82,7 @@ adminApp.controller('ManagerController', ['$http','$scope',
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
+      //setTimeout(function(){$scope.run()},500);
     });
 
     $scope.detailBoxShow = function(status) {
@@ -120,7 +121,7 @@ adminApp.controller('ManagerController', ['$http','$scope',
           }).success(function(data, status) {
             $scope.info = data.info;
             $scope.detail_show = true;
-            //$('#companyDetailModal').modal();
+            $('#companyDetailModal').modal();
           }).error(function(data, status) {
               //TODO:更改对话框
               alert('数据发生错误！');
@@ -183,14 +184,6 @@ adminApp.controller('ManagerController', ['$http','$scope',
     };
 }]);
 
-
-adminApp.directive('finishRepeatDirective', function() {
-  return function(scope, element, attrs) {
-    $(element).find('.js_ajax_form').ajaxForm(function() {
-      getData();
-    });
-  };
-});
 
 adminApp.controller('ChartController', ['$http','$scope',
   function ($http, $scope) {
@@ -308,8 +301,8 @@ adminApp.controller('RegionController', ['$http','$scope',
 
     $http.get('/region/province').success(function(data, status) {
       $scope.provinces = data;
-      $scope.cities = scope.provinces.city[0];
-      $scope.districts = scope.provinces.city[0].district[0];
+      $scope.cities = $scope.provinces[0].city[0];
+      $scope.districts = $scope.provinces[0].city[0].district[0];
     });
 
     var pid = '';

@@ -18,7 +18,6 @@ exports.getHost = function(req, res) {
 exports.setHost = function(req, res) {
   var type = req.body.host_type;
   var host = req.body.host_value;
-  console.log(typeof(type),type,host);
   Config.findOne({'name':'admin'},function (err,config) {
     if(err || !config) {
       if(!config) {
