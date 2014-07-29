@@ -179,7 +179,13 @@ exports._edit = function(req, res) {
 
   switch(_type) {
     case 0:
-      Region.update({'id':id}, {'$set':{'name':name}}).run();
+      Region.update({'id':id}, {'$set':{'name':name}},function (err,region){
+        if(err || !region){
+          res.send({'result':0,'msg':'null'});
+        }else{
+          res.send({'result':1,'msg':'ok'});
+        }
+      });
       break;
     case 1:
       Region.findOne({'id':pid}, function(err, region) {
