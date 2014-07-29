@@ -1,20 +1,19 @@
-extends ../layouts/default
+div
+  p 企业注册是否需要邀请码
+  label
+    input(type="radio" name="company_register_invite_code" ng-model="value" value="true" )
+    | 需要
+  label
+    input(type="radio" name="company_register_invite_code" ng-model="value" value="false")
+    | 不需要
+  button(ng-click="codeSetting()") 设置
 
-block content
-  .container
-    form(action="/system/setting" method="post")
-      p 企业注册是否需要邀请码
-      label
-        input(type="radio" name="company_register_invite_code" value="true")
-        | 需要
-      label
-        input(type="radio" name="company_register_invite_code" value="false")
-        | 不需要
-      button(type="submit") 保存设置
-
-    form(action="/system/createCompanyRegisterInviteCode" method="post")
-      p 生成邀请码
-      button(type="submit") 生成
-      p 所有邀请码
-      each code in codes
-        p= code.code
+div
+  .row
+    p 生成邀请码
+    button(ng-click="renderCode()") 生成
+  .row
+    p 所有邀请码
+  .row
+    div(ng-repeat = "code in codes")
+      p {{code.code}}

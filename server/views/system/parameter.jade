@@ -1,0 +1,15 @@
+#content
+  .outer
+    .inner
+      .row
+        span
+          后台域名
+        input(type="text" ng-model="host.admin")
+        button(ng-click="setHost(0,host.admin)") 修改
+      .row
+        span
+          产品域名
+        input(type="text" ng-model="host.product")
+        button(ng-click="setHost(1,host.product)") 修改
+    .inner
+      include ../system/setting

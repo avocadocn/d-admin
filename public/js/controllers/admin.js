@@ -6,7 +6,7 @@ adminApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
   $routeProvider
     .when('/parameter', {
-      templateUrl: '/public/views/parameter.html',
+      templateUrl: '/manager/parameter',
       controller: 'ParameterController',
       controllerAs: 'parameter'
     })
@@ -51,6 +51,14 @@ adminApp.controller('ParameterController', ['$http','$scope',
           'product':'无'
         }
       }
+      $http.get('/system/getcode').success(function (data, status) {
+        $scope.codes = data.codes;
+        $http.get('/system/getting').success(function (data, status) {
+          if(data.result == 1){
+            $scope.value = data.value;
+          }
+        });
+      });
     });
     $scope.setHost = function(type,value) {
        try{
@@ -73,6 +81,35 @@ adminApp.controller('ParameterController', ['$http','$scope',
           console.log(e);
       }
     };
+
+    $scope.codeSetting = function(){
+      $http({
+          method: 'post',
+          url: '/system/setting',
+          data:{
+            company_register_invite_code:$scope.value
+          }
+      }).success(function(data, status) {
+        if(data.result == 1){
+          $scope.value = data.value;
+        }
+      }).error(function(data, status) {
+          alert('数据发生错误!');
+      });
+    }
+
+    $scope.renderCode = function(){
+      $http({
+          method: 'post',
+          url: '/system/createCompanyRegisterInviteCode'
+      }).success(function(data, status) {
+        if(data.result == 1){
+          $scope.codes = data.codes;
+        }
+      }).error(function(data, status) {
+          alert('数据发生错误!');
+      });
+    }
 }]);
 
 
