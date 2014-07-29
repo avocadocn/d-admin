@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "meanio":"latest",
-    "assetmanager": "^0.1.1",
+    "assetmanager": "0.1.2",
     "express": "~3.4.7",
     "consolidate": "~0.10.0",
     "dependable": "0.2.5",
@@ -48,7 +48,7 @@
     "crypto": "0.0.3"
   },
   "devDependencies": {
-    "assetmanager": "^0.1.1",
+    "assetmanager": "0.1.2",
     "grunt-env": "~0.4.1",
     "grunt-contrib-cssmin": "^0.9.0",
     "grunt-contrib-uglify": "^0.4.0",
