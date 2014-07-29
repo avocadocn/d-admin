@@ -1,44 +1,67 @@
 .modal-dialog
-  .modal-content
-    .modal-header
+  .dl-modal
+    .dl-modal-header
       button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
       h4.modal-title#myModalLabel 该公司详细信息
-    .modal-body
-        form.form-horizontal(name="infoForm")
-          .row
+    .dl-modal-body
+        form.form-horizontal.clearfix(name="infoForm")
+          .dl_modal_container.clearfix
             h4.pull-left 基本信息
           hr
-          .row
-            label.col-md-2.control-label 公司名
-            .col-md-5
-              label.info_label {{info.name}}
-          .row
-            label.col-md-2.control-label 官方公司名
-            .col-md-5
-              label.info_label {{info.official_name}}
-          .row
-            label.col-md-2.control-label 地区
-            .col-md-5
-              label.info_label {{info.city.province}}  {{info.city.city}}
-          .row
-            label.col-md-2.control-label 详细地址
-            .col-md-5
-              label.info_label {{info.address}}
-          .row
-            label.col-md-2.control-label 联系人电话
-            .col-md-5
-              label.info_label {{info.phone}}
-          .row
-            label.col-md-2.control-label 公司座机
-            .col-md-5
-              label.info_label {{info.lindline.areacode}} - {{info.lindline.number}} - {{info.lindline.extension}}
-          .row
-            label.col-md-2.control-label 联系人
-            .col-md-5
-              label.info_label {{info.linkman}}
-          .row
-            label.col-md-2.control-label 简介
-            .col-md-5
-              label.info_label {{info.brief}}
-    .modal-footer
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 公司名:
+            .info_detail
+              span.info_label {{info.name}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 官方公司名
+            .info_detail
+              span.info_label {{info.official_name}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 地区
+            .info_detail
+              span.info_label {{info.city.province}}  {{info.city.city}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 详细地址
+            .info_detail
+              span.info_label {{info.address}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 人数
+            .info_detail
+              span.info_label {{info.membernumber}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 联系人电话
+            .info_detail
+              span.info_label {{info.phone}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 公司座机
+            .info_detail
+              span.info_label {{info.lindline.areacode}} - {{info.lindline.number}} - {{info.lindline.extension}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 联系人
+            .info_detail
+              span.info_label {{info.linkman}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label Email
+            .info_detail
+              span.info_label {{login_email}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 简介
+            .info_detail
+              span.info_label {{info.brief}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 注册时间
+            .info_detail
+              span.info_label {{register_date}}
+    .dl-modal-footer
       button(data-dismiss="modal") 确定

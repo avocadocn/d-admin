@@ -121,6 +121,8 @@ adminApp.controller('ManagerController', ['$http','$scope',
           }).success(function(data, status) {
             $scope.info = data.info;
             $scope.detail_show = true;
+            $scope.register_date = data.register_date;
+            $scope.login_email = data.login_email;
             $('#companyDetailModal').modal();
           }).error(function(data, status) {
               //TODO:更改对话框

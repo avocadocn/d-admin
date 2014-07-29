@@ -20,7 +20,7 @@ exports.getComapnyBasicInfo = function(req, res) {
 
 exports.getCompanyDetail = function(req, res) {
   var _id = req.body._id;
-  Company.findOne({'_id': _id},{'info':1},function(err, company_info) {
+  Company.findOne({'_id': _id},{'info':1,'register_date':1,'login_email':1},function(err, company_info) {
     if(err || !company_info) {
       return res.send([]);
     } else {
