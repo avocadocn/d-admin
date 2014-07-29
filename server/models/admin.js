@@ -19,6 +19,11 @@ var Admin = new Schema({
         type: String,
         default: 'admin'
     }],
+    status:{
+        type:String,
+        enum:['active','inactive','delete'],
+        default:'active'
+    },
     hashed_password: String,
     provider: {
         type: String,

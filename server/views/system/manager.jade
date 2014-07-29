@@ -20,6 +20,7 @@
                     th 部门数
                     th 小组数
                     th 人数
+                    th 状态
                     th 操作
                 tbody
                   tr(ng-repeat="_content in companies")
@@ -29,6 +30,9 @@
                     td {{_content.department_num}}
                     td {{_content.team.length}}
                     td {{_content.info.membernumber}}
+                    td
+                      .glyphicon.glyphicon-ok(ng-if="_content.status.active")
+                      .glyphicon.glyphicon-remove(ng-if="!_content.status.active")
                     td
                       a(ng-if="!_content.status.active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content._id)") 验证
                       span(ng-if="!_content.status.active") |
