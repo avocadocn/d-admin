@@ -23,7 +23,7 @@ block content
               a.btn.btn-default.btn-sm(data-toggle="modal" data-original-title="Help" data-placement="bottom" class="btn btn-default btn-sm" href="#helpModal")
                 i.fa.fa-question
             div.btn-group
-              a.btn.btn-metis-1.btn-sm(href="login.html" data-toggle="tooltip" data-original-title="Logout" data-placement="bottom")
+              a.btn.btn-metis-1.btn-sm(href="/admin/logout")
                 i.fa.fa-power-off
           .collapse.navbar-collapse.navbar-ex1-collapse
       header.head
@@ -49,7 +49,7 @@ block content
             h5.media-heading 后台
             ul.list-unstyled.user-info
               li
-                a(href="") Administrator
+                a(href="") #{name}
               li Last Access:
                 br
                 small

@@ -91,8 +91,8 @@ module.exports = function(app, passport, db) {
         app.use(helpers(config.app.name));
 
         // Use passport session
-        //app.use(passport.initialize());
-        //app.use(passport.session());
+        app.use(passport.initialize());
+        app.use(passport.session());
 
         //mean middleware from modules before routes
         app.use(mean.chainware.before);

@@ -16,31 +16,31 @@ html
         img(src="assets/img/logo.png" alt="Metis Logo")
       .tab-content
         div(id="login" class="tab-pane active")
-          form.form-signin(action="")
+          form.form-signin(action="/admin/login" method="post")
             p.text-muted.text-center Enter your username and password
-            input.form-control(type="text" placeholder="Username")
-            input.form-control(type="password" placeholder="Password")
+            input.form-control(type="text" placeholder="Username" name="email")
+            input.form-control(type="password" placeholder="Password" name="password")
             button.btn.btn-lg.btn-primary.btn-block(type="submit") Sign in
-        div(id="forgot" class="tab-pane")
-          form.form-signin(action="")
-            p.text-muted.text-center Enter your valid e-mail
-            input.form-control(type="email" placeholder="mail@domain.com" required="required")
-            br
-            button.btn.btn-lg.btn-danger.btn-block(type="submit") Recover Password
-        div(id="signup" class="tab-pane")
-          form.form-signin(action="")
-            input.form-control(type="text" placeholder="username")
-            input.form-control(type="email" placeholder="mail@domain.com")
-            input.form-control(type="password" placeholder="password")
-            button.btn.btn-lg.btn-success.btn-block(type="submit") Register
-      .text-center
-        .list-inline
-          li
-            a.text-muted(href="#login" data-toggle="tab") Login
-          li
-            a.text-muted(href="#forgot" data-toggle="tab") Forgot Password
-          li
-            a.text-muted(href="#signup" data-toggle="tab") Signup
+        //- div(id="forgot" class="tab-pane")
+        //-   form.form-signin(action="")
+        //-     p.text-muted.text-center Enter your valid e-mail
+        //-     input.form-control(type="email" placeholder="mail@domain.com" required="required")
+        //-     br
+        //-     button.btn.btn-lg.btn-danger.btn-block(type="submit") Recover Password
+        //- div(id="signup" class="tab-pane")
+        //-   form.form-signin(action="")
+        //-     input.form-control(type="text" placeholder="username")
+        //-     input.form-control(type="email" placeholder="mail@domain.com")
+        //-     input.form-control(type="password" placeholder="password")
+        //-     button.btn.btn-lg.btn-success.btn-block(type="submit") Register
+      //- .text-center
+      //-   .list-inline
+      //-     li
+      //-       a.text-muted(href="#login" data-toggle="tab") Login
+      //-     li
+      //-       a.text-muted(href="#forgot" data-toggle="tab") Forgot Password
+      //-     li
+      //-       a.text-muted(href="#signup" data-toggle="tab") Signup
 
 
     script(src="/public/lib/jquery/jquery.min.js")

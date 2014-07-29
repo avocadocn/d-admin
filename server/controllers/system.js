@@ -23,7 +23,7 @@ exports.setNeedCompanyRegisterInviteCode = function(req, res) {
   } else {
     need = false;
   }
-  Config.findOne({ name: 'donler' })
+  Config.findOne({ name: 'admin' })
   .exec(function(err, config) {
     config.company_register_need_invite = need;
     config.save(function(err) {
