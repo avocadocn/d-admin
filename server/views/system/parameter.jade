@@ -1,15 +1,20 @@
 #content
   .outer
     .inner
-      .row
-        span
-          后台域名
-        input(type="text" ng-model="host.admin")
-        button(ng-click="setHost(0,host.admin)") 修改
-      .row
-        span
-          产品域名
-        input(type="text" ng-model="host.product")
-        button(ng-click="setHost(1,host.product)") 修改
+      .dl_parameter
+        .dl_row.margin_top_10
+          .dl_left_head.dl_vertical
+            后台域名
+          .dl_md_2.dl_vertical
+            input.dl_modal_input.form-control(type="text" ng-model="host.admin")
+          .dl_md_1.dl_vertical
+            button.dl_btn.dl_btn_right(ng-click="setHost(0,host.admin)") 修改
+        .dl_row.margin_top_5
+          .dl_left_head.dl_vertical
+            产品域名
+          .dl_md_2.dl_vertical
+            input.dl_modal_input.form-control(type="text" ng-model="host.product")
+          .dl_md_1.dl_vertical
+            button.dl_btn.dl_btn_right(ng-click="setHost(1,host.product)") 修改
     .inner
       include ../system/setting

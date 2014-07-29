@@ -1,4 +1,4 @@
-div
+div.margin_top_5
   p 企业注册是否需要邀请码
   label
     input(type="radio" name="company_register_invite_code" ng-model="value" value="true" )
@@ -9,11 +9,17 @@ div
   button(ng-click="codeSetting()") 设置
 
 div
-  .row
-    p 生成邀请码
-    button(ng-click="renderCode()") 生成
-  .row
-    p 所有邀请码
-  .row
-    div(ng-repeat = "code in codes")
-      p {{code.code}}
+  .dl_row
+    button.dl_btn_right(ng-click="renderCode()") 生成邀请码
+  .dl_row.dl_code
+    table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+      thead
+        tr
+          th 序号
+          th 邀请码
+          th 操作
+      tbody
+        tr(ng-repeat="code in codes")
+          td {{$index}}
+          td {{code.code}}
+          td 复制
