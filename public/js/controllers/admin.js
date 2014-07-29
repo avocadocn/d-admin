@@ -82,6 +82,7 @@ adminApp.controller('ManagerController', ['$http','$scope',
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
+      $scope.company_num=$scope.companies.length;
       //setTimeout(function(){$scope.run()},500);
     });
 
