@@ -24,7 +24,7 @@
                 tbody
                   tr(ng-repeat="_content in companies")
                     td {{_content.info.name}}
-                    td {{_content.register_date}}
+                    td {{_content.register_date | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td {{_content.login_email}}
                     td {{_content.department_num}}
                     td {{_content.team.length}}

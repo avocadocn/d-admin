@@ -35,7 +35,35 @@ function($routeProvider, $locationProvider) {
     });
 }]);
 
-
+adminApp.filter('dateView', function() {
+  return function(input) {
+    var today = new Date();
+    var date = new Date(input);
+    var intervalMilli = date.getTime() - today.getTime();
+    var xcts = parseInt(intervalMilli / (24 * 60 * 60 * 1000));
+    var nowTime = (date.getHours()<10?('0'+date.getHours()):date.getHours())+':'+(date.getMinutes()<10?('0'+date.getMinutes()):date.getMinutes());
+    // -2:前天 -1：昨天 0：今天 1：明天 2：后天， out：显示日期
+    switch(xcts){
+      case -2:
+      return '前天'+nowTime;
+      break;
+      case -1:
+      return '昨天'+nowTime;
+      break;
+      case 0:
+      return '今天'+nowTime;
+      break;
+      case 1:
+      return '明天'+nowTime;
+      break;
+      case 2:
+      return '后天'+nowTime;
+      break;
+      default:
+      return input;
+    }
+  }
+});
 
 adminApp.controller('ParameterController', ['$http','$scope',
   function ($http, $scope) {
