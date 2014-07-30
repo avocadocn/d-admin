@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
   UUID = require('../kit/uuid');
 
 exports.getComapnyBasicInfo = function(req, res) {
-  Company.find(null,{'_id':1,'info.name':1,'info.membernumber':1,'department':1,'team':1,'login_email':1,'register_date':1,'status':1},function(err, companies) {
+  Company.find(null,{'_id':1,'info.name':1,'info.membernumber':1,'department':1,'team':1,'login_email':1,'register_date':1,'status':1}).sort({'register_date':-1}).exec(function(err, companies) {
     if(err || !companies) {
       return res.send([]);
     } else {
