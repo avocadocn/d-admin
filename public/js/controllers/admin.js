@@ -21,7 +21,7 @@ function($routeProvider, $locationProvider) {
       controllerAs: 'manager'
     })
     .when('/region', {
-      templateUrl: '/public/views/region.html',
+      templateUrl: '/manager/region',
       controller: 'RegionController',
       controllerAs: 'region'
     })
@@ -406,15 +406,19 @@ adminApp.controller('RegionController', ['$http','$scope',
 
     $http.get('/region/province').success(function(data, status) {
       $scope.provinces = data;
-      $scope.cities = $scope.provinces[0].city[0];
-      $scope.districts = $scope.provinces[0].city[0].district[0];
+      $scope.cities = $scope.provinces[0].city;
+      $scope.districts = $scope.provinces[0].city[0].district;
+
+      $scope.province_selected=$scope.provinces[0];
+      $scope.province_new = $scope.province_selected.name;
+      $scope.city_selected=$scope.cities[0];
+      $scope.city_new = $scope.city_selected.name;
+      $scope.district_selected=$scope.districts[0];
+      $scope.district_new = $scope.district_selected.name;
     });
 
     var pid = '';
     var cid = '';
-    $scope.province_selected='';
-    $scope.city_selected='';
-    $scope.district_selected='';
 
     $scope.province_new='';
     $scope.city_new='';
@@ -422,6 +426,7 @@ adminApp.controller('RegionController', ['$http','$scope',
 
     $scope.getCity = function(province) {
       pid = province.id;
+      $scope.province_new = province.name;
       try{
           $http({
               method: 'post',
@@ -444,6 +449,7 @@ adminApp.controller('RegionController', ['$http','$scope',
 
     $scope.getDistrict = function(city) {
       cid = city.id;
+      $scope.city_new = city.name;
       try{
           $http({
               method: 'post',
@@ -464,6 +470,9 @@ adminApp.controller('RegionController', ['$http','$scope',
       }
     };
 
+    $scope.getDistrictSelected = function(district){
+      $scope.district_new = district.name;
+    }
 
     $scope.add = function(type) {
       var address = '';
@@ -575,7 +584,7 @@ adminApp.controller('RegionController', ['$http','$scope',
               case 0:
                 for(var i = 0; i < $scope.provinces.length; i++) {
                   if ($scope.provinces[i].id === _id) {
-                    $scope.provinces.name = $scope.province_new;
+                    $scope.provinces[i].name = $scope.province_new;
                     break;
                   }
                 }
@@ -586,7 +595,7 @@ adminApp.controller('RegionController', ['$http','$scope',
               case 1:
                 for(var i = 0; i < $scope.cities.length; i++) {
                   if ($scope.cities[i].id === _id) {
-                    $scope.cities.name = $scope.city_new;
+                    $scope.cities[i].name = $scope.city_new;
                     break;
                   }
                 }
@@ -596,7 +605,7 @@ adminApp.controller('RegionController', ['$http','$scope',
               case 2:
                 for(var i = 0; i < $scope.districts.length; i++) {
                   if ($scope.districts[i].id === _id) {
-                    $scope.districts.name = $scope.district_new;
+                    $scope.districts[i].name = $scope.district_new;
                     break;
                   }
                 }

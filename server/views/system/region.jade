@@ -1,0 +1,32 @@
+#content
+  .outer
+    .inner
+      .form-group.dl_row.margin_left_15.margin_top_20
+        h5 公司注册时的地区选择模版,请不要随意修改!
+      .form-group.dl_row.margin_top_10
+        .col-lg-8
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="province_selected" ng-options="v.name for v in provinces" ng-change="getCity(province_selected)")
+        .col-lg-1
+          input.dl_form-control(type="text" ng-model="province_new")
+        .col-lg-2
+          button.dl_btn.dl_btn_small(value="delete" ng-click="_delete(0,province_selected.id)") 删除
+          button.dl_btn.dl_btn_small(value="add" ng-click="add(0)") 增加
+          button.dl_btn.dl_btn_small(value="edit" ng-click="_edit(0,province_selected.id)") 修改
+      .form-group.dl_row
+        .col-lg-8
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="city_selected" ng-options="v.name for v in cities" ng-change="getDistrict(city_selected)")
+        .col-lg-1
+          input.dl_form-control(type="text" ng-model="city_new")
+        .col-lg-2
+          button.dl_btn.dl_btn_small(value="delete" ng-click="_delete(1,city_selected.id)") 删除
+          button.dl_btn.dl_btn_small(value="add" ng-click="add(1)") 增加
+          button.dl_btn.dl_btn_small(value="edit" ng-click="_edit(1,city_selected.id)") 修改
+      .form-group.dl_row
+        .col-lg-8
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="district_selected" ng-options="v.name for v in districts" ng-change="getDistrictSelected(district_selected)")
+        .col-lg-1
+          input.dl_form-control(type="text" ng-model="district_new")
+        .col-lg-2
+          button.dl_btn.dl_btn_small(value="delete" ng-click="_delete(2,district_selected.id)") 删除
+          button.dl_btn.dl_btn_small(value="add" ng-click="add(2)") 增加
+          button.dl_btn.dl_btn_small(value="edit" ng-click="_edit(2,district_selected.id)") 修改
