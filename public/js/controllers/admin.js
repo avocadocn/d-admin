@@ -70,15 +70,22 @@ adminApp.filter('dateView', function() {
   }
 });
 
+adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
+  $rootScope.run = function() {
+    $(document).ready(function(){
+      $('#dataTable').dataTable();
+    });
+  };
+}]);
 
-
-adminApp.controller('MessageController', ['$http','$scope',
-  function ($http, $scope) {
+adminApp.controller('MessageController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
     $scope.content = {
       'text':""
     };
     $http.get('/message/sendlist').success(function(data, status) {
       $scope.send_messages = data.message_contents;
+      setTimeout(function(){$rootScope.run()},500);
     });
     $scope.send = function() {
        try{
@@ -102,8 +109,8 @@ adminApp.controller('MessageController', ['$http','$scope',
     };
 }]);
 
-adminApp.controller('ParameterController', ['$http','$scope',
-  function ($http, $scope) {
+adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
     $scope.host = {
       'admin':'无',
       'product':'无'
@@ -121,6 +128,7 @@ adminApp.controller('ParameterController', ['$http','$scope',
         $http.get('/system/getting').success(function (data, status) {
           if(data.result == 1){
             $scope.value = data.value;
+            setTimeout(function(){$rootScope.run()},500);
           }
         });
       });
@@ -178,14 +186,14 @@ adminApp.controller('ParameterController', ['$http','$scope',
 }]);
 
 
-adminApp.controller('ManagerController', ['$http','$scope',
-  function ($http, $scope) {
+adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
     $scope.detail_show = false;
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
       $scope.company_num=$scope.companies.length;
-      //setTimeout(function(){$scope.run()},500);
+      setTimeout(function(){$rootScope.run()},500);
     });
 
     $scope.detailBoxShow = function(status) {
@@ -235,57 +243,6 @@ adminApp.controller('ManagerController', ['$http','$scope',
       catch(e){
           console.log(e);
       }
-    };
-
-    $scope.metisTable = function() {
-      /*----------- BEGIN TABLESORTER CODE -------------------------*/
-      /* required jquery.tablesorter.min.js*/
-      $(".sortableTable").tablesorter();
-      /*----------- END TABLESORTER CODE -------------------------*/
-
-      /*----------- BEGIN datatable CODE -------------------------*/
-      $('#dataTable').dataTable({
-        "sDom": "<'pull-right'l>t<'row'<'col-lg-6'f><'col-lg-6'p>>",
-        "sPaginationType": "bootstrap",
-        "oLanguage": {
-            "sLengthMenu": "Show _MENU_ entries"
-        }
-      });
-      /*----------- END datatable CODE -------------------------*/
-
-      /*----------- BEGIN action table CODE -------------------------*/
-      $('#actionTable button.remove').on('click', function() {
-        $(this).closest('tr').remove();
-      });
-      $('#actionTable button.edit').on('click', function() {
-        $('#editModal').modal({
-            show: true
-        });
-        var val1 = $(this).closest('tr').children('td').eq(1),
-                val2 = $(this).closest('tr').children('td').eq(2),
-                val3 = $(this).closest('tr').children('td').eq(3);
-        $('#editModal #fName').val(val1.html());
-        $('#editModal #lName').val(val2.html());
-        $('#editModal #uName').val(val3.html());
-
-
-        $('#editModal #sbmtBtn').on('click', function() {
-            val1.html($('#editModal #fName').val());
-            val2.html($('#editModal #lName').val());
-            val3.html($('#editModal #uName').val());
-        });
-
-      });
-      /*----------- END action table CODE -------------------------*/
-    }
-    $scope.metisSortable = function() {
-      $('.inner .row').sortable({
-      });
-    };
-
-    $scope.run = function() {
-      $scope.metisTable();
-      $scope.metisSortable();
     };
 }]);
 
