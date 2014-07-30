@@ -1010,8 +1010,11 @@ textarea {
 .margin_left_80 {
   margin-left: 80px;
 }
+.margin_right_10 {
+  margin-right: 10px !important;
+}
 .margin_right_20 {
-  margin-right: 20px;
+  margin-right: 20px !important;
 }
 .header_container {
   width: 960px;

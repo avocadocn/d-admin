@@ -29,9 +29,14 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/public/views/chart.html',
       controller: 'ChartController',
       controllerAs: 'chart',
+    })
+    .when('/message', {
+      templateUrl: '/manager/message',
+      controller: 'MessageController',
+      controllerAs: 'message',
     }).
     otherwise({
-      redirectTo: '#'
+      redirectTo: '/parameter'
     });
 }]);
 
@@ -64,6 +69,38 @@ adminApp.filter('dateView', function() {
     }
   }
 });
+
+
+
+adminApp.controller('MessageController', ['$http','$scope',
+  function ($http, $scope) {
+    $scope.content = {
+      'text':""
+    };
+    $http.get('/message/sendlist').success(function(data, status) {
+      $scope.send_messages = data.message_contents;
+    });
+    $scope.send = function() {
+       try{
+          $http({
+              method: 'post',
+              url: '/message/send',
+              data:{
+                  content : $scope.content.text
+              }
+          }).success(function(data, status) {
+            $scope.send_messages = data.message_contents;
+            //$('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+}]);
 
 adminApp.controller('ParameterController', ['$http','$scope',
   function ($http, $scope) {

@@ -12,16 +12,16 @@ block content
               span.icon-bar
               span.icon-bar
             img.margin_left_10.margin_top_10(src="/public/img/logo_blue.png" alt="logo")
-          .topnav
+          .topnav.margin_right_10
             .btn-group
-              a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="E-mail" data-toggle="tooltip")
+              a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="E-mail" data-toggle="tooltip" href="#/message")
                 i.fa.fa-envelope
-                span.label.label-warning 5
-              a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="Messages" href="#" data-toggle="tooltip")
-                i.fa.fa-comments
-                span.label.label-danger 4
-              a.btn.btn-default.btn-sm(data-toggle="modal" data-original-title="Help" data-placement="bottom" class="btn btn-default btn-sm" href="#helpModal")
-                i.fa.fa-question
+              //-   span.label.label-warning 5
+              //- a.btn.btn-default.btn-sm(data-placement="bottom" data-original-title="Messages" href="#" data-toggle="tooltip")
+              //-   i.fa.fa-comments
+              //-   span.label.label-danger 4
+              //- a.btn.btn-default.btn-sm(data-toggle="modal" data-original-title="Help" data-placement="bottom" class="btn btn-default btn-sm" href="#helpModal")
+              //-   i.fa.fa-question
             div.btn-group
               a.btn.btn-metis-1.btn-sm(href="/admin/logout")
                 i.fa.fa-power-off
@@ -44,7 +44,7 @@ block content
         .user-wrapper
           a.user-link(href="")
             img.media-object.img-thumbnail.user-img(alt="User Picture" src="/public/pic/user.gif")
-            span.label.label-danger.user-label 16
+            //- span.label.label-danger.user-label 16
           .media-body
             h5.media-heading 后台
             ul.list-unstyled.user-info
