@@ -17,9 +17,13 @@ div.margin_top_20
         tr
           th 序号
           th 邀请码
+          th 是否使用
+          th 使用公司
           th 操作
       tbody
         tr(ng-repeat="code in codes")
           td {{$index}}
           td {{code.code}}
+          td {{code.status == 'active' ? '否' : '是'}}
+          td {{code.use_by_company.name}}
           td 复制

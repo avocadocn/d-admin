@@ -10,30 +10,55 @@ function($routeProvider, $locationProvider) {
       controller: 'ParameterController',
       controllerAs: 'parameter'
     })
-    .when('/dashboard', {
-      templateUrl: '/public/views/dashboard.html',
-      controller: 'DashboardController',
-      controllerAs: 'dashboard'
-    })
+    // .when('/dashboard', {
+    //   templateUrl: '/public/views/dashboard.html',
+    //   controller: 'DashboardController',
+    //   controllerAs: 'dashboard'
+    // })
     .when('/manager', {
       templateUrl: '/manager/home',
       controller: 'ManagerController',
       controllerAs: 'manager'
+    })
+    .when('/user', {
+      templateUrl: '/manager/user',
+      controller: 'UserController',
+      controllerAs: 'user'
+    })
+    .when('/campaign', {
+      templateUrl: '/manager/campaign',
+      controller: 'CampaignController',
+      controllerAs: 'campaign'
+    })
+    .when('/team', {
+      templateUrl: '/manager/team',
+      controller: 'TeamController',
+      controllerAs: 'team'
     })
     .when('/region', {
       templateUrl: '/manager/region',
       controller: 'RegionController',
       controllerAs: 'region'
     })
-    .when('/chart', {
-      templateUrl: '/public/views/chart.html',
-      controller: 'ChartController',
-      controllerAs: 'chart',
+    .when('/album', {
+      templateUrl: '/manager/album',
+      controller: 'AlbumController',
+      controllerAs: 'album'
     })
+    // .when('/chart', {
+    //   templateUrl: '/public/views/chart.html',
+    //   controller: 'ChartController',
+    //   controllerAs: 'chart',
+    // })
     .when('/message', {
       templateUrl: '/manager/message',
       controller: 'MessageController',
       controllerAs: 'message',
+    })
+    .when('/error', {
+      templateUrl: '/manager/error',
+      controller: 'ErrorController',
+      controllerAs: 'error',
     }).
     otherwise({
       redirectTo: '/parameter'
@@ -77,6 +102,136 @@ adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
     });
   };
 }]);
+
+
+adminApp.controller('UserController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
+    //返回第一个公司的所有员工
+    $scope.first = true;
+    $scope.company_selected = null;
+    $scope.company_regx = {
+      'value':''
+    };
+    $scope.searchCompany = function(all){
+      try{
+          $http({
+              method: 'post',
+              url: '/manager/search',
+              data:{
+                regx : $scope.company_regx.value,
+                all : all
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              $scope.companies = data.companies;
+              $scope.company_selected = data.companies[0];
+              if($scope.first){
+                $scope.getUser($scope.company_selected);
+              }
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
+    $scope.active = function(user,active){
+      try{
+          $http({
+              method: 'post',
+              url: '/user/active',
+              data:{
+                  _id : user._id,
+                  operate : {'active':active}
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              for(var i = 0 ; i < $scope.users.length; i ++){
+                if($scope.users[i]._id === user._id){
+                  $scope.users[i].active = active;
+                  break;
+                }
+              }
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
+    //根据公司找到员工
+    $scope.getUser = function(company) {
+      try{
+          $http({
+              method: 'post',
+              url: '/user/search',
+              data:{
+                  _id : company._id
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              $scope.users = data.users;
+              if($scope.first){
+                setTimeout(function(){$rootScope.run()},500);
+                $scope.first = false;
+              }
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+    $scope.searchCompany(true);
+}]);
+
+adminApp.controller('ErrorController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
+    $http.get('/error/errorList').success(function(data, status) {
+      if(data.result === 1){
+        $scope.errors = data.error;
+        console.log($scope.errors);
+        setTimeout(function(){$rootScope.run()},500);
+      }
+    });
+    $scope.delete = function(_id) {
+       try{
+          $http({
+              method: 'post',
+              url: '/error/delete',
+              data:{
+                  _id : _id
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              for(var i = 0 ; i < errors.length; i ++){
+                if(errors[i]._id.toString() === _id){
+                  errors.splice(i,1);
+                  break;
+                }
+              }
+            }
+            //$('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+}]);
+
 
 adminApp.controller('MessageController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
@@ -196,6 +351,34 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
       setTimeout(function(){$rootScope.run()},500);
     });
 
+    $scope.active = function(value,company_id){
+      try{
+        $http({
+            method: 'post',
+            url: '/manager/active',
+            data:{
+                operate : {
+                  'status.active':value
+                },
+                _id : company_id
+            }
+        }).success(function(data, status) {
+          if(data.result === 1){
+            for(var i = 0 ; i < $scope.companies.length; i ++){
+              if($scope.companies[i]._id === company_id){
+                $scope.companies[i].status.active = value;
+                break;
+              }
+            }
+          }else{
+            alert(data.msg);
+          }
+        });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
     $scope.detailBoxShow = function(status) {
       $scope.detail_show = status;
     };

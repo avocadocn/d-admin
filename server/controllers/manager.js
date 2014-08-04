@@ -44,6 +44,16 @@ exports.getCompanyDetail = function(req, res) {
 };
 
 
+exports.companyModify = function(req,res){
+  Company.update({'_id':req.body._id},{'$set':req.body.operate},function (err, company){
+    if(err || !company){
+      return res.send({'msg':'COMPANY_UPDATE_ERROR','result':0});
+    }else{
+      return res.send({'msg':'COMPANY_UPDATE_SUCCESS','result':1});
+    }
+  });
+}
+
 exports.getCompanyGroup = function(req, res) {
 
 };
@@ -55,6 +65,7 @@ exports.home = function(req,res){
 
 
 exports.validate = function(req, res) {
+  console.log(req.headers);
   var who = req.body.who,
       name = req.body.name,
       _id = req.body._id;
@@ -75,4 +86,38 @@ exports.validate = function(req, res) {
       });
     }
   });
+};
+
+
+
+
+//TODO
+//根据公司名搜索公司
+exports.searchCompany = function (req, res) {
+    if(req.body.all){
+      var condition = {'status.active':true};
+    }else{
+      var regx = new RegExp(req.body.regx);
+      var condition = {'info.name':regx,'status.active':true};
+    }
+    var companies_rst = [];
+    Company.find(condition, function (err, companies) {
+        if(err) {
+            return res.send([]);
+        } else {
+            if(companies) {
+                for(var i = 0; i < companies.length; i ++) {
+                    companies_rst.push({
+                        '_id' : companies[i]._id,
+                        'name' : companies[i].info.name,
+                        'team' : companies[i].team,
+                        'logo' : companies[i].info.logo
+                    });
+                }
+                return res.send({'msg':'COMPANY_SEARCH_SUCCESS!','result':1, 'companies':companies_rst});
+            } else {
+                return res.send({'msg':'COMPANY_SEARCH_FAILED!','result':0, 'companies':[]});
+            }
+        }
+    });
 };

@@ -1,0 +1,35 @@
+#content
+  .outer
+    .inner
+      .form-group.dl_row.margin_top_10
+        .col-lg-3
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getUser(company_selected)")
+        //- .col-lg-1
+        //-   input.dl_form-control(type="text" ng-model="company_regx.value")
+        //- .col-lg-2
+        //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
+    .inner
+      .dl_row.dl_code
+        table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+          thead
+            tr
+              th 公司名
+              th 昵称
+              th 小队
+              th 状态
+              th 操作
+          tbody
+            tr(ng-repeat="user in users")
+              td {{user.cname}}
+              td {{user.nickname}}
+              td
+                table.table.table-bordered.table-condensed.table-hover.table-striped
+                  tbody
+                    tr(ng-repeat="team in user.team" ng-if="team.gid != '0'")
+                      td {{team.name}}
+                      td {{team.leader ? '队长' : '队员'}}
+              td {{user.mail_active ? (user.active ? '正常' : '封禁') : '未激活'}}
+              td(ng-if="user.mail_active && user.active")
+                a(ng-click="active(user,false)") 封禁
+              td(ng-if="user.mail_active && !user.active")
+                a(ng-click="active(user,true)") 解封

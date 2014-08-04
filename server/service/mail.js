@@ -3,24 +3,25 @@
 var mailer = require('nodemailer'),
     jade = require('jade'),
     fs = require('fs'),
+    error = require('../controllers/error'),
     rootConfig = require('../config/config'),
     encrypt = require('../kit/encrypt');
-
-var MAIL_OPTION = {
-    host: 'smtp.ym.163.com',
-    auth: {
-        user: 'nicoJiang@55yali.com',
-        pass: '~!jzl1234'
-    }
-};
 
 // var MAIL_OPTION = {
 //     host: 'smtp.ym.163.com',
 //     auth: {
-//         user: 'service@donler.com',
-//         pass: '55yali'
+//         user: 'nicoJiang@55yali.com',
+//         pass: '~!jzl1234'
 //     }
 // };
+
+var MAIL_OPTION = {
+    host: 'smtp.ym.163.com',
+    auth: {
+        user: 'service@donler.com',
+        pass: '55yali'
+    }
+};
 
 var transport = mailer.createTransport('SMTP', MAIL_OPTION);
 
@@ -33,12 +34,14 @@ var siteProtocol = 'http://';
 /**
  * Send an email
  * @param {Object} data 邮件对象
+ * @param {Object} target 出错时记录的目标对象
  */
-var sendMail = function (data) {
+var sendMail = function (data,target,err_type) {
   transport.sendMail(data, function (err) {
     if (err) {
+      error.addErrorItem(target,err_type,err);
       // 写为日志
-      console.log(err);
+      console.log(err_type,err);
     }
   });
 };
@@ -66,6 +69,11 @@ exports.sendCompanyActiveMail = function (who, name, id, host) {
           to: to,
           subject: subject,
           html: html
-        });
+        },{
+          type:'company',
+          _id:id,
+          name:name,
+          email:who
+        },'COMPANY_CREATE_EMAIL_SEND_ERROR');
     });
 };

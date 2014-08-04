@@ -34,10 +34,10 @@
                       .glyphicon.glyphicon-ok(ng-if="_content.status.active")
                       .glyphicon.glyphicon-remove(ng-if="!_content.status.active")
                     td
-                      a(ng-if="!_content.status.active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content._id)") 验证
-                      span(ng-if="!_content.status.active") |
-                      a(ng-click="getDetail(_content._id)" href="") 资料
+                      a(ng-click="getDetail(_content._id)" href="") 查看资料
                       span |
-                      a(href="") 详情
+                      a(ng-if="!_content.status.mail_active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content._id)") 发送激活邮件
+                      a(ng-if="!_content.status.active && _content.status.mail_active" ng-click="active(true,_content._id)") 激活
+                      a(ng-if="_content.status.active && _content.status.mail_active" ng-click="active(false,_content._id)") 屏蔽
 .modal.fade#companyDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/company_detail
