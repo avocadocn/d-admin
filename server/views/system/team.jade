@@ -1,0 +1,30 @@
+#content
+  .outer
+    .inner
+      .form-group.dl_row.margin_top_10
+        .col-lg-3
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getTeam(company_selected)")
+        //- .col-lg-1
+        //-   input.dl_form-control(type="text" ng-model="company_regx.value")
+        //- .col-lg-2
+        //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
+    .inner
+      .dl_row.dl_code
+        table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+          thead
+            tr
+              th
+              th 公司名
+              th 队名
+              th 类型
+              th 队员数
+              th 创建时间
+          tbody
+            tr(ng-repeat="team in teams")
+              td
+                img.size_36(ng-src="http://{{host}}{{team.logo}}")
+              td {{team.cname}}
+              td {{team.name}}
+              td {{team.group_type}}
+              td {{team.member.length}}
+              td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}

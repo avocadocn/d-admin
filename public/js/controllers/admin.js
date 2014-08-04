@@ -45,11 +45,11 @@ function($routeProvider, $locationProvider) {
       controller: 'AlbumController',
       controllerAs: 'album'
     })
-    // .when('/chart', {
-    //   templateUrl: '/public/views/chart.html',
-    //   controller: 'ChartController',
-    //   controllerAs: 'chart',
-    // })
+    .when('/chart', {
+      templateUrl: '/public/views/chart.html',
+      controller: 'ChartController',
+      controllerAs: 'chart',
+    })
     .when('/message', {
       templateUrl: '/manager/message',
       controller: 'MessageController',
@@ -193,6 +193,102 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
     };
     $scope.searchCompany(true);
 }]);
+
+
+
+adminApp.controller('TeamController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
+    //返回第一个公司的所有员工
+    $scope.first = true;
+    $scope.company_selected = null;
+    $scope.company_regx = {
+      'value':''
+    };
+    $scope.show_group = false;
+    $scope.searchCompany = function(all){
+      try{
+          $http({
+              method: 'post',
+              url: '/manager/search',
+              data:{
+                regx : $scope.company_regx.value,
+                all : all
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              $scope.companies = data.companies;
+              $scope.company_selected = data.companies[0];
+              if($scope.first){
+                $scope.getTeam($scope.company_selected);
+              }
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
+
+    $scope.teamByGroup = function(all) {
+      if(!$scope.show_group){
+        try{
+          $http({
+              method: 'post',
+              url: '/team/group',
+              data:{
+                cid : $scope.company_selected._id,
+                all : all
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+        }
+        catch(e){
+            console.log(e);
+        }
+      }else{
+        $scope.show_group = false;
+      }
+    }
+    //根据公司找到小队
+    $scope.getTeam = function(company) {
+      try{
+          $http({
+              method: 'post',
+              url: '/team/search',
+              data:{
+                  _id : company._id
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              $scope.teams = data.teams;
+              $scope.host = data.host;
+              if($scope.first){
+                setTimeout(function(){$rootScope.run()},500);
+                $scope.first = false;
+              }
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+    $scope.searchCompany(true);
+}]);
+
+
 
 adminApp.controller('ErrorController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
