@@ -42,20 +42,19 @@ var teamHandle = function(teams){
   var team_by_group = [];
   var find = false;
   for(var i =0; i < teams.length; i ++){
-    for(j = 0 ; j < team_by_group.length; j ++){
+    for(var j = 0 ; j < team_by_group.length; j ++){
       //如果已经存在分组就把小队push进去
       if(team_by_group[j].gid === teams[i].gid){
         find = true;
-        team_by_group.teams.push(teams[i]);
+        team_by_group[j].teams.push(teams[i]);
       }
     }
     //新建分组
     if(!find){
       team_by_group.push({
         'gid':teams[i].gid,
-        'teams':[]
+        'teams':[teams[i]]
       });
-      team_by_group.teams.push(teams[i]);
     }
     find = false;
   }

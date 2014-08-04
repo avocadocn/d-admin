@@ -49,6 +49,7 @@
         "fullcalendar": "~1.6.4",
         "bootstrap3-wysihtml5-bower": "~0.2.9",
         "holderjs": "~2.3.2",
-        "ckeditor": "~4.3.4"
+        "ckeditor": "~4.3.4",
+        "Chart.js": "1.0.1-beta.3"
     }
 }

@@ -93,6 +93,10 @@ textarea {
 .mouse_hidden:hover {
   color: #666;
 }
+.chart_area{
+  width: 400px;
+  height: 400px;
+}
 .comment_right {
   float: right;
   margin-right: 10px;
