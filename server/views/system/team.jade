@@ -19,6 +19,7 @@
               th 类型
               th 队员数
               th 创建时间
+              th 积分
           tbody
             tr(ng-repeat="team in teams")
               td
@@ -29,6 +30,7 @@
               td {{team.group_type}}
               td {{team.member.length}}
               td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{team.score.total}}
     .inner
       .dl_row
         .dl_row
