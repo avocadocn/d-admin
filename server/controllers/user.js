@@ -1,6 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+  CompanyGroup = mongoose.model('CompanyGroup'),
   Company = mongoose.model('Company'),
   User = mongoose.model('User');
 
@@ -44,4 +45,26 @@ exports.userModify = function(req,res){
       return res.send({'msg':'USER_UPDATE_SUCCESS','result':1});
     }
   });
+}
+
+
+exports.userByTeam = function(req,res){
+  CompanyGroup.findOne({'_id':req.body.teamId},{'member':1,'leader':1,'cname':1,'group_type':1},function (err,team){
+    if(err || !team){
+      return res.send({'msg':'TEAM_USER_FETCH_ERROR','result':0});
+    }else{
+      team.member.forEach(function(value){
+        var leader = false;
+        for(var i = 0; i < team.leader.length; i ++){
+          if(value._id.toString() === team.leader[i]._id.toString()){
+            leader = true;
+            break;
+          }
+        }
+        value.set('leader', leader, {strict : false});
+        value.set('cname', team.cname, {strict : false});
+      });
+      return res.send({'msg':'TEAM_USER_FETCH_SUCCESS','result':1, 'team':team});
+    }
+  })
 }

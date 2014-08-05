@@ -1,0 +1,56 @@
+.modal-dialog
+  .dl-modal.team_modal
+    .dl-modal-header
+      button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+      h4.modal-title#myModalLabel 小队详情
+    .dl-modal-body
+      #content
+        .outer
+          .inner
+            .row
+              .col-lg-12
+                .box
+                  header
+                    .icons
+                      i.fa.fa-table
+                    h5 小队成员
+                  #collapse4.body
+                    table#dt_team_user.table.table-bordered.table-condensed.table-hover.table-striped
+                      thead
+                        tr
+                          th 公司
+                          th 昵称
+                          th 加入时间
+                          th 是否为队长
+                      tbody
+                        tr(ng-repeat="member in members")
+                          td {{member.cname}}
+                          td {{member.nickname}}
+                          td {{member.join_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                          td {{member.leader ? '是' : '否'}}
+          .inner
+            .row
+              .col-lg-12
+                .box
+                  header
+                    .icons
+                      i.fa.fa-table
+                    h5 小队近期活动
+                  #collapse4.body
+                    table#dt_team_campaign.table.table-bordered.table-condensed.table-hover.table-striped
+                      thead
+                        tr
+                          th 主题
+                          th 开始时间
+                          th 结束时间
+                          th 地点
+                          th 参加人数
+                          th 状态
+                      tbody
+                        tr(ng-repeat="campaign in campaigns")
+                          td {{campaign.theme}}
+                          td {{campaign.start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                          td {{campaign.end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                          td {{campaign.location.name}}
+                          td {{campaign.member.length}}
+                          td {{campaign.active ? (campaign.finish ? '结束' : '进行中') : '关闭'}}

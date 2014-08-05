@@ -24,7 +24,8 @@
               td
                 img.size_36(ng-src="http://{{host}}{{team.logo}}")
               td {{team.cname}}
-              td {{team.name}}
+              td
+                a(ng-click="getDetail(team._id)") {{team.name}}
               td {{team.group_type}}
               td {{team.member.length}}
               td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}
@@ -47,3 +48,5 @@
             canvas#pie
           .col_md_6
             canvas#bar
+.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/team_detail

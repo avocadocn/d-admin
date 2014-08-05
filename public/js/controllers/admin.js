@@ -224,6 +224,57 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
       'id':1
     }];
     $scope.group_selected = $scope.group_selecteds[0];
+
+
+    $scope.getDetail = function(teamId) {
+      try{
+          $http({
+              method: 'post',
+              url: '/user/team',
+              data:{
+                teamId : teamId
+              }
+          }).success(function(data, status) {
+            if(data.result == 1){
+              $scope.members = data.team.member;
+              try{
+                  $http({
+                      method: 'post',
+                      url: '/campaign/team',
+                      data:{
+                        teamId : teamId
+                      }
+                  }).success(function(data, status) {
+                    if(data.result == 1){
+                      $scope.campaigns = data.campaigns;
+                      $('#teamDetailModal').modal();
+                      setTimeout(function(){$(document).ready(function(){
+                        $('#dt_team_user').dataTable();
+                      });},500);
+                      setTimeout(function(){$(document).ready(function(){
+                        $('#dt_team_campaign').dataTable();
+                      });},500);
+                    }
+                  }).error(function(data, status) {
+                      //TODO:更改对话框
+                      alert('数据发生错误！');
+                  });
+              }
+              catch(e){
+                  console.log(e);
+              }
+            }
+            $('#companyDetailModal').modal();
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+
     $scope.searchCompany = function(all){
       try{
           $http({
