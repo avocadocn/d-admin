@@ -95,6 +95,7 @@ adminApp.filter('dateView', function() {
   }
 });
 
+
 adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
   $rootScope.run = function() {
     $(document).ready(function(){
@@ -104,6 +105,14 @@ adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
 }]);
 
 
+var colorGenerator = function(){
+  var base = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+  var COLOR = "#";
+  for(var i = 0; i < 6; i ++){
+    COLOR += base[parseInt(Math.random()*10)];
+  }
+  return COLOR;
+}
 adminApp.controller('UserController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     //返回第一个公司的所有员工
@@ -204,7 +213,17 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
     $scope.company_regx = {
       'value':''
     };
-    $scope.show_group = false;
+
+    $scope.show_group_caption = '所有公司的小队类型分布';
+
+    $scope.group_selecteds = [{
+      'name':'所有公司',
+      'id':0
+    },{
+      'name':'单个公司',
+      'id':1
+    }];
+    $scope.group_selected = $scope.group_selecteds[0];
     $scope.searchCompany = function(all){
       try{
           $http({
@@ -232,68 +251,86 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
       }
     }
 
+    $scope.statisticsSelect = function(option){
+      if(option.id == 0){
+        $scope.show_group_caption = '所有公司的小队类型分布';
+        $scope.teamByGroup(true);
+      }
+      if(option.id == 1){
+        $scope.show_group_caption = $scope.company_selected.name + '的小队类型分布';
+        $scope.teamByGroup(false);
+      }
+    }
     $scope.teamByGroup = function(all) {
+      var ctxPie = $("#pie").get(0).getContext("2d");
+      var ctxBar = $("#bar").get(0).getContext("2d");
       if(!$scope.show_group){
         try{
           $http({
               method: 'post',
               url: '/team/group',
               data:{
-                cid : $scope.company_selected._id,
+                cid : $scope.company_selected ? $scope.company_selected._id : null,
                 all : all
               }
           }).success(function(data, status) {
             if(data.result === 1){
-              var data = [
-                {
-                    value: 300,
-                    color:"#F7464A",
-                    highlight: "#FF5A5E",
-                    label: "Red"
-                },
-                {
-                    value: 50,
-                    color: "#46BFBD",
-                    highlight: "#5AD3D1",
-                    label: "Green"
-                },
-                {
-                    value: 100,
-                    color: "#FDB45C",
-                    highlight: "#FFC870",
-                    label: "Yellow"
-                }
-              ];
-              var options = {
-                  //Boolean - Whether we should show a stroke on each segment
-                  segmentShowStroke : true,
-
-                  //String - The colour of each segment stroke
-                  segmentStrokeColor : "#fff",
-
-                  //Number - The width of each segment stroke
-                  segmentStrokeWidth : 2,
-
-                  //Number - The percentage of the chart that we cut out of the middle
-                  percentageInnerCutout : 50, // This is 0 for Pie charts
-
-                  //Number - Amount of animation steps
-                  animationSteps : 100,
-
-                  //String - Animation easing effect
-                  animationEasing : "easeOutBounce",
-
-                  //Boolean - Whether we animate the rotation of the Doughnut
-                  animateRotate : true,
-
-                  //Boolean - Whether we animate scaling the Doughnut from the centre
-                  animateScale : false,
-
-                  //String - A legend template
-                  legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+              $scope.team_by_group = data.team_by_group;
+              var dataForPie = [];
+              var dataForBar = {
+                labels:[],
+                datasets: [
+                  {
+                    label: "TEAM BY GROUP BAR",
+                    fillColor: "rgba(220,220,220,0.5)",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data: []
+                  }
+                ]
               };
-              var ctx = $("#pie").get(0).getContext("2d");
-              var myPieChart = new Chart(ctx).Pie(data,options);
+              for(var i = 0;i < $scope.team_by_group.length; i ++){
+
+                dataForBar.labels.push($scope.team_by_group[i].group_type);
+                dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
+
+                dataForPie.push({
+                  value : $scope.team_by_group[i].teams.length,
+                  color: colorGenerator(),
+                  highlight: colorGenerator(),
+                  label:$scope.team_by_group[i].group_type
+                });
+                $scope.team_by_group[i].color = dataForPie[i].color;
+              }
+              var optionsForPie = {
+                segmentShowStroke : true,
+                segmentStrokeColor : "#fff",
+                segmentStrokeWidth : 2,
+                percentageInnerCutout : 50, // This is 0 for Pie charts
+                animationSteps : 100,
+                animationEasing : "easeOutBounce",
+                animateRotate : true,
+                animateScale : false,
+                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+              };
+
+              var optionsForBar = {
+                scaleBeginAtZero : true,
+                scaleShowGridLines : true,
+                scaleGridLineColor : "rgba(0,0,0,.05)",
+                scaleGridLineWidth : 1,
+                barShowStroke : true,
+                barStrokeWidth : 2,
+                barValueSpacing : 5,
+                barDatasetSpacing : 1,
+                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+              };
+
+              var myPieChart = new Chart(ctxPie);
+              var myBarChart = new Chart(ctxBar);
+              myPieChart.Pie(dataForPie,optionsForPie);
+              myBarChart.Bar(dataForBar,optionsForBar);
             }
           }).error(function(data, status) {
               //TODO:更改对话框
@@ -324,6 +361,10 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
                 setTimeout(function(){$rootScope.run()},500);
                 $scope.first = false;
               }
+
+              if($scope.group_selected.id == 1){
+                $scope.teamByGroup(false);
+              }
             }
           }).error(function(data, status) {
               //TODO:更改对话框
@@ -335,6 +376,7 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
       }
     };
     $scope.searchCompany(true);
+    $scope.teamByGroup(true);
 }]);
 
 

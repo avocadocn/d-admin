@@ -94,8 +94,8 @@ textarea {
   color: #666;
 }
 .chart_area{
-  width: 400px;
-  height: 400px;
+  width: 400px !important;
+  height: 200px !important;
 }
 .comment_right {
   float: right;

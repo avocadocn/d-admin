@@ -52,6 +52,7 @@ var teamHandle = function(teams){
     //新建分组
     if(!find){
       team_by_group.push({
+        'group_type':teams[i].group_type,
         'gid':teams[i].gid,
         'teams':[teams[i]]
       });
@@ -84,12 +85,13 @@ exports.getTeamByGroup = function(req,res){
           if(err || !config){
             return res.send({'msg':'TEAM_FETCH_SUCCESS','result':0,'teams':teams});
           }else{
-            return res.send({'msg':'TEAM_GROUPBY_SUCCESS','result':1,'team_by_group':teamHandle(teams)});
+            var team_by_group = teamHandle(teams);
+            return res.send({'msg':'TEAM_GROUPBY_SUCCESS','result':1,'team_by_group':team_by_group,'host':config.host.product});
           }
         });
       }
     });
   }else{
-    companySelect({'cid':req.body.cid},res,teamHandle);
+    companySelect({'_id':req.body.cid},res,teamHandle);
   }
 }

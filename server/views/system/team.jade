@@ -28,17 +28,22 @@
               td {{team.group_type}}
               td {{team.member.length}}
               td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}
-    .inner(ng-if='false')
+    .inner
       .dl_row
-        button.dl_btn.dl_btn_small(ng-click="teamByGroup(true)") 查看统计信息
-      .dl_row
-        hr
-      .dl_row
-        span
-          a 按类型
-          a |
-          a 按公司
-      .dl_row
-        hr
-      .dl_row.margin_top_10
-        canvas.chart_area#pie
+        .dl_row
+          hr
+        .dl_row
+          span.pull-left
+            h5 小队类型分布
+          span
+            .col-lg-2
+              select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
+        .dl_row
+          hr
+        .dl_row
+          p {{show_group_caption}}
+        .dl_row.margin_top_10
+          .col_md_6
+            canvas#pie
+          .col_md_6
+            canvas#bar
