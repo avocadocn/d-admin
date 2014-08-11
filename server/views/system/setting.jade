@@ -1,12 +1,12 @@
 div.margin_top_5
   p 企业注册是否需要邀请码
   label
-    input(type="radio" name="company_register_invite_code" ng-model="value" value="true" )
+    input(type="radio" name="company_register_invite_code" ng-model="code_open.value" value="true" ng-click="changeCodeOpen(true)")
     | 需要
   label
-    input(type="radio" name="company_register_invite_code" ng-model="value" value="false")
+    input(type="radio" name="company_register_invite_code" ng-model="code_open.value" value="false" ng-click="changeCodeOpen(false)")
     | 不需要
-  button(ng-click="codeSetting()") 设置
+  //- button.dl_btn.dl_btn_small(ng-click="codeSetting()") 设置
 
 div.margin_top_20
   .dl_row

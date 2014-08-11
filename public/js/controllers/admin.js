@@ -768,6 +768,9 @@ adminApp.controller('MessageController', ['$http','$scope','$rootScope',
 
 adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
+    $scope.code_open = {
+      value : ''
+    }
     $scope.host = {
       'admin':'无',
       'product':'无'
@@ -784,7 +787,7 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
         $scope.codes = data.codes;
         $http.get('/system/getting').success(function (data, status) {
           if(data.result == 1){
-            $scope.value = data.value;
+            $scope.code_open.value = data.value.toString();
             setTimeout(function(){$rootScope.run()},500);
           }
         });
@@ -812,16 +815,20 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
       }
     };
 
+    $scope.changeCodeOpen = function(value){
+      $scope.code_open.value = value.toString();
+      $scope.codeSetting();
+    }
     $scope.codeSetting = function(){
       $http({
           method: 'post',
           url: '/system/setting',
           data:{
-            company_register_invite_code:$scope.value
+            company_register_invite_code: ($scope.code_open.value == 'false' || $scope.code_open.value == false) ? false : true
           }
       }).success(function(data, status) {
         if(data.result == 1){
-          $scope.value = data.value;
+          $scope.code_open.value = data.value.toString();
         }
       }).error(function(data, status) {
           alert('数据发生错误!');

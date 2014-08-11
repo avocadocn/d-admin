@@ -41,6 +41,7 @@ exports.getCodeSwitch = function(req, res){
 
 exports.setNeedCompanyRegisterInviteCode = function(req, res) {
   var need = req.body.company_register_invite_code;
+  console.log(typeof need,need);
   Config.findOne({ name: 'admin' })
   .exec(function(err, config) {
     config.company_register_need_invite = need;
