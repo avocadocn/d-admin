@@ -16,7 +16,7 @@ var companySelect = function(condition,res,callback){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      CompanyGroup.find({'cid':company._id,'gid':{'$ne':'0'}},{'name':1,'gid':1,'group_type':1,'_id':1,'member':1,'leader':1,'create_time':1,'home_court':1,'logo':1,'cname':1},function (err,teams){
+      CompanyGroup.find({'cid':company._id,'gid':{'$ne':'0'}},{'name':1,'gid':1,'group_type':1,'_id':1,'member':1,'leader':1,'create_time':1,'home_court':1,'logo':1,'cname':1,'score':1},function (err,teams){
         if(err || !teams){
           return res.send({'msg':'TEAM_FETCH_FAILED','result':0});
         }else{
@@ -77,7 +77,7 @@ exports.searchCompanyForTeam = function (req ,res){
 //目前只是按照小组类型统计小组数量
 exports.getTeamByGroup = function(req,res){
   if(req.body.all){
-    CompanyGroup.find({'gid':{'$ne':'0'}},{'name':1,'gid':1,'group_type':1,'_id':1,'member':1,'leader':1,'create_time':1,'home_court':1,'logo':1,'cname':1},function (err,teams){
+    CompanyGroup.find({'gid':{'$ne':'0'}},{'name':1,'gid':1,'group_type':1,'_id':1,'member':1,'leader':1,'create_time':1,'home_court':1,'logo':1,'cname':1,'score':1},function (err,teams){
       if(err || !teams){
         return res.send({'msg':'TEAM_FETCH_FAILED','result':0});
       }else{

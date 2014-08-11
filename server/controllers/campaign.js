@@ -16,7 +16,7 @@ var companySelect = function(condition,res){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      Campaign.find({'cid':company._id,'gid':{'$ne':'0'}},function (err,campaigns){
+      Campaign.find({'cid':company._id,'gid':{'$ne':'0'}}).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
         if(err || !campaigns){
           return res.send({'msg':'CAMPAIGN_FETCH_FAILED','result':0});
         }else{
@@ -45,7 +45,7 @@ exports.searchCompanyForCampaign = function (req ,res){
 }
 
 exports.campaignByTeam = function(req,res){
-  Campaign.find({'team':req.body.teamId}).sort({'start_time':-1}).exec(function (err,campaigns){
+  Campaign.find({'team':req.body.teamId}).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
     if(err || !campaigns){
       return res.send({'msg':'TEAM_CAMPAIGN_FETCH_FAILED','result':0});
     }else{

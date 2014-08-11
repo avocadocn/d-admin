@@ -77,7 +77,7 @@ exports.createAdmin = function(req, res) {
 
 
 exports.logout = function(req,res){
-  //由于 req.user 无法存入数据库,暂时只能用session
+  //由于未知原因 req.user 无法存入数据库,暂时只能用session
   if(req.session.admin){
     req.session.destroy(function(err){
       console.log(err);

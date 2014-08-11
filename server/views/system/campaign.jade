@@ -3,7 +3,7 @@
     .inner
       .form-group.dl_row.margin_top_10
         .col-lg-3
-          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getTeam(company_selected)")
+          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getCampaign(company_selected)")
         //- .col-lg-1
         //-   input.dl_form-control(type="text" ng-model="company_regx.value")
         //- .col-lg-2
@@ -13,37 +13,42 @@
         table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
-              th 公司
-              th 队名
+              th 主题
+              th 内容
+              th 标签
               th 类型
-              th 队员数
-              th 创建时间
+              th 参加人数
+              th 开始时间
+              th 结束时间
+              th 地点
           tbody
-            tr(ng-repeat="team in teams")
-              td {{team.cname}}
-              td
-                a(ng-click="getDetail(team._id)") {{team.name}}
-              td {{team.group_type}}
-              td {{team.member.length}}
-              td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}
-    .inner
-      .dl_row
-        .dl_row
-          hr
-        .dl_row
-          span.pull-left
-            h5 小队类型分布
-          span
-            .col-lg-2
-              select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
-        .dl_row
-          hr
-        .dl_row
-          p {{show_group_caption}}
-        .dl_row.margin_top_10
-          .col_md_6
-            canvas#pie
-          .col_md_6
-            canvas#bar
-.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-  include ../partials/team_detail
+            tr(ng-repeat="campaign in campaigns")
+              td {{campaign.theme}}
+              td {{campaign.content}}
+              td {{campaign.type}}
+              td {{campaign.campaign_type}}
+              td {{campaign.member.length}}
+              td {{team.start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{team.end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{team.location.name}}
+//-     .inner
+//-       .dl_row
+//-         .dl_row
+//-           hr
+//-         .dl_row
+//-           span.pull-left
+//-             h5 小队类型分布
+//-           span
+//-             .col-lg-2
+//-               select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
+//-         .dl_row
+//-           hr
+//-         .dl_row
+//-           p {{show_group_caption}}
+//-         .dl_row.margin_top_10
+//-           .col_md_6
+//-             canvas#pie
+//-           .col_md_6
+//-             canvas#bar
+//- .modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+//-   include ../partials/team_detail
