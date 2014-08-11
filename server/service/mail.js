@@ -54,9 +54,9 @@ var sendMail = function (data,target,err_type) {
  * @param {String} id HR的公司id
  */
 exports.sendCompanyActiveMail = function (who, name, id, host) {
-  var from = '动梨无限<service@donler.com>';
+  var from = '动梨<service@donler.com>';
   var to = who;
-  var subject = name + ' 动梨社区公司账号激活';
+  var subject = name + ' 动梨账号激活';
   var content = '<p>我们收到您在动梨的申请信息，请点击下面的链接来激活帐户：</p>' +
     '<a style="text-decoration: none; word-break: break-all;" href="http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '">http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '</a>';
 

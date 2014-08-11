@@ -25,11 +25,11 @@ function($routeProvider, $locationProvider) {
       controller: 'UserController',
       controllerAs: 'user'
     })
-    .when('/campaign', {
-      templateUrl: '/manager/campaign',
-      controller: 'CampaignController',
-      controllerAs: 'campaign'
-    })
+    // .when('/campaign', {
+    //   templateUrl: '/manager/campaign',
+    //   controller: 'CampaignController',
+    //   controllerAs: 'campaign'
+    // })
     .when('/team', {
       templateUrl: '/manager/team',
       controller: 'TeamController',
