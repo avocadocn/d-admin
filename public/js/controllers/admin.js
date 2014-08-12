@@ -662,17 +662,17 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
       }
     }
     //根据公司找到活动
-    $scope.getTeam = function(company) {
+    $scope.getCampaign = function(company) {
       try{
           $http({
               method: 'post',
-              url: '/team/search',
+              url: '/campaign/search',
               data:{
                   _id : company._id
               }
           }).success(function(data, status) {
             if(data.result === 1){
-              $scope.teams = data.teams;
+              $scope.campaigns = data.campaigns;
               $scope.host = data.host;
               if($scope.first){
                 setTimeout(function(){$rootScope.run()},500);
@@ -680,7 +680,7 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
               }
 
               if($scope.group_selected.id == 1){
-                $scope.teamByGroup(false);
+                $scope.campaignByGroup(false);
               }
             }
           }).error(function(data, status) {
@@ -695,6 +695,8 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
     $scope.searchCompany(true);
     $scope.teamByGroup(true);
 }]);
+
+
 
 adminApp.controller('ErrorController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {

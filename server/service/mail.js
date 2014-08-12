@@ -58,7 +58,7 @@ exports.sendCompanyActiveMail = function (who, name, id, host) {
   var to = who;
   var subject = name + ' 动梨账号激活';
   var content = '<p>我们收到您在动梨的申请信息，请点击下面的链接来激活帐户：</p>' +
-    '<a style="text-decoration: none; word-break: break-all;" href="http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '">http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '</a>';
+    '<a style="text-decoration: none; word-break: break-all;" href="http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '">激活账号</a>';
 
     fs.readFile(rootConfig.root+'/server/views/partials/mailTemplate.jade', 'utf8', function (err, data) {
         if (err) throw err;
