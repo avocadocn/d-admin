@@ -63,7 +63,7 @@ module.exports = function(grunt) {
                     args: [],
                     ignore: ['public/**'],
                     ext: 'js,jade',
-                    nodeArgs: ['--debug'],
+                    //nodeArgs: ['--debug'],
                     delayTime: 1,
                     env: {
                         PORT: require('./server/config/config').port

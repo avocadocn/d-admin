@@ -95,7 +95,6 @@ adminApp.filter('dateView', function() {
   }
 });
 
-
 adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
   $rootScope.run = function() {
     $(document).ready(function(){
@@ -703,7 +702,13 @@ adminApp.controller('ErrorController', ['$http','$scope','$rootScope',
     $http.get('/error/errorList').success(function(data, status) {
       if(data.result === 1){
         $scope.errors = data.error;
-        console.log($scope.errors);
+        $scope.errors.forEach(function(log) {
+          if (log.error && log.error.body) {
+            log.errorLines = log.error.body.split(/\n/g);
+          } else {
+            log.errorLines = [];
+          }
+        });
         setTimeout(function(){$rootScope.run()},500);
       }
     });

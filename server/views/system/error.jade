@@ -16,8 +16,7 @@
                     th 目标
                     th 名称
                     th 目标邮箱
-                    th 错误类型
-                    th 错误值
+                    th 详细信息
                     th 日期
                     th 操作
                 tbody
@@ -25,8 +24,26 @@
                     td {{error.error.target.kind}}
                     td {{error.error.target.name}}
                     td {{error.error.target.email}}
-                    td {{error.error.kind}}
-                    td {{error.error.body}}
+                    td
+                      h5
+                        span(ng-if="error.error.method") 方法
+                        | &nbsp;
+                        span(ng-if="error.error.url") 路由
+                        | &nbsp;
+                        span(ng-if="error.error.kind") 状态码
+                      p
+                        span.text-primary {{error.error.method}}
+                        | &nbsp;
+                        span {{error.error.url}}
+                        | &nbsp;
+                        span.text-danger {{error.error.kind}}
+                      h5(ng-if="error.error.headers") headers
+                      p(ng-repeat="(key, value) in error.error.headers track by $index")
+                        span.text-primary {{key}}
+                        | :&nbsp;
+                        span {{value}}
+                      h5(ng-if="error.error.body") 服务器错误信息
+                      p(ng-repeat="line in error.errorLines track by $index") {{line}}
                     td {{error.date | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td
                       a(ng-click="delete(error_id)") 删除
