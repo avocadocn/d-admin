@@ -13,7 +13,6 @@
         table(datatable)#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
-              th 所属公司
               th 主题
               th 内容
               th 标签
@@ -24,7 +23,6 @@
               th 地点
           tbody()
             tr(ng-repeat="campaign in campaigns")
-              td {{campaign.cname}} ｜ {{campaign.cid}}
               td {{campaign.theme}}
               td
                 .campaign_content {{campaign.content}}
