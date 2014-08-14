@@ -1,0 +1,7 @@
+.campaign_content{
+  overflow: auto;
+  word-break: break-all;
+  word-wrap: break-word;
+  max-width: 400px;
+  height:100%;
+}

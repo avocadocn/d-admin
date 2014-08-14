@@ -25,11 +25,11 @@ function($routeProvider, $locationProvider) {
       controller: 'UserController',
       controllerAs: 'user'
     })
-    // .when('/campaign', {
-    //   templateUrl: '/manager/campaign',
-    //   controller: 'CampaignController',
-    //   controllerAs: 'campaign'
-    // })
+    .when('/campaign', {
+      templateUrl: '/manager/campaign',
+      controller: 'CampaignController',
+      controllerAs: 'campaign'
+    })
     .when('/team', {
       templateUrl: '/manager/team',
       controller: 'TeamController',
@@ -112,6 +112,84 @@ var colorGenerator = function(){
   }
   return COLOR;
 }
+
+
+adminApp.directive('datatable', ['$timeout', '$compile',
+    function($timeout, $compile) {
+
+        // default options to be used on to all datatables
+        var defaults = {};
+
+        return {
+            restrict: 'A',
+            compile: function(element, attrs) {
+                var repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]'),
+                    repeatAttr,
+                    watch,
+                    original = $(repeatOption).clone();
+
+                // enable watching of the dataset if in use
+                repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]');
+
+                if (repeatOption.length) {
+                    repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
+                    watch = $.trim(repeatAttr.split('|')[0]).split(' ').pop();
+                }
+
+                // post-linking function
+                return function(scope, element, attrs, controller) {
+
+                    // merge default options with table specific override options
+                    var options = angular.extend({}, defaults, scope.$eval(attrs.datatable)),
+                        table = null;
+
+                    // add default css style
+                    element.addClass('table table-striped');
+
+                    if (watch) {
+
+                        // deep watching of dataset to re-init on change
+                        scope.$watch(watch, function(newValue, oldValue) {
+                            if (newValue) {
+
+                                // check for class, 'fnIsDataTable' doesn't work here
+                                if (!element.hasClass('dataTable')) {
+
+                                    // init datatables after data load for first time
+                                    $timeout(function() {
+                                        table = element.dataTable(options);
+                                    });
+
+                                } else if (newValue != oldValue) {
+
+                                    // destroy and re-init datatable with new data (fnDraw not working here)
+                                    table.fnDestroy();
+
+                                    // DataTables addes specifc 'width' property after destroy, have to manually remove
+                                    element.removeAttr('style');
+
+                                    // empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
+                                    var body = element.find('tbody');
+                                    body.empty();
+                                    body.append($compile(original)(scope));
+
+                                    // 'timeout' to allow ng-repeat time to render
+                                    $timeout(function() {
+                                        table.dataTable(options);
+                                    });
+
+                                }
+                            }
+                        }, true);
+                    } else {
+                        // no dataset present, init normally
+                        table = element.dataTable(options);
+                    }
+                };
+            }
+        };
+    }
+]);
 adminApp.controller('UserController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     //返回第一个公司的所有员工
@@ -430,8 +508,8 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
 }]);
 
 
-adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
-  function ($http, $scope, $rootScope) {
+adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeout',
+  function ($http, $scope, $rootScope, $timeout) {
     //返回第一个公司的所有活动
     $scope.first = true;
     $scope.company_selected = null;
@@ -465,7 +543,7 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
               $scope.companies = data.companies;
               $scope.company_selected = data.companies[0];
               if($scope.first){
-                $scope.getTeam($scope.company_selected);
+                $scope.getCampaign($scope.company_selected);
               }
             }
           }).error(function(data, status) {
@@ -673,10 +751,12 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
             if(data.result === 1){
               $scope.campaigns = data.campaigns;
               $scope.host = data.host;
-              if($scope.first){
-                setTimeout(function(){$rootScope.run()},500);
+              //if($scope.first){
+                // setTimeout(function(){$(document).ready(function(){
+                //         $('#dt_campaign').dataTable();
+                //       });},500);
                 $scope.first = false;
-              }
+              //}
 
               if($scope.group_selected.id == 1){
                 $scope.campaignByGroup(false);
@@ -692,7 +772,7 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope',
       }
     };
     $scope.searchCompany(true);
-    $scope.teamByGroup(true);
+    //$scope.teamByGroup(true);
 }]);
 
 

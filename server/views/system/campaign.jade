@@ -10,9 +10,10 @@
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
     .inner
       .dl_row.dl_code
-        table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+        table(datatable)#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
+              th 所属公司
               th 主题
               th 内容
               th 标签
@@ -21,16 +22,18 @@
               th 开始时间
               th 结束时间
               th 地点
-          tbody
+          tbody()
             tr(ng-repeat="campaign in campaigns")
+              td {{campaign.cname}} ｜ {{campaign.cid}}
               td {{campaign.theme}}
-              td {{campaign.content}}
+              td
+                .campaign_content {{campaign.content}}
               td {{campaign.type}}
               td {{campaign.campaign_type}}
               td {{campaign.member.length}}
-              td {{team.start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
-              td {{team.end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
-              td {{team.location.name}}
+              td {{campaign.start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{campaign.end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{campaign.location.name}}
 //-     .inner
 //-       .dl_row
 //-         .dl_row
