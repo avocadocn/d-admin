@@ -264,7 +264,6 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
             if(data.result === 1){
               $scope.users = data.users;
               if($scope.first){
-                setTimeout(function(){$rootScope.run()},500);
                 $scope.first = false;
               }
             }
@@ -325,12 +324,6 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
                     if(data.result == 1){
                       $scope.campaigns = data.campaigns;
                       $('#teamDetailModal').modal();
-                      setTimeout(function(){$(document).ready(function(){
-                        $('#dt_team_user').dataTable();
-                      });},500);
-                      setTimeout(function(){$(document).ready(function(){
-                        $('#dt_team_campaign').dataTable();
-                      });},500);
                     }
                   }).error(function(data, status) {
                       //TODO:更改对话框
@@ -486,7 +479,6 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
               $scope.teams = data.teams;
               $scope.host = data.host;
               if($scope.first){
-                setTimeout(function(){$rootScope.run()},500);
                 $scope.first = false;
               }
 
@@ -789,7 +781,6 @@ adminApp.controller('ErrorController', ['$http','$scope','$rootScope',
             log.errorLines = [];
           }
         });
-        setTimeout(function(){$rootScope.run()},500);
       }
     });
     $scope.delete = function(_id) {
@@ -829,7 +820,6 @@ adminApp.controller('MessageController', ['$http','$scope','$rootScope',
     };
     $http.get('/message/sendlist').success(function(data, status) {
       $scope.send_messages = data.message_contents;
-      setTimeout(function(){$rootScope.run()},500);
     });
     $scope.send = function() {
        try{
@@ -875,7 +865,6 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
         $http.get('/system/getting').success(function (data, status) {
           if(data.result == 1){
             $scope.code_open.value = data.value.toString();
-            setTimeout(function(){$rootScope.run()},500);
           }
         });
       });
@@ -944,7 +933,6 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
       $scope.company_num=$scope.companies.length;
-      setTimeout(function(){$rootScope.run()},500);
     });
 
     $scope.active = function(value,company_id){

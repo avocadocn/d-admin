@@ -1,0 +1,13 @@
+.user_content{
+  float:left;
+}
+
+.user_content .name{
+  float:left;
+  width:240px;
+}
+
+.user_content .role{
+  float:left;
+  width:20px;
+}

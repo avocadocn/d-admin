@@ -10,7 +10,7 @@
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
     .inner
       .dl_row.dl_code
-        table#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+        table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
               th 公司名
@@ -23,11 +23,10 @@
               td {{user.cname}}
               td {{user.nickname}}
               td
-                table.table.table-bordered.table-condensed.table-hover.table-striped
-                  tbody
-                    tr(ng-repeat="team in user.team" ng-if="team.gid != '0'")
-                      td {{team.name}}
-                      td {{team.leader ? '队长' : '队员'}}
+                ul.user_content
+                  li(ng-repeat="team in user.team" ng-if="team.gid != '0'")
+                    span.name {{team.name}}
+                    span.role {{team.leader ? '队长' : '队员'}}
               td {{user.mail_active ? (user.active ? '正常' : '封禁') : '未激活'}}
               td(ng-if="user.mail_active && user.active")
                 a(ng-click="active(user,false)") 封禁
