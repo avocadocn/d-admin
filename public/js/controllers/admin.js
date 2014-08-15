@@ -341,6 +341,64 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
 
 
 
+
+
+
+
+var chartGenerator = function(data,property){
+  var dataForPie = [];
+  var dataForBar = {
+    labels:[],
+    datasets: [
+      {
+        label: "TEAM BY GROUP BAR",
+        fillColor: "rgba(220,220,220,0.5)",
+        strokeColor: "rgba(220,220,220,0.8)",
+        highlightFill: "rgba(220,220,220,0.75)",
+        highlightStroke: "rgba(220,220,220,1)",
+        data: []
+      }
+    ]
+  };
+  for(var i = 0;i < $scope.team_by_group.length; i ++){
+
+    dataForBar.labels.push($scope.team_by_group[i][property]);
+    dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
+
+    dataForPie.push({
+      value : $scope.team_by_group[i].teams.length,
+      color: colorGenerator(),
+      highlight: colorGenerator(),
+      label:$scope.team_by_group[i].group_type
+    });
+    $scope.team_by_group[i].color = dataForPie[i].color;
+  }
+  var optionsForPie = {
+    segmentShowStroke : true,
+    segmentStrokeColor : "#fff",
+    segmentStrokeWidth : 2,
+    percentageInnerCutout : 50, // This is 0 for Pie charts
+    animationSteps : 100,
+    animationEasing : "easeOutBounce",
+    animateRotate : true,
+    animateScale : false,
+    legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+  };
+
+  var optionsForBar = {
+    scaleBeginAtZero : true,
+    scaleShowGridLines : true,
+    scaleGridLineColor : "rgba(0,0,0,.05)",
+    scaleGridLineWidth : 1,
+    barShowStroke : true,
+    barStrokeWidth : 2,
+    barValueSpacing : 5,
+    barDatasetSpacing : 1,
+    legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+  };
+}
+
+
 adminApp.controller('TeamController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     //返回第一个公司的所有员工
@@ -457,56 +515,6 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
           }).success(function(data, status) {
             if(data.result === 1){
               $scope.team_by_group = data.team_by_group;
-              var dataForPie = [];
-              var dataForBar = {
-                labels:[],
-                datasets: [
-                  {
-                    label: "TEAM BY GROUP BAR",
-                    fillColor: "rgba(220,220,220,0.5)",
-                    strokeColor: "rgba(220,220,220,0.8)",
-                    highlightFill: "rgba(220,220,220,0.75)",
-                    highlightStroke: "rgba(220,220,220,1)",
-                    data: []
-                  }
-                ]
-              };
-              for(var i = 0;i < $scope.team_by_group.length; i ++){
-
-                dataForBar.labels.push($scope.team_by_group[i].group_type);
-                dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
-
-                dataForPie.push({
-                  value : $scope.team_by_group[i].teams.length,
-                  color: colorGenerator(),
-                  highlight: colorGenerator(),
-                  label:$scope.team_by_group[i].group_type
-                });
-                $scope.team_by_group[i].color = dataForPie[i].color;
-              }
-              var optionsForPie = {
-                segmentShowStroke : true,
-                segmentStrokeColor : "#fff",
-                segmentStrokeWidth : 2,
-                percentageInnerCutout : 50, // This is 0 for Pie charts
-                animationSteps : 100,
-                animationEasing : "easeOutBounce",
-                animateRotate : true,
-                animateScale : false,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
-              };
-
-              var optionsForBar = {
-                scaleBeginAtZero : true,
-                scaleShowGridLines : true,
-                scaleGridLineColor : "rgba(0,0,0,.05)",
-                scaleGridLineWidth : 1,
-                barShowStroke : true,
-                barStrokeWidth : 2,
-                barValueSpacing : 5,
-                barDatasetSpacing : 1,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-              };
 
               var myPieChart = new Chart(ctxPie);
               var myBarChart = new Chart(ctxBar);

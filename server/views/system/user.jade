@@ -32,3 +32,4 @@
                 a(ng-click="active(user,false)") 封禁
               td(ng-if="user.mail_active && !user.active")
                 a(ng-click="active(user,true)") 解封
+              td(ng-if="!user.mail_active")
