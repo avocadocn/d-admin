@@ -26,30 +26,43 @@
               td {{campaign.theme}}
               td
                 .campaign_content {{campaign.content}}
-              td {{campaign.type}}
-              td {{campaign.campaign_type}}
+              td {{campaign.group_type}}
+              td {{campaign.campaign_type_value}}
               td {{campaign.member.length}}
               td {{campaign.start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{campaign.end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{campaign.location.name}}
-//-     .inner
-//-       .dl_row
-//-         .dl_row
-//-           hr
-//-         .dl_row
-//-           span.pull-left
-//-             h5 小队类型分布
-//-           span
-//-             .col-lg-2
-//-               select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
-//-         .dl_row
-//-           hr
-//-         .dl_row
-//-           p {{show_group_caption}}
-//-         .dl_row.margin_top_10
-//-           .col_md_6
-//-             canvas#pie
-//-           .col_md_6
-//-             canvas#bar
-//- .modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-//-   include ../partials/team_detail
+    .inner
+      .dl_row
+        .dl_row
+          hr
+        .dl_row
+          .pull-left
+            span.pull-left
+              h5 活动按标签分布
+            span
+              .col-lg-6
+                select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
+          .pull-right
+            span.pull-left
+              h5 活动按类型分布
+            span
+              .col-lg-6
+                select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
+        .dl_row
+          hr
+        .dl_row
+          //-p {{show_group_caption}}
+        .dl_row.margin_top_10
+          .pull-left
+            .col_md_6
+              canvas#pieGroup
+            .col_md_6
+              canvas#barGroup
+          .pull-right
+            .col_md_6
+              canvas#pieType
+            .col_md_6
+              canvas#barType
+.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/team_detail

@@ -345,13 +345,13 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
 
 
 
-var chartGenerator = function(data,property){
+var chartGenerator = function(data,length_property,label_property,ctxPie,ctxBar){
   var dataForPie = [];
   var dataForBar = {
     labels:[],
     datasets: [
       {
-        label: "TEAM BY GROUP BAR",
+        label: "CHART",
         fillColor: "rgba(220,220,220,0.5)",
         strokeColor: "rgba(220,220,220,0.8)",
         highlightFill: "rgba(220,220,220,0.75)",
@@ -360,18 +360,18 @@ var chartGenerator = function(data,property){
       }
     ]
   };
-  for(var i = 0;i < $scope.team_by_group.length; i ++){
+  for(var i = 0;i < data.length; i ++){
 
-    dataForBar.labels.push($scope.team_by_group[i][property]);
-    dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
+    dataForBar.labels.push(data[i][label_property]);
+    dataForBar.datasets[0].data.push(length_property ? data[i][length_property].length : data.length);
 
     dataForPie.push({
-      value : $scope.team_by_group[i].teams.length,
+      value : length_property ? data[i][length_property].length : data.length,
       color: colorGenerator(),
       highlight: colorGenerator(),
-      label:$scope.team_by_group[i].group_type
+      label:data[i][label_property]
     });
-    $scope.team_by_group[i].color = dataForPie[i].color;
+    data[i].color = dataForPie[i].color;
   }
   var optionsForPie = {
     segmentShowStroke : true,
@@ -384,7 +384,6 @@ var chartGenerator = function(data,property){
     animateScale : false,
     legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
   };
-
   var optionsForBar = {
     scaleBeginAtZero : true,
     scaleShowGridLines : true,
@@ -396,6 +395,10 @@ var chartGenerator = function(data,property){
     barDatasetSpacing : 1,
     legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
   };
+  var myPieChart = new Chart(ctxPie);
+  var myBarChart = new Chart(ctxBar);
+  myPieChart.Pie(dataForPie,optionsForPie);
+  myBarChart.Bar(dataForBar,optionsForBar);
 }
 
 
@@ -515,11 +518,7 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
           }).success(function(data, status) {
             if(data.result === 1){
               $scope.team_by_group = data.team_by_group;
-
-              var myPieChart = new Chart(ctxPie);
-              var myBarChart = new Chart(ctxBar);
-              myPieChart.Pie(dataForPie,optionsForPie);
-              myBarChart.Bar(dataForBar,optionsForBar);
+              chartGenerator($scope.team_by_group,'teams','group_type',ctxPie,ctxBar);
             }
           }).error(function(data, status) {
               //TODO:更改对话框
@@ -588,7 +587,34 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
     }];
     $scope.group_selected = $scope.group_selecteds[0];
 
+    // chartGenerator(data,length_property,label_property,ctxPie,ctxBar)
+    $scope.campaignByRule = function(cid){
+      try{
+          $http({
+              method: 'post',
+              url: '/campaign/rule',
+              data:{
+                cid : cid
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              var ctxPieGroup = $("#pieGroup").get(0).getContext("2d");
+              var ctxBarGroup = $("#barGroup").get(0).getContext("2d");
+              chartGenerator(data.campaign_by_group,'campaigns','group_type',ctxPieGroup,ctxBarGroup);
 
+              var ctxPieType = $("#pieType").get(0).getContext("2d");
+              var ctxBarType = $("#barType").get(0).getContext("2d");
+              chartGenerator(data.campaign_by_type,'campaigns','type',ctxPieType,ctxBarType);
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
     $scope.searchCompany = function(all){
       try{
           $http({
@@ -619,185 +645,14 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
     $scope.statisticsSelect = function(option){
       if(option.id == 0){
         $scope.show_group_caption = '所有公司的活动类型分布';
-        $scope.teamByGroup(true);
+        $scope.campaignByRule(undefined);
       }
       if(option.id == 1){
         $scope.show_group_caption = $scope.company_selected.name + '的活动类型分布';
-        $scope.teamByGroup(false);
+        $scope.campaignByRule($scope.company_selected._id);
       }
     }
 
-
-    //按类型分布
-    $scope.campaignByType = function(all) {
-      var ctxPie = $("#pieCampaignType").get(0).getContext("2d");
-      var ctxBar = $("#barCampaignType").get(0).getContext("2d");
-      if(!$scope.show_group){
-        try{
-          $http({
-              method: 'post',
-              url: '/campaign/group',
-              data:{
-                cid : $scope.company_selected ? $scope.company_selected._id : null,
-                all : all
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.team_by_group = data.team_by_group;
-              var dataForPie = [];
-              var dataForBar = {
-                labels:[],
-                datasets: [
-                  {
-                    label: "TEAM BY GROUP BAR",
-                    fillColor: "rgba(220,220,220,0.5)",
-                    strokeColor: "rgba(220,220,220,0.8)",
-                    highlightFill: "rgba(220,220,220,0.75)",
-                    highlightStroke: "rgba(220,220,220,1)",
-                    data: []
-                  }
-                ]
-              };
-              for(var i = 0;i < $scope.team_by_group.length; i ++){
-
-                dataForBar.labels.push($scope.team_by_group[i].group_type);
-                dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
-
-                dataForPie.push({
-                  value : $scope.team_by_group[i].teams.length,
-                  color: colorGenerator(),
-                  highlight: colorGenerator(),
-                  label:$scope.team_by_group[i].group_type
-                });
-                $scope.team_by_group[i].color = dataForPie[i].color;
-              }
-              var optionsForPie = {
-                segmentShowStroke : true,
-                segmentStrokeColor : "#fff",
-                segmentStrokeWidth : 2,
-                percentageInnerCutout : 50, // This is 0 for Pie charts
-                animationSteps : 100,
-                animationEasing : "easeOutBounce",
-                animateRotate : true,
-                animateScale : false,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
-              };
-
-              var optionsForBar = {
-                scaleBeginAtZero : true,
-                scaleShowGridLines : true,
-                scaleGridLineColor : "rgba(0,0,0,.05)",
-                scaleGridLineWidth : 1,
-                barShowStroke : true,
-                barStrokeWidth : 2,
-                barValueSpacing : 5,
-                barDatasetSpacing : 1,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-              };
-
-              var myPieChart = new Chart(ctxPie);
-              var myBarChart = new Chart(ctxBar);
-              myPieChart.Pie(dataForPie,optionsForPie);
-              myBarChart.Bar(dataForBar,optionsForBar);
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-        }
-        catch(e){
-            console.log(e);
-        }
-      }else{
-        $scope.show_group = false;
-      }
-    }
-
-
-    //按标签分布
-    $scope.campaignByGroup = function(all) {
-      var ctxPie = $("#pieCampaignGroup").get(0).getContext("2d");
-      var ctxBar = $("#barCampaignGroup").get(0).getContext("2d");
-      if(!$scope.show_group){
-        try{
-          $http({
-              method: 'post',
-              url: '/campaign/type',
-              data:{
-                cid : $scope.company_selected ? $scope.company_selected._id : null,
-                all : all
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.team_by_group = data.team_by_group;
-              var dataForPie = [];
-              var dataForBar = {
-                labels:[],
-                datasets: [
-                  {
-                    label: "TEAM BY GROUP BAR",
-                    fillColor: "rgba(220,220,220,0.5)",
-                    strokeColor: "rgba(220,220,220,0.8)",
-                    highlightFill: "rgba(220,220,220,0.75)",
-                    highlightStroke: "rgba(220,220,220,1)",
-                    data: []
-                  }
-                ]
-              };
-              for(var i = 0;i < $scope.team_by_group.length; i ++){
-
-                dataForBar.labels.push($scope.team_by_group[i].group_type);
-                dataForBar.datasets[0].data.push($scope.team_by_group[i].teams.length);
-
-                dataForPie.push({
-                  value : $scope.team_by_group[i].teams.length,
-                  color: colorGenerator(),
-                  highlight: colorGenerator(),
-                  label:$scope.team_by_group[i].group_type
-                });
-                $scope.team_by_group[i].color = dataForPie[i].color;
-              }
-              var optionsForPie = {
-                segmentShowStroke : true,
-                segmentStrokeColor : "#fff",
-                segmentStrokeWidth : 2,
-                percentageInnerCutout : 50, // This is 0 for Pie charts
-                animationSteps : 100,
-                animationEasing : "easeOutBounce",
-                animateRotate : true,
-                animateScale : false,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
-              };
-
-              var optionsForBar = {
-                scaleBeginAtZero : true,
-                scaleShowGridLines : true,
-                scaleGridLineColor : "rgba(0,0,0,.05)",
-                scaleGridLineWidth : 1,
-                barShowStroke : true,
-                barStrokeWidth : 2,
-                barValueSpacing : 5,
-                barDatasetSpacing : 1,
-                legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-              };
-
-              var myPieChart = new Chart(ctxPie);
-              var myBarChart = new Chart(ctxBar);
-              myPieChart.Pie(dataForPie,optionsForPie);
-              myBarChart.Bar(dataForBar,optionsForBar);
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-        }
-        catch(e){
-            console.log(e);
-        }
-      }else{
-        $scope.show_group = false;
-      }
-    }
     //根据公司找到活动
     $scope.getCampaign = function(company) {
       try{
@@ -819,7 +674,7 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
               //}
 
               if($scope.group_selected.id == 1){
-                $scope.campaignByGroup(false);
+                $scope.campaignByRule(company._id);
               }
             }
           }).error(function(data, status) {
@@ -832,7 +687,7 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
       }
     };
     $scope.searchCompany(true);
-    //$scope.teamByGroup(true);
+    $scope.campaignByRule(undefined);
 }]);
 
 

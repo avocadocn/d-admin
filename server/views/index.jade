@@ -26,9 +26,47 @@ block content
               a.btn.btn-metis-1.btn-sm(href="/admin/logout")
                 i.fa.fa-power-off
           .collapse.navbar-collapse.navbar-ex1-collapse
-            span ok
-            span no
-            span yes
+            .navbar-toggle
+              ul#menu
+                li.nav-header 菜单
+                li.nav-divider
+                li
+                  a(href="#/parameter")
+                    i.fa.fa-dashboard
+                    span.link-title 综合设置
+                //- li
+                //-   a(href="#/dashboard")
+                //-     i.fa.fa-dashboard
+                //-     span.link-title 运行状态
+                li
+                  a(href="#/manager")
+                    i.fa.fa-table
+                    span.link-title 公司管理
+                li
+                  a(href="#/user")
+                    i.fa.fa-table
+                    span.link-title 人员管理
+                li
+                  a(href="#/team")
+                    i.fa.fa-table
+                    span.link-title 小队统计
+                li
+                  a(href="#/campaign")
+                    i.fa.fa-table
+                    span.link-title 活动统计
+                li
+                  a(href="#/region")
+                    i.fa.fa-table
+                    span.link-title 地区管理
+                li
+                  a(href="#/error")
+                    i.fa.fa-table
+                    span.link-title 错误日志
+                li
+                  a(href="#/chart")
+                    i.fa.fa.fa-bar-chart-o
+                    span.link-title Charts
+                li.nav-divider
       header.head
         .search-bar
           form.main-search(action="")
