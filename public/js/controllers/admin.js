@@ -583,6 +583,18 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
 
 adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeout',
   function ($http, $scope, $rootScope, $timeout) {
+    $('#start_time').datetimepicker();
+    $('#end_time').datetimepicker();
+    // $("#start_time").on("changeDate",function (ev) {
+    //     var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+    //     $scope.start_time = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+    //     $('#end_time').datetimepicker('setStartDate', dateUTC);
+    // });
+    // $("#end_time").on("changeDate",function (ev) {
+    //     var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+    //     $scope.end_time = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+    //     $('#start_time').datetimepicker('setEndDate', dateUTC);
+    // });
     //返回第一个公司的所有活动
     $scope.first = true;
     $scope.company_selected = null;
@@ -600,6 +612,10 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
       'id':1
     }];
     $scope.group_selected = $scope.group_selecteds[0];
+
+    $scope.test = function(){
+      alert($scope.start_time);
+    }
 
     // chartGenerator(data,length_property,label_property,ctxPie,ctxBar)
     $scope.campaignByRule = function(cid){

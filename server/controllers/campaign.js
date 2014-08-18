@@ -18,11 +18,14 @@ var mongoose = require('mongoose'),
 //8:部门间活动 (公司的两个部门一起搞活动)
 //9:部门间相互挑战
 
+//db.campaigns.find({'$or':[{'$and':[{'end_time':{'$lte':end}},{'end_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':end}},{'start_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':start}},{'end_time':{'$gte':end}}]}]});
+
+
 exports.home = function (req ,res){
   res.render('system/campaign');
 }
 
-var companySelect = function(condition,res){
+var companySelect = function(condition,res,start,end){
   Company.findOne(condition,{'_id':1,'info.name':1}).exec(function (err,company){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
@@ -33,9 +36,9 @@ var companySelect = function(condition,res){
           '$ne':'0'
         }
       };
-      // if(start && end){
-      //   condition.
-      // }
+      if(start && end){
+        condition.set('$or',[{'$and':[{'end_time':{'$lte':end}},{'end_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':end}},{'start_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':start}},{'end_time':{'$gte':end}}]}],{'strict':false});
+      }
       Campaign.find(condition).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
         if(err || !campaigns){
           return res.send({'msg':'CAMPAIGN_FETCH_FAILED','result':0});
@@ -72,13 +75,13 @@ var companySelect = function(condition,res){
 
 exports.searchCompanyForCampaign = function (req ,res){
   //第一次默认取第一个公司的所有活动
+  var condition;
   if(req.body._id == undefined || req.body._id == null){
-    var condition = {'team':{'$ne':[]}};
-    companySelect(condition,res,null);
+    condition = {'team':{'$ne':[]}};
   }else{
-    var condition = {'_id':req.body._id};
-    companySelect(condition,res,null);
+    condition = {'_id':req.body._id};
   }
+  companySelect(condition,res,req.body.start,req.body.end);
 }
 
 exports.campaignByTeam = function(req,res){

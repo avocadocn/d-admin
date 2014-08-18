@@ -8,6 +8,22 @@
         //-   input.dl_form-control(type="text" ng-model="company_regx.value")
         //- .col-lg-2
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
+        .col-lg-6.pull-right
+          .time_picker_area
+            .time_span
+              .input-group.date.form_datetime#start_time
+                span.input-group-addon.no_radius
+                  span.glyphicon.glyphicon-th
+                input.dl-form-control(type="text" ng-model="$parent.start_time" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+            .time_block
+              span >>>
+            .time_span
+              .input-group.date.form_datetime#end_time
+                span.input-group-addon.no_radius
+                  span.glyphicon.glyphicon-th
+                input.dl-form-control(type="text" ng-model="$parent.end_time" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+            .time_block
+              a.dl_btn.dl_btn_small(ng-click="test()") 获取
     .inner
       .dl_row.dl_code
         table(datatable)#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
