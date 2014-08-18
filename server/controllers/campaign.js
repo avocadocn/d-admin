@@ -27,7 +27,16 @@ var companySelect = function(condition,res){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      Campaign.find({'cid':company._id,'gid':{'$ne':'0'}}).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
+      var condition = {
+        'cid':company._id,
+        'gid':{
+          '$ne':'0'
+        }
+      };
+      // if(start && end){
+      //   condition.
+      // }
+      Campaign.find(condition).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
         if(err || !campaigns){
           return res.send({'msg':'CAMPAIGN_FETCH_FAILED','result':0});
         }else{
@@ -203,7 +212,7 @@ var byRule = function(cid,res){
   }else{
     condition = null;
   }
-  Campaign.find(condition).populate('team').exec(function (err,campaigns){
+  Campaign.find(condition,{'theme':1,'team':1,'group_type':1,'campaign_type':1}).populate('team').exec(function (err,campaigns){
     if(err || !campaigns){
       res.send({'result':0,'msg':'TYPE_CAMPAIGN_FETCH_FAILED','campaigns':[]});
     }else{

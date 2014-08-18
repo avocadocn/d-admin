@@ -298,6 +298,7 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
               for(var i = 0 ; i < $scope.users.length; i ++){
                 if($scope.users[i]._id === user._id){
                   $scope.users[i].active = active;
+                  //console.log($scope.users);
                   break;
                 }
               }
