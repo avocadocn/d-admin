@@ -23,7 +23,7 @@
                   span.glyphicon.glyphicon-th
                 input.dl-form-control(type="text" ng-model="$parent.end_time" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
             .time_block
-              a.dl_btn.dl_btn_small(ng-click="test()") 获取
+              a.dl_btn.dl_btn_small(ng-click="campaignByDate()") 获取
     .inner
       .dl_row.dl_code
         table(datatable)#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped

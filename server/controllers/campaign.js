@@ -37,12 +37,13 @@ var companySelect = function(condition,res,start,end){
         }
       };
       if(start && end){
-        condition.set('$or',[{'$and':[{'end_time':{'$lte':end}},{'end_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':end}},{'start_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':start}},{'end_time':{'$gte':end}}]}],{'strict':false});
+        condition['$or'] = [{'$and':[{'end_time':{'$lte':end}},{'end_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':end}},{'start_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':start}},{'end_time':{'$gte':end}}]}];
       }
       Campaign.find(condition).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
         if(err || !campaigns){
           return res.send({'msg':'CAMPAIGN_FETCH_FAILED','result':0});
         }else{
+          console.log(condition);
           for(var i = 0 ; i < campaigns.length ; i ++){
             switch(campaigns[i].campaign_type){
               case 1:
@@ -81,7 +82,7 @@ exports.searchCompanyForCampaign = function (req ,res){
   }else{
     condition = {'_id':req.body._id};
   }
-  companySelect(condition,res,req.body.start,req.body.end);
+  companySelect(condition,res,req.body.start_time,req.body.end_time);
 }
 
 exports.campaignByTeam = function(req,res){
