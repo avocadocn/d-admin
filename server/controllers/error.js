@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 
 //获取错误日志
 exports.getErrorStatics = function(req,res){
-  Error.find({'status':'active'}).sort({'date':-1}).exec(function(err,error){
+  Error.find({'status':'active'}).sort({'date':-1}).limit(100).exec(function(err,error){
     if(err || !error){
       res.send({'msg':'ERROR_FETCH_FAILED','result':0});
     }else{
