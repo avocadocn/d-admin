@@ -1,6 +1,8 @@
 #content
   .outer
     .inner
+      a.pull-right(ng-click="userToLower()") 用户名转小写
+    .inner
       .form-group.dl_row.margin_top_10
         .col-lg-3
           select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getUser(company_selected)")

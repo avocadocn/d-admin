@@ -6,4 +6,5 @@ module.exports = function(app) {
   app.post('/user/search', authorization.requiresAdmin,user.searchCompanyForUser);
   app.post('/user/active', authorization.requiresAdmin,user.userModify);
   app.post('/user/team', authorization.requiresAdmin,user.userByTeam);
+  app.get('/user/tolower',authorization.requiresAdmin,user.tolower);
 };

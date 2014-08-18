@@ -337,6 +337,19 @@ adminApp.controller('UserController', ['$http','$scope','$rootScope',
       }
     };
     $scope.searchCompany(true);
+
+    $scope.userToLower = function (){
+      try{
+        $http.get('/user/tolower').success(function(data,status) {
+          alert('success');
+        }).error(function(data,status){
+          alert('error');
+        });
+      }
+      catch(e){
+        console.log(e);
+      }
+    }
 }]);
 
 

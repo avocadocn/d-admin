@@ -68,3 +68,24 @@ exports.userByTeam = function(req,res){
     }
   })
 }
+
+exports.tolower = function(req,res) {
+  User.find(null,{'username':1,'email':1})
+  .exec()
+  .then(function(users){
+    users.forEach(function(user){
+        user.username = user.username.toLowerCase();
+        user.save(function(err){
+          if(err)
+            console.log(err);
+          // else
+          //   console.log(user);
+        })
+    });
+    return res.send({});
+  })
+  .then(null,function(err){
+    console.log(err);
+    return res.send(500);
+  })
+}
