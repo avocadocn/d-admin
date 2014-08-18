@@ -381,6 +381,16 @@ textarea {
   -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
+
+.table_all {
+  overflow-x: scroll;
+  max-width:1600px;
+}
+
+.td_err {
+  overflow-y: scroll;
+  max-height:200px;
+}
 .dl_tip {
   float: left;
   position: absolute;
