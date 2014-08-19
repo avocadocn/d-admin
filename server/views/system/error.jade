@@ -13,14 +13,15 @@
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
+                    th 日期
                     th 目标
                     th 名称
                     th 目标邮箱
                     th 详细信息
-                    th 日期
                     th 操作
                 tbody
                   tr(ng-repeat="error in errors")
+                    td {{error.date | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td {{error.error.target.kind}}
                     td {{error.error.target.name}}
                     td {{error.error.target.email}}
@@ -45,6 +46,5 @@
                           span {{value}}
                         h5(ng-if="error.error.body") 服务器错误信息
                         p(ng-repeat="line in error.errorLines track by $index") {{line}}
-                    td {{error.date | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td
                       a(ng-click="delete(error_id)") 删除
