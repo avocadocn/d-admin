@@ -15,7 +15,7 @@ var companySelect = function(condition,res){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      User.find({'cid':company._id},{'nickname':1,'cname':1,'role':1,'team':1,'active':1,'mail_active':1,'_id':1},function (err,users){
+      User.find({'cid':company._id},{'nickname':1,'cname':1,'role':1,'team':1,'disabled':1,'mail_active':1,'_id':1},function (err,users){
         if(err || !users){
           return res.send({'msg':'USER_FETCH_FAILED','result':0});
         }else{

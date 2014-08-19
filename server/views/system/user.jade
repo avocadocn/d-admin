@@ -29,9 +29,9 @@
                   li(ng-repeat="team in user.team" ng-if="team.gid != '0'")
                     span.name {{team.name}}
                     span.role {{team.leader ? '队长' : '队员'}}
-              td {{user.mail_active ? (user.active ? '正常' : '封禁') : '未激活'}}
-              td(ng-if="user.mail_active && user.active")
-                a(ng-click="active(user,false)") 封禁
-              td(ng-if="user.mail_active && !user.active")
-                a(ng-click="active(user,true)") 解封
+              td {{user.mail_active ? (!user.disabled ? '正常' : '封禁') : '未激活'}}
+              td(ng-if="user.mail_active && !user.disabled")
+                a(ng-click="active(user,true)") 封禁
+              td(ng-if="user.mail_active && user.disabled")
+                a(ng-click="active(user,false)") 解封
               td(ng-if="!user.mail_active")

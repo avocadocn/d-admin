@@ -47,4 +47,4 @@
                         h5(ng-if="error.error.body") 服务器错误信息
                         p(ng-repeat="line in error.errorLines track by $index") {{line}}
                     td
-                      a(ng-click="delete(error_id)") 删除
+                      a(ng-click="delete(error._id)") 删除
