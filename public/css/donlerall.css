@@ -407,6 +407,12 @@ textarea {
   overflow-y: scroll;
   max-height:200px;
 }
+
+.td_max_height {
+  overflow-y: scroll;
+  max-height:50px;
+}
+
 .dl_tip {
   float: left;
   position: absolute;

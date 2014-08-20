@@ -10,6 +10,7 @@ module.exports = function(app) {
     var user = require('../controllers/user');
     var team = require('../controllers/team');
     var campaign = require('../controllers/campaign');
+    var department = require('../controllers/department');
     var authorization = require('../routes/middlewares/authorization.js');
 
     app.get('/manager/home', authorization.requiresAdmin,manager.home);
@@ -20,6 +21,7 @@ module.exports = function(app) {
     app.get('/manager/user', authorization.requiresAdmin,user.home);
     app.get('/manager/team', authorization.requiresAdmin,team.home);
     app.get('/manager/campaign', authorization.requiresAdmin,campaign.home);
+    app.get('/manager/department', authorization.requiresAdmin,department.home);
 
     app.get('/manager/company', authorization.requiresAdmin,manager.getComapnyBasicInfo);
     app.post('/manager/search', authorization.requiresAdmin,manager.searchCompany);

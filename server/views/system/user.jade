@@ -11,7 +11,7 @@
         //- .col-lg-2
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
     .inner
-      .dl_row.dl_code
+      .dl_row.dl_code.table_all
         table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
@@ -25,10 +25,11 @@
               td {{user.cname}}
               td {{user.nickname}}
               td
-                ul.user_content
-                  li(ng-repeat="team in user.team" ng-if="team.gid != '0'")
-                    span.name {{team.name}}
-                    span.role {{team.leader ? '队长' : '队员'}}
+                .td_max_height
+                  ul.user_content
+                    li(ng-repeat="team in user.team" ng-if="team.gid != '0'")
+                      span.name {{team.name}}
+                      span.role {{team.leader ? '队长' : '队员'}}
               td {{user.mail_active ? (!user.disabled ? '正常' : '封禁') : '未激活'}}
               td(ng-if="user.mail_active && !user.disabled")
                 a(ng-click="active(user,true)") 封禁

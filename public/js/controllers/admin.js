@@ -35,6 +35,11 @@ function($routeProvider, $locationProvider) {
       controller: 'TeamController',
       controllerAs: 'team'
     })
+    // .when('/department', {
+    //   templateUrl: '/manager/department',
+    //   controller: 'DepartmentController',
+    //   controllerAs: 'department'
+    // })
     .when('/region', {
       templateUrl: '/manager/region',
       controller: 'RegionController',
@@ -250,6 +255,11 @@ adminApp.directive('datatable', ['$timeout', '$compile',
         };
     }
 ]);
+
+
+// adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
+//   function ($http, $scope, $rootScope)
+// ])
 adminApp.controller('UserController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     //返回第一个公司的所有员工
