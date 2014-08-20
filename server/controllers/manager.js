@@ -1,6 +1,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+  CompanyGroup = mongoose.model('CompanyGroup'),
+  User = mongoose.model('User'),
   Company = mongoose.model('Company'),
   Config = mongoose.model('Config'),
   mail = require('../service/mail'),
@@ -54,16 +56,40 @@ exports.companyModify = function(req,res){
   });
 }
 
-exports.getCompanyGroup = function(req, res) {
-
-};
-
+exports.disableAll = function(req,res){
+  var status = req.body.active;
+  var cid = req.body._id;
+  Company.findByIdAndUpdate({'_id':cid},{'$set':{'status.active':status}},function (err, company){
+    if(err || !company){
+      return res.send({'msg':'COMPANY_UPDATE_ERROR','result':0});
+    }else{
+      var tids = [];
+      for(var i = 0; i < company.team.length; i ++){
+        tids.push(company.team[i].id);
+      }
+      CompanyGroup.update({'_id':{'$in':tids}},{'$set':{'active':status}},{'multi':true},function (err,company_group){
+        if(err || !company_group){
+          return res.send({'msg':'TEAM_UPDATE_ERROR','result':0});
+        }else{
+          User.update({'cid':company._id},{'$set':{'disabled':!status}},{'multi':true},function (err,user){
+            if(err || !user){
+              return res.send({'msg':'USER_UPDATE_ERROR','result':0});
+            }else{
+              return res.send({'msg':'PERMISSION_UPDATE_SUCCESS','result':1});
+            }
+          });
+        }
+      });
+    }
+  });
+}
 
 exports.home = function(req,res){
   res.render('system/manager');
 }
 
 
+//发邮件激活公司
 exports.validate = function(req, res) {
   console.log(req.headers);
   var who = req.body.who,
@@ -95,10 +121,10 @@ exports.validate = function(req, res) {
 //根据公司名搜索公司
 exports.searchCompany = function (req, res) {
     if(req.body.all){
-      var condition = {'status.active':true};
+      var condition = null;
     }else{
       var regx = new RegExp(req.body.regx);
-      var condition = {'info.name':regx,'status.active':true};
+      var condition = {'info.name':regx};
     }
     var companies_rst = [];
     Company.find(condition, function (err, companies) {

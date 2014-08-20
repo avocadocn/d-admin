@@ -897,9 +897,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
             method: 'post',
             url: '/manager/active',
             data:{
-                operate : {
-                  'status.active':value
-                },
+                active: value,
                 _id : company_id
             }
         }).success(function(data, status) {

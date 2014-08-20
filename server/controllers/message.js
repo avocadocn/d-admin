@@ -187,6 +187,9 @@ exports.adminSendToAll = function(req,res){
   }
   var MC={
     'caption':'Message From Donler',
+    'specific_type':{
+      'value':0
+    },
     'content':content,
     'sender':[],
     'team':[],
