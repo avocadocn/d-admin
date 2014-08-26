@@ -8,7 +8,20 @@ var mongoose = require('mongoose'),
     validate = require('mongoose-validate'),
     crypto = require('crypto');
 
-
+var _device = new Schema({
+    platform:{
+        type:String,
+        enum:['Android','IOS','WindowsPhone','BlackBerry']
+    },
+    version:String,
+    device_id:String,
+    token:String,                  //只有APN推送才会用到
+    user_id:String,                //只有Android的百度云推送才会用到
+    update_date:{
+        type: Date,
+        default: Date.now
+    }
+});
 
 var _team = new Schema({
     gid: {
@@ -102,7 +115,8 @@ var UserSchema = new Schema({
     disabled:{
         type: Boolean,
         default: false
-    }
+    },
+    device:[_device]
 });
 
 /**

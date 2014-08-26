@@ -28,4 +28,5 @@ module.exports = function(app) {
     app.post('/manager/company/detail', authorization.requiresAdmin,manager.getCompanyDetail);
     app.post('/manager/validate', authorization.requiresAdmin,manager.validate);
     app.post('/manager/active', authorization.requiresAdmin,manager.disableAll);
+    app.post('/manager/edit/name', authorization.requiresAdmin,manager.editName);
 };

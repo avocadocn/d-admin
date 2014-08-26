@@ -53,6 +53,20 @@ textarea {
 textarea {
   resize: none;
 }
+.name_banner{
+  width:100%;
+}
+.name_banner .content{
+  width:95%;
+  float:left;
+}
+.name_banner .content .inputbox{
+  width:90%;
+}
+.name_banner .edit{
+  width:5%;
+  float:right;
+}
 .team_modal{
   width : 940px !important;
   margin-left : -200px !important;

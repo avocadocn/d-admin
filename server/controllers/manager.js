@@ -6,8 +6,23 @@ var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
   Config = mongoose.model('Config'),
   mail = require('../service/mail'),
+  sync = require('../service/synchronization'),
   UUID = require('../kit/uuid');
 
+
+
+
+
+exports.editName = function(req,res){
+  Company.update({'_id':req.body._id},{'$set':{'info.name':req.body.name}},function (err,company){
+    if(err || !company){
+      res.send({'msg':'COMPANY_NAME_UPDATE_FAILED','result':0});
+    }else{
+      sync.updateCompanyName(req.body.name,req.body._id);
+      return res.send({'msg':'COMPANY_NAME_UPDATE_SUCCEES','result':1});
+    }
+  });
+}
 exports.getComapnyBasicInfo = function(req, res) {
   Company.find(null,{'_id':1,'info.name':1,'info.membernumber':1,'department':1,'team':1,'login_email':1,'register_date':1,'status':1}).sort({'register_date':-1}).exec(function(err, companies) {
     if(err || !companies) {

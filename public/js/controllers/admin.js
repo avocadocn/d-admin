@@ -895,11 +895,52 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
 adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     $scope.detail_show = false;
+    $scope.edit = false;
+    $scope.has_edit = false;
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
+      for(var i = 0; i < $scope.companies.length; i ++){
+        $scope.companies.edit = false;
+      }
       $scope.company_num=$scope.companies.length;
     });
+
+
+
+    //修改公司名
+    $scope.editName = function(){
+      $scope.edit = !$scope.edit;
+    }
+    $scope.saveName = function(){
+      try{
+        $http({
+            method: 'post',
+            url: '/manager/edit/name',
+            data:{
+                name: $scope.info.name,
+                _id : $scope.cid
+            }
+        }).success(function(data, status) {
+          if(data.result === 1){
+            for(var i = 0 ; i < $scope.companies.length; i ++){
+              if($scope.companies[i]._id = $scope.cid){
+                $scope.companies[i].info.name = $scope.info.name;
+                break;
+              }
+            }
+            $scope.edit = !$scope.edit;
+          }else{
+            alert(data.msg);
+          }
+        });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
+
+
 
     $scope.active = function(value,company_id){
       try{
@@ -962,6 +1003,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
               }
           }).success(function(data, status) {
             $scope.info = data.info;
+            $scope.cid = company_id;
             $scope.detail_show = true;
             $scope.register_date = data.register_date;
             $scope.login_email = data.login_email;
