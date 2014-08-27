@@ -75,7 +75,7 @@ exports.PushTest = function(req,res){
   var counter = {
     i:0
   };
-  var sum = 10;
+  var sum = 3;
   async.whilst(
     function() { return counter.i < sum},
     function(__callback){
