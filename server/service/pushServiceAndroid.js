@@ -14,7 +14,7 @@ var PROTOCOL_SCHEMA = 'http://';
 var SERVER_HOST = 'channel.api.duapp.com';
 var COMMON_PATH = '/rest/2.0/channel/';
 //var URL_HEADER = PROTOCOL_SCHEMA + SERVER_HOST;
-var debug = true;
+var debug = false;
 
 /*
  * error message

@@ -27,7 +27,11 @@ var Config = new Schema({
     push:{
         baidu:{
             apiKey:String,
-            secretKey:String
+            secretKey:String,
+            single:{
+                type:Boolean,
+                default:true
+            }
         },
         apn:{
             gateway:String,

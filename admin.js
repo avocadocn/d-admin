@@ -33,3 +33,6 @@ logger.init(app, passport, mongoose);
 
 // Expose app
 exports = module.exports = app;
+
+
+//require('./server/service/schedule').init();
