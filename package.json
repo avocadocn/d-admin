@@ -49,8 +49,7 @@
     "mongoose-validate": "~0.0.5",
     "node-schedule":"latest",
     "apn": "latest",
-    "redis-node": "latest",
-    "async": "0.7.0"
+    "redis-node": "latest"
   },
   "devDependencies": {
     "assetmanager": "0.1.2",

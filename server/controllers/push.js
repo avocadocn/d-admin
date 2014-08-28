@@ -8,18 +8,18 @@ var mongoose = require('mongoose'),
     async = require('async'),
     User = mongoose.model('User');
 
-// var optionsAndroid = {
-//    ak: 'pSGg3PHKgD7vdah7eHDydQOu',
-//    sk: 'pcMcc3WnqQCPNi4GY4xXPXrBanNizo1z'
-// };
-
 var optionsAndroid = {
-   ak: 'C8aqWRQiPFlpcKsuL3Iru7d6',
-   sk: 'nyPPYGqDmybQcQyQlOeehLUZAXegfciP'
+   ak: 'pSGg3PHKgD7vdah7eHDydQOu',
+   sk: 'pcMcc3WnqQCPNi4GY4xXPXrBanNizo1z'
 };
 
+// var optionsAndroid = {
+//    ak: 'C8aqWRQiPFlpcKsuL3Iru7d6',
+//    sk: 'nyPPYGqDmybQcQyQlOeehLUZAXegfciP'
+// };
+
 var optionsIOS = {
-  gateway: 'gateway.push.apple.com',
+  gateway: 'gateway.sandbox.push.apple.com',
   cert: rootConfig.root+'/server/service/PushChatCert.pem',
   key:  rootConfig.root+'/server/service/PushChatKey.pem',
   passphrase: '55yali',
@@ -55,8 +55,9 @@ exports.PushTest = function(req,res){
   var opt = {
     message_type:1,
     push_type: 1,
-    user_id: '1125800188872535509',
+    //user_id: '1125800188872535509',
     //user_id: '873187148634115400',
+    user_id: '660104886647897117',
     messages: JSON.stringify({'title':'这是标题','description':'这是内容'}),
     msg_keys: 'nick667'
   }
@@ -206,6 +207,7 @@ var _push = function(users,msg,out_counter,out_callback){
 }
 //自动判断用户手机平台,推送对应格式的消息
 exports.pushCampaign = function(members,msg,out_counter,out_callback){
+  // 生产模式
   // var uids = [];
   // if(members){
   //   for(var i = 0; i < members.length; i ++){
@@ -228,6 +230,8 @@ exports.pushCampaign = function(members,msg,out_counter,out_callback){
   //   out_counter.i++;
   //   out_callback();
   // }
+
+  // 测试模式
   var users = [{
     '_id':'0',
     'nickname':'a',

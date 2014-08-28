@@ -1,4 +1,4 @@
-var apn = require('apn');
+//var apn = require('apn');
 var rootConfig = require('../config/config');
 
 
@@ -37,55 +37,55 @@ var rootConfig = require('../config/config');
 
 
 function Push(options){
-  var self = this;
-  self.connect_options = options;
-  self.connect_options.errorCallback = function(errorNum, notification){
-    console.log('Error is: %s', errorNum);
-    console.log("Note " + notification);
-  }
-  self.apnsConnection = new apn.Connection(self.connect_options);
+  // var self = this;
+  // self.connect_options = options;
+  // self.connect_options.errorCallback = function(errorNum, notification){
+  //   console.log('Error is: %s', errorNum);
+  //   console.log("Note " + notification);
+  // }
+  // self.apnsConnection = new apn.Connection(self.connect_options);
 
   //console.log(self.apnsConnection);
 }
 
 Push.prototype.pushMsg = function (alert,payload,token,callback,counter,__callback) {
-  var self = this;
-  self.note = new apn.Notification();
-  self.device_token = token;
-  self.myDevice = new apn.Device(self.device_token);
-  self.note.device = self.myDevice;
-  self.note.badge = 1;
-  //self.note.sound = "notification-beep.wav";
-  self.note.alert = alert;
-  self.note.payload = payload;
-  var send = false;
-  if(self.apnsConnection){
-    self.apnsConnection.sendNotification(self.note);
-    self.apnsConnection.on('connected',function() {
-      //console.log("Connected");
-      //if(!send){callback({'msg':'NULL','status':'CONNECTED'});send=true;}
-    });
-    self.apnsConnection.on('transmitted',function(notification, device) {
-      //console.log("Notificationtransmitted to:" + device.token.toString('hex'));
-      //if(!send){callback({'msg':'Connected','status':'TRANSMITTED','data':device.token.toString('hex')});send=true;}
-    });
-    self.apnsConnection.on('transmissionError',function(errCode, notification, device) {
-      console.error("Notificationcaused error: " + errCode + " for device ",device,notification);
-      if(!send){callback({'msg':'NOTIFICATIONCAUSED ERROR','status':'ERROR','err_code':errCode},counter,__callback);send=true;}
-    });
-    self.apnsConnection.on('timeout',function () {
-      console.log("ConnectionTimeout");
-      if(!send){callback({'msg':'CONNECTION_TIMEOUT','status':'TIMEOUT'},counter,__callback);send=true}
-    });
-    self.apnsConnection.on('disconnected',function() {
-      console.log("Disconnectedfrom APNS");
-      if(!send){callback({'msg':'DISCONNECTED_FROM_APN_SERVER','status':'DISCONNECTED'},counter,__callback);send=true;}
-    });
-    self.apnsConnection.on('socketError',function(){
-      console.log({'msg':'SOCKET_ERROR','status':'ERROR'});
-      if(!send){callback({'msg':'SOCKET_ERROR','status':'ERROR'},counter,__callback);send=true;}
-    });
-  }
+  // var self = this;
+  // self.note = new apn.Notification();
+  // self.device_token = token;
+  // self.myDevice = new apn.Device(self.device_token);
+  // self.note.device = self.myDevice;
+  // self.note.badge = 1;
+  // //self.note.sound = "notification-beep.wav";
+  // self.note.alert = alert;
+  // self.note.payload = payload;
+  // var send = false;
+  // if(self.apnsConnection){
+  //   self.apnsConnection.sendNotification(self.note);
+  //   self.apnsConnection.on('connected',function() {
+  //     //console.log("Connected");
+  //     //if(!send){callback({'msg':'NULL','status':'CONNECTED'});send=true;}
+  //   });
+  //   self.apnsConnection.on('transmitted',function(notification, device) {
+  //     //console.log("Notificationtransmitted to:" + device.token.toString('hex'));
+  //     //if(!send){callback({'msg':'Connected','status':'TRANSMITTED','data':device.token.toString('hex')});send=true;}
+  //   });
+  //   self.apnsConnection.on('transmissionError',function(errCode, notification, device) {
+  //     console.error("Notificationcaused error: " + errCode + " for device ",device,notification);
+  //     if(!send){callback({'msg':'NOTIFICATIONCAUSED ERROR','status':'ERROR','err_code':errCode},counter,__callback);send=true;}
+  //   });
+  //   self.apnsConnection.on('timeout',function () {
+  //     console.log("ConnectionTimeout");
+  //     if(!send){callback({'msg':'CONNECTION_TIMEOUT','status':'TIMEOUT'},counter,__callback);send=true}
+  //   });
+  //   self.apnsConnection.on('disconnected',function() {
+  //     console.log("Disconnectedfrom APNS");
+  //     if(!send){callback({'msg':'DISCONNECTED_FROM_APN_SERVER','status':'DISCONNECTED'},counter,__callback);send=true;}
+  //   });
+  //   self.apnsConnection.on('socketError',function(){
+  //     console.log({'msg':'SOCKET_ERROR','status':'ERROR'});
+  //     if(!send){callback({'msg':'SOCKET_ERROR','status':'ERROR'},counter,__callback);send=true;}
+  //   });
+  // }
 }
 
 module.exports = Push;
