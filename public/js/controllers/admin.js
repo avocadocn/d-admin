@@ -906,7 +906,32 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
       $scope.company_num=$scope.companies.length;
     });
 
-
+    $scope.testPW = function(){
+      try{
+        $http({
+            method: 'post',
+            url: 'http://cp.pushwoosh.com/json/1.3/createMessage',
+            data:{
+                'application':'B13D4-3532F',
+                'auth':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073',
+                'notifications':{
+                  'send_date':new Date(),
+                  'content':'信刚你收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗',
+                  'link':'http://pushwoosh.com/'
+                }
+            },
+            headers: {
+              'Content-Type':'application/json',
+              'Access-Control-Allow-Origin':'*'
+             }
+        }).success(function(data, status) {
+          console.log(data);
+        });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
 
     //修改公司名
     $scope.editName = function(){
