@@ -64,6 +64,11 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/manager/error',
       controller: 'ErrorController',
       controllerAs: 'error',
+    })
+    .when('/app', {
+      templateUrl: '/manager/app',
+      controller: 'AppController',
+      controllerAs: 'app',
     }).
     otherwise({
       redirectTo: '/parameter'
@@ -255,6 +260,89 @@ adminApp.directive('datatable', ['$timeout', '$compile',
         };
     }
 ]);
+
+
+
+
+
+
+// adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
+//   function ($http, $scope, $rootScope)
+// ])
+adminApp.controller('AppController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
+    //返回第一个公司的所有员工
+    $scope.first = true;
+    $scope.company_selected = null;
+    $scope.push_status = {
+      value:'on'
+    };
+
+    $scope.baidu = {
+      ak:'',
+      sk:''
+    }
+
+    $scope.apn = {
+      gateway:'',
+      cert_path:'',
+      key_path:'',
+      passphrase:'',
+      port:0
+    }
+
+    $scope.app_users = [];
+
+    var god = function(scope,per,http,path,operate,method){
+      try{
+          http({
+              method: method,
+              url: '/app/'+path,
+              data:{
+                data : scope[per],
+                operate : operate
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              scope[per] = data.data;
+            }else{
+              alert(data.msg);
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
+    //用户设备信息
+    $scope.info = function(){
+      god($scope,'app_users',$http,'info','get','get');
+    }
+
+    //苹果推送设置
+    $scope.apn = function(operate){
+      god($scope,'apn',$http,'apn',operate,'post');
+    }
+
+    //百度推送设置
+    $scope.baidu = function(operate){
+      god($scope,'baidu',$http,'baidu',operate,'post');
+    }
+
+    $scope.pushConfig = function(operate){
+      god($scope,'push_status',$http,'config',operate,'post');
+    }
+
+    $scope.info();
+    $scope.apn('get');
+    $scope.baidu('get');
+    $scope.pushConfig('get');
+}]);
+
+
 
 
 // adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
@@ -905,33 +993,6 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
       }
       $scope.company_num=$scope.companies.length;
     });
-
-    $scope.testPW = function(){
-      try{
-        $http({
-            method: 'post',
-            url: 'http://cp.pushwoosh.com/json/1.3/createMessage',
-            data:{
-                'application':'B13D4-3532F',
-                'auth':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073',
-                'notifications':{
-                  'send_date':new Date(),
-                  'content':'信刚你收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗',
-                  'link':'http://pushwoosh.com/'
-                }
-            },
-            headers: {
-              'Content-Type':'application/json',
-              'Access-Control-Allow-Origin':'*'
-             }
-        }).success(function(data, status) {
-          console.log(data);
-        });
-      }
-      catch(e){
-          console.log(e);
-      }
-    }
 
     //修改公司名
     $scope.editName = function(){

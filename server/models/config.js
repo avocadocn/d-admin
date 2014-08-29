@@ -31,8 +31,8 @@ var Config = new Schema({
             default:'off'
         },
         baidu:{
-            apiKey:String,
-            secretKey:String,
+            ak:String,
+            sk:String,
             single:{
                 type:Boolean,
                 default:true

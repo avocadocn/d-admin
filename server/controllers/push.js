@@ -128,6 +128,7 @@ var clientAndroid = null;
 
 
 var _push = function(users,msg,out_callback){
+  console.log(11111,out_callback);
   var user_id_or_tokens = [];
   //第一步:获取参加活动的所有成员,取出他们的设备推送码(token或者user_id)
   for(var i = 0 ; i < users.length; i ++){
@@ -165,18 +166,18 @@ var _push = function(users,msg,out_callback){
   if(user_id_or_tokens.length > 0){
     //第二步:分别定义IOS和Android的推送信息头
 
-    var body = {
-      'application':optionsIOS.application,
-      'auth':null,
-      'notifications':{
-        'send_date':new Date(),
-        'content':msg.body,
-        'data':{
-          'custom':'json data'
-        },
-        'link':optionsIOS.link
-      }
-    }
+    // var body = {
+    //   'application':optionsIOS.application,
+    //   'auth':null,
+    //   'notifications':{
+    //     'send_date':new Date(),
+    //     'content':msg.body,
+    //     'data':{
+    //       'custom':'json data'
+    //     },
+    //     'link':optionsIOS.link
+    //   }
+    // }
 
     var body = {
       'alert':{'body':msg.body},
@@ -231,14 +232,14 @@ var _push = function(users,msg,out_callback){
           value = ({'result':1,'msg':'PUSH_SUCCESS'});
         }
         if(out_callback){
-          console.log(value);
+          console.log(22222,out_callback);
           out_callback(value);
         }
       }
     );
   }else{
     if(out_callback){
-      out_counter.i ++;
+      if(out_counter)out_counter.i ++;
       out_callback({'result':1,'msg':'PUSH_OVER'});
     }
   }
@@ -254,47 +255,50 @@ exports.pushCampaign = function(req,res){
 
   var key = eval('('+req.body.key+')');
   if(key.campaign_id_key == encrypt.encrypt(key.campaign_id,secret.SECRET)){
-    // 生产模式
-    // var uids = [];
-    // if(members){
-    //   for(var i = 0; i < members.length; i ++){
-    //     uids.push(members[i]._id);
-    //   }
+    //生产模式
+    var uids = [];
+    if(members){
+      for(var i = 0; i < members.length; i ++){
+        uids.push(members[i]._id);
+      }
 
-    //   // User.find({'_id':{'$in':uids}},{'_id':1,'device':1},function(err,users){
-    //   //   if(err || !users){
-    //   //     return res.send({'msg':'USER_NOT_FOUND','result':0});
-    //   //   }else{
-    //   //     var msg = {
-    //   //       body:req.body.body,
-    //   //       title:req.body.title,
-    //   //       description:req.body.description
-    //   //     }
-    //   //     _push(users,res,msg);
-    //   //   }
-    //   // });
-    // }else{
-    //   out_counter.i++;
-    //   out_callback();
-    // }
+      User.find({'_id':{'$in':uids}},{'_id':1,'device':1},function(err,users){
+        if(err || !users){
+          return res.send({'msg':'USER_NOT_FOUND','result':0});
+        }else{
+          var msg = {
+            body:req.body.body,
+            title:req.body.title,
+            description:req.body.description
+          }
+          _push(users,msg,function(data){return res.send(data);});
+        }
+      });
+    }else{
+      return res.send({'msg':'NO_USER','result':1});
+    }
 
     // 测试模式
-    var users = [{
-      '_id':'0',
-      'nickname':'a',
-      'device':[{
-        'platform':'Android',
-        'user_id':'1125800188872535509'
-      }]},{
-      '_id':'1',
-      'nickname':'b',
-      'device':[{
-        'platform':'IOS',
-        'token':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073'
-      }]
-    }
-    ];
-    _push(users,msg,function(data){return res.send(data);});
+    // var users = [{
+    //   '_id':'0',
+    //   'nickname':'a',
+    //   'device':[{
+    //     'platform':'Android',
+    //     'user_id':'1125800188872535509'
+    //   }]},{
+    //   '_id':'1',
+    //   'nickname':'b',
+    //   'device':[{
+    //     'platform':'IOS',
+    //     'token':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073'
+    //   }]
+    // }
+    // ];
+    // var ballback = function(data){
+    //   return res.send(data);
+    // };
+    //console.log(ballback);
+    //_push(users,msg,ballback);
   }else{
     res.send({'msg':'PUSH_PERMISSION_DENNIED!','result':0});
   }
