@@ -983,8 +983,8 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
 adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     $scope.detail_show = false;
-    $scope.edit = false;
-    $scope.has_edit = false;
+    $scope.nameEdit = false;
+    $scope.domainEdit = false;
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;
@@ -996,7 +996,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
 
     //修改公司名
     $scope.editName = function(){
-      $scope.edit = !$scope.edit;
+      $scope.nameEdit = !$scope.nameEdit;
     }
     $scope.saveName = function(){
       try{
@@ -1015,7 +1015,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
                 break;
               }
             }
-            $scope.edit = !$scope.edit;
+            $scope.nameEdit = false;
           }else{
             alert(data.msg);
           }
@@ -1025,8 +1025,45 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
           console.log(e);
       }
     }
-
-
+    $scope.addDomain = function () {
+      $scope.domainEdit = true;
+      $scope.emailDomains.push('');
+    }
+    $scope.removeDomain = function (index) {
+      $scope.domainEdit = true;
+      $scope.emailDomains.splice(index,1);
+    }
+    $scope.saveDomain = function () {
+      var tempDomain = {};
+      for(var i=0;i<$scope.emailDomains.length;i++){
+        if($scope.emailDomains[i].length>0){
+          tempDomain[$scope.emailDomains[i]] = $scope.emailDomains[i];
+        }
+      }
+      $scope.emailDomains = [];
+      for(var j in tempDomain){
+        $scope.emailDomains.push(j);
+      }
+      try{
+        $http({
+            method: 'post',
+            url: '/manager/edit/domain',
+            data:{
+                domain: $scope.emailDomains,
+                _id : $scope.cid
+            }
+        }).success(function(data, status) {
+          if(data.result === 1){
+            $scope.domainEdit = false;
+          }else{
+            alert(data.msg);
+          }
+        });
+      }
+      catch(e){
+          console.log(e);
+      }
+    }
 
     $scope.active = function(value,company_id){
       try{
@@ -1089,10 +1126,13 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
               }
           }).success(function(data, status) {
             $scope.info = data.info;
+            $scope.emailDomains = data.email.domain;
             $scope.cid = company_id;
             $scope.detail_show = true;
             $scope.register_date = data.register_date;
             $scope.login_email = data.login_email;
+            $scope.nameEdit = false;
+            $scope.domainEdit = false;
             $('#companyDetailModal').modal();
           }).error(function(data, status) {
               //TODO:更改对话框

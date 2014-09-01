@@ -12,15 +12,25 @@
             .info_side
               span.control-label 公司名:
             .info_detail
-              span.info_label(ng-if='!edit') {{info.name}}
-              input.info_label(ng-if='edit' ng-model="info.name")
-              a(ng-if='!edit' ng-click='editName()') 编辑
-              a(ng-if='edit' ng-click = 'saveName()') 保存
+              span.info_label(ng-if='!namedit') {{info.name}}
+              input.info_label(ng-if='nameEdit' ng-model="info.name")
+              a(ng-if='!nameEdit' ng-click='editName()') 编辑
+              a(ng-if='nameEdit' ng-click = 'saveName()') 保存
           .dl_modal_container.clearfix
             .info_side
               span.control-label 官方公司名:
             .info_detail
               span.info_label {{info.official_name}}
+          .dl_modal_container.clearfix
+            .info_side
+              span.control-label 邮箱后缀:
+            .info_detail
+              .domain_container(ng-repeat="domain in emailDomains track by $index")
+                span.info_label(ng-if='!domainEdit') {{emailDomains[$index]}}
+                input.info_label(ng-if='domainEdit' ng-model="emailDomains[$index]")
+                a(ng-click='removeDomain($index)') 删除
+              a(ng-click='addDomain()') 添加
+              a.pull-right(ng-if='domainEdit' ng-click = 'saveDomain()') 保存
           .dl_modal_container.clearfix
             .info_side
               span.control-label 地区:

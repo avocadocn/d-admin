@@ -31,4 +31,5 @@ module.exports = function(app) {
     app.post('/manager/validate', authorization.requiresAdmin,manager.validate);
     app.post('/manager/active', authorization.requiresAdmin,manager.disableAll);
     app.post('/manager/edit/name', authorization.requiresAdmin,manager.editName);
+    app.post('/manager/edit/domain', authorization.requiresAdmin,manager.editDomain);
 };

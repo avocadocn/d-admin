@@ -23,6 +23,15 @@ exports.editName = function(req,res){
     }
   });
 }
+exports.editDomain = function (req,res) {
+  Company.update({'_id':req.body._id},{'$set':{'email.domain':req.body.domain}},function (err,company){
+    if(err || !company){
+      res.send({'msg':'COMPANY_NAME_UPDATE_FAILED','result':0});
+    }else{
+      return res.send({'msg':'COMPANY_NAME_UPDATE_SUCCEES','result':1});
+    }
+  });
+}
 exports.getComapnyBasicInfo = function(req, res) {
   Company.find(null,{'_id':1,'info.name':1,'info.membernumber':1,'department':1,'team':1,'login_email':1,'register_date':1,'status':1}).sort({'register_date':-1}).exec(function(err, companies) {
     if(err || !companies) {
@@ -51,7 +60,7 @@ function countDepartment(p_department,num) { //p_department为数组
 
 exports.getCompanyDetail = function(req, res) {
   var _id = req.body._id;
-  Company.findOne({'_id': _id},{'info':1,'register_date':1,'login_email':1},function(err, company_info) {
+  Company.findOne({'_id': _id},{'info':1,'register_date':1,'login_email':1,'email':1},function(err, company_info) {
     if(err || !company_info) {
       return res.send([]);
     } else {
