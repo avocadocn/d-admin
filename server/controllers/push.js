@@ -239,7 +239,7 @@ var _push = function(users,msg,out_callback){
     );
   }else{
     if(out_callback){
-      if(out_counter)out_counter.i ++;
+      if(counter) counter.i ++;
       out_callback({'result':1,'msg':'PUSH_OVER'});
     }
   }
