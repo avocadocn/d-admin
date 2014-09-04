@@ -19,7 +19,7 @@ var optionsAndroid = {
 // };
 
 var optionsIOS = {
-  gateway: 'gateway.push.apple.com',
+  gateway: 'gateway.sandbox.push.apple.com',
   cert: rootConfig.root+'/server/service/PushChatCert.pem',
   key:  rootConfig.root+'/server/service/PushChatKey.pem',
   passphrase: '55yali',
@@ -146,10 +146,10 @@ var _push = function(users,msg,out_callback){
             clientAndroid = new PushAndroid(optionsAndroid);
           }
         }
-        if(users[i].device[j].platform == 'IOS'){
+        if(users[i].device[j].platform == 'iOS'){
 
           user_id_or_tokens.push({
-            'platform':'IOS',
+            'platform':'iOS',
             '_id':users[i]._id,
             'nickname':users[i].nickname,
             'target':users[i].device[j].token
@@ -208,7 +208,7 @@ var _push = function(users,msg,out_callback){
     async.whilst(
       function() { return counter.i < sum},
       function(__callback){
-        if(user_id_or_tokens[counter.i].platform == 'IOS'){
+        if(user_id_or_tokens[counter.i].platform == 'iOS'){
           body.token = user_id_or_tokens[counter.i].target;
           cilentIOS.pushMsg(body,out_callback,counter,__callback);
         }
