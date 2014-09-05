@@ -128,7 +128,6 @@ var clientAndroid = null;
 
 
 var _push = function(users,msg,out_callback){
-  console.log(11111,out_callback);
   var user_id_or_tokens = [];
   //第一步:获取参加活动的所有成员,取出他们的设备推送码(token或者user_id)
   for(var i = 0 ; i < users.length; i ++){
@@ -142,7 +141,7 @@ var _push = function(users,msg,out_callback){
             'target':users[i].device[j].user_id
           });
           //第一次初始化
-          if(clientAndroid == null || clientAndroid == undefined){
+          if(!clientAndroid){
             clientAndroid = new PushAndroid(optionsAndroid);
           }
         }
@@ -155,7 +154,7 @@ var _push = function(users,msg,out_callback){
             'target':users[i].device[j].token
           });
           //第一次初始化
-          if(clientIOS == null || clientIOS == undefined){
+          if(!clientIOS){
             cilentIOS = new PushIOS(optionsIOS);
           }
         }
@@ -195,51 +194,73 @@ var _push = function(users,msg,out_callback){
 
     //console.log(msg.description);
 
-    //第三步:依次同步推送给所有成员的所有设备
-    var callback = function(data,counter,__callback){
-      counter.i++;
-      __callback();
-      console.log(data);
-    }
-    var counter = {
-      i:0
-    };
-    var sum = user_id_or_tokens.length;
-    async.whilst(
-      function() { return counter.i < sum},
-      function(__callback){
-        if(user_id_or_tokens[counter.i].platform == 'iOS'){
-          body.token = user_id_or_tokens[counter.i].target;
-          cilentIOS.pushMsg(body,out_callback,counter,__callback);
-        }
-        if(user_id_or_tokens[counter.i].platform == 'Android'){
-          opt.user_id = user_id_or_tokens[counter.i].target;
-          clientAndroid.pushMsg(opt, function(err, result) {
-            if (err) {
-              console.log(err);
-              callback({'msg':'CAMPAIGN_PUSH_ERROR','result':0,'data':result},counter,__callback);
-            }else{
-              callback({'msg':'CAMPAIGN_PUSH_SUCCESS','result':1,'data':result},counter,__callback);
-            }
-          })
-        }
-      },
-      function(err){
-        var value;
-        if(err){
-          value = ({'result':0,'msg':'PUSH_FAILURED'});
-        }else{
-          value = ({'result':1,'msg':'PUSH_SUCCESS'});
-        }
-        if(out_callback){
-          console.log(22222,out_callback);
-          out_callback(value);
-        }
+    // //第三步:依次同步推送给所有成员的所有设备
+    // var callback = function(data,counter,__callback){
+    //   counter.i++;
+    //   __callback();
+    //   console.log(data);
+    // }
+    // var counter = {
+    //   i:0
+    // };
+    // var sum = user_id_or_tokens.length;
+    // async.whilst(
+    //   function() { return counter.i < sum},
+    //   function(__callback){
+    //     if(user_id_or_tokens[counter.i].platform == 'iOS'){
+    //       body.token = user_id_or_tokens[counter.i].target;
+    //       cilentIOS.pushMsg(body,out_callback,counter,__callback);
+    //     }
+    //     if(user_id_or_tokens[counter.i].platform == 'Android'){
+    //       opt.user_id = user_id_or_tokens[counter.i].target;
+    //       clientAndroid.pushMsg(opt, function(err, result) {
+    //         if (err) {
+    //           console.log(err);
+    //           callback({'msg':'CAMPAIGN_PUSH_ERROR','result':0,'data':result},counter,__callback);
+    //         }else{
+    //           callback({'msg':'CAMPAIGN_PUSH_SUCCESS','result':1,'data':result},counter,__callback);
+    //         }
+    //       })
+    //     }
+    //   },
+    //   function(err){
+    //     var value;
+    //     if(err){
+    //       value = ({'result':0,'msg':'PUSH_FAILURED'});
+    //     }else{
+    //       value = ({'result':1,'msg':'PUSH_SUCCESS'});
+    //     }
+    //     if(out_callback){
+    //       out_callback(value);
+    //     }
+    //   }
+    // );
+
+    async.map(user_id_or_tokens, function(user_id_or_token, callback) {
+      if(user_id_or_token.platform == 'iOS'){
+        body.token = user_id_or_token.target;
+        // TO DO: 暂不改动clientIOS，先省略后几个参数，不可把out_callback传入
+        cilentIOS.pushMsg(body, function(result) {
+          console.log(result);
+        });
+      } else if(user_id_or_token.platform == 'Android'){
+        opt.user_id = user_id_or_token.target;
+        clientAndroid.pushMsg(opt, function(err, result) {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
-    );
+
+      // 无论成功与否，只要执行过pushMsg就视为推送任务结束，结果另行处理
+      callback(null, user_id_or_token);
+    }, function(err, result) {
+      out_callback({'result':1,'msg':'PUSH_OVER'});
+    })
+
+
   }else{
     if(out_callback){
-      if(counter) counter.i ++;
       out_callback({'result':1,'msg':'PUSH_OVER'});
     }
   }
