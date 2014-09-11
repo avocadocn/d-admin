@@ -131,7 +131,7 @@ var _push = function(users,msg,out_callback){
   var user_id_or_tokens = [];
   //第一步:获取参加活动的所有成员,取出他们的设备推送码(token或者user_id)
   for(var i = 0 ; i < users.length; i ++){
-    if(users[i].device){
+    if(!users[i].push_toggle&&users[i].device){
       for(var j = 0; j < users[i].device.length; j ++){
         if(users[i].device[j].platform == 'Android'){
           user_id_or_tokens.push({
@@ -283,7 +283,7 @@ exports.pushCampaign = function(req,res){
         uids.push(members[i]._id);
       }
 
-      User.find({'_id':{'$in':uids}},{'_id':1,'device':1},function(err,users){
+      User.find({'_id':{'$in':uids}},{'_id':1,'device':1,'push_toggle':1},function(err,users){
         if(err || !users){
           return res.send({'msg':'USER_NOT_FOUND','result':0});
         }else{
