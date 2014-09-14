@@ -119,8 +119,6 @@ exports.validate = function(req, res) {
   var who = req.body.who,
       name = req.body.name,
       _id = req.body._id;
-  //console.log(who,name,_id,req.headers.host);
-  //mail.sendCompanyActiveMail(who, name, _id, req.header.host);
   Company.update({'_id':_id},{'$set':{'status.date':new Date().getTime()}},function (err, company){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILUTRE!','result':0});
@@ -130,15 +128,19 @@ exports.validate = function(req, res) {
           console.log(err);
           return res.send({'msg':'MAIL_SEND_FAILUTRE!','result':0});
         } else {
-          //mail.sendCompanyActiveMail(who, name, _id, config.host.product);
-          webpower.sendCompanyActiveMail(who, _id, config.host.product, function (err) {
-            if (err) {
-              console.log(err);
-              return res.send({'msg':'MAIL_SEND_FAILUTRE!','result':0});
-            } else {
-              return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
-            }
-          });
+          if (!config.smtp || config.smtp === 'webpower') {
+            webpower.sendCompanyActiveMail(who, _id, config.host.product, function (err) {
+              if (err) {
+                console.log(err);
+                return res.send({'msg':'MAIL_SEND_FAILUTRE!','result':0});
+              } else {
+                return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
+              }
+            });
+          } else {
+            mail.sendCompanyActiveMail(who, name, _id, config.host.product);
+            return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
+          }
         }
       });
     }
