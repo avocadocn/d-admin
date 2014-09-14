@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
   Config = mongoose.model('Config'),
   mail = require('../service/mail'),
+  webpower = require('../service/webpower'),
   sync = require('../service/synchronization'),
   UUID = require('../kit/uuid');
 
@@ -115,7 +116,6 @@ exports.home = function(req,res){
 
 //发邮件激活公司
 exports.validate = function(req, res) {
-  console.log(req.headers);
   var who = req.body.who,
       name = req.body.name,
       _id = req.body._id;
@@ -130,8 +130,15 @@ exports.validate = function(req, res) {
           console.log(err);
           return res.send({'msg':'MAIL_SEND_FAILUTRE!','result':0});
         } else {
-          mail.sendCompanyActiveMail(who, name, _id, config.host.product);
-          return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
+          //mail.sendCompanyActiveMail(who, name, _id, config.host.product);
+          webpower.sendCompanyActiveMail(who, _id, config.host.product, function (err) {
+            if (err) {
+              console.log(err);
+              return res.send({'msg':'MAIL_SEND_FAILUTRE!','result':0});
+            } else {
+              return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
+            }
+          });
         }
       });
     }
