@@ -118,3 +118,53 @@ exports.init = function(req, res) {
     else res.send({ r: 'init success' });
   });
 };
+
+exports.getSMTP = function (req, res) {
+  Config.findOne({ name: 'admin' }).exec()
+  .then(function (config) {
+    if (!config) {
+      return res.send({ result: 0, msg: '获取失败' });
+    }
+    if (!config.smtp) {
+      config.smtp = 'webpower';
+      config.save(function (err) {
+        if (err) {
+          console.log(err);
+          res.send({ result: 0, msg: '获取失败' });
+        } else {
+          res.send({ result: 1, smtp: config.smtp });
+        }
+      });
+    } else {
+      res.send({ result: 1, smtp: config.smtp });
+    }
+  })
+  .then(null, function (err) {
+    console.log(err);
+    res.send({ result: 0, msg: '获取失败' });
+  });
+};
+
+exports.setSMTP = function (req, res) {
+  Config.findOne({ name: 'admin' }).exec()
+  .then(function (config) {
+    if (!config) {
+      return res.send({ result: 0, msg: '设置失败' });
+    }
+    config.smtp = req.body.smtp;
+    config.save(function (err) {
+      if (err) {
+        console.log(err);
+        res.send({ result: 0, msg: '设置失败' });
+      } else {
+        res.send({ result: 1 });
+      }
+    })
+  })
+  .then(null, function (err) {
+    console.log(err);
+    res.send({ result: 0, msg: '设置失败' });
+  });
+};
+
+

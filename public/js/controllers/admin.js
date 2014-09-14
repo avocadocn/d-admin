@@ -977,6 +977,30 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
           alert('数据发生错误!');
       });
     }
+
+    $http.get('/admin/smtp').success(function (data, status) {
+      if (data.result === 1) {
+        $scope.smtp = data.smtp;
+      } else {
+        alert(data.msg);
+      }
+    }).error(function (data, status) {
+      alert('数据发生错误!');
+    });
+
+    $scope.setSMTP = function () {
+      $http.post('/admin/smtp', { smtp: $scope.smtp }).success(function (data, status) {
+        if (data.result === 1) {
+          alert('设置成功');
+        } else {
+          alert(data.msg);
+        }
+      }).error(function (data, status) {
+        alert('数据发生错误!');
+      });
+
+    };
+
 }]);
 
 

@@ -16,5 +16,11 @@
             input.dl_modal_input.form-control(type="text" ng-model="host.product")
           .dl_md_1.dl_vertical
             button.dl_btn.dl_btn_right(ng-click="setHost(1,host.product)") 修改
+      div
+        label SMTP:
+        select(ng-model="smtp")
+          option 163
+          option webpower
+        button(ng-click="setSMTP()") 确定
     .inner
       include ../system/setting

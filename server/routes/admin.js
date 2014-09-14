@@ -19,4 +19,7 @@ module.exports = function(app,passport) {
       failureFlash: true
   }),  admin.loginSuccess);
   app.get('/init', authorization.requiresAdmin, admin.init);
+
+  app.get('/admin/smtp', authorization.requiresAdmin, admin.getSMTP);
+  app.post('/admin/smtp', authorization.requiresAdmin, admin.setSMTP);
 };
