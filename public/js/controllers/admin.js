@@ -901,18 +901,17 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     $scope.code_open = {
       value : ''
-    }
+    };
     $scope.host = {
       'admin':'无',
       'product':'无'
-    }
+    };
     $http.get('/admin/host/get').success(function(data, status) {
-      $scope.host = data;
-      if(!$scope.host.admin) {
-        $scope.host = {
-          'admin':'无',
-          'product':'无'
-        }
+      if (data.admin) {
+        $scope.host.admin = data.admin;
+      }
+      if (data.product) {
+        $scope.host.product = data.product;
       }
       $http.get('/system/getcode').success(function (data, status) {
         $scope.codes = data.codes;
@@ -930,7 +929,8 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
               url: '/admin/host/set',
               data:{
                   host_type : type,
-                  host_value : type == 0 ? $scope.host.admin : $scope.host.product
+                  //host_value : type == 0 ? $scope.host.admin : $scope.host.product
+                  host_value: value
               }
           }).success(function(data, status) {
             window.location.reload();
