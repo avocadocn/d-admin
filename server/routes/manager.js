@@ -13,7 +13,6 @@ module.exports = function(app) {
     var campaign = require('../controllers/campaign');
     var department = require('../controllers/department');
     var authorization = require('../routes/middlewares/authorization.js');
-
     app.get('/manager/home', authorization.requiresAdmin,manager.home);
     app.get('/manager/parameter', authorization.requiresAdmin,parameter.home);
     app.get('/manager/message', authorization.requiresAdmin,message.home);

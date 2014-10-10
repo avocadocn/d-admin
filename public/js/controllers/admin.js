@@ -69,8 +69,13 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/manager/app',
       controller: 'AppController',
       controllerAs: 'app',
-    }).
-    otherwise({
+    })
+    .when('/report', {
+      templateUrl: '/report/home',
+      controller: 'ReportController',
+      controllerAs: 'report',
+    })
+    .otherwise({
       redirectTo: '/parameter'
     });
 }]);
@@ -134,35 +139,63 @@ adminApp.filter('day', function() {
   }
 });
 adminApp.filter('week', function() {
-return function(input) {
-// input will be ginger in the usage below
-switch(new Date(input).getDay()){
-  case 0:
-  input = '周日';
-  break;
-  case 1:
-  input = '周一';
-  break;
-  case 2:
-  input = '周二';
-  break;
-  case 3:
-  input = '周三';
-  break;
-  case 4:
-  input = '周四';
-  break;
-  case 5:
-  input = '周五';
-  break;
-  case 6:
-  input = '周六';
-  break;
-  default:
-  input = '';
-}
-return input;
-}
+  return function(input) {
+    // input will be ginger in the usage below
+    switch(new Date(input).getDay()){
+      case 0:
+      input = '周日';
+      break;
+      case 1:
+      input = '周一';
+      break;
+      case 2:
+      input = '周二';
+      break;
+      case 3:
+      input = '周三';
+      break;
+      case 4:
+      input = '周四';
+      break;
+      case 5:
+      input = '周五';
+      break;
+      case 6:
+      input = '周六';
+      break;
+      default:
+      input = '';
+    }
+    return input;
+  }
+});
+adminApp.filter('reportMap', function() {
+  return function(mapType) {
+    // input will be ginger in the usage below
+    switch(mapType){
+      case 0:
+      mapType = '淫秽色情';
+      break;
+      case 1:
+      mapType = '敏感信息';
+      break;
+      case 2:
+      mapType = '垃圾营销';
+      break;
+      case 3:
+      mapType = '诈骗';
+      break;
+      case 4:
+      mapType = '人身攻击';
+      break;
+      case 5:
+      mapType = '泄露我的隐私';
+      break;
+      default:
+      mapType = '';
+    }
+    return mapType;
+  }
 });
 
 adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
@@ -1577,7 +1610,43 @@ adminApp.controller('RegionController', ['$http','$scope',
     //$scope.formGeneral();
 }]);
 
+adminApp.controller('ReportController', ['$http','$scope',
+  function ($http, $scope) {
 
+    $http.get('/report/get').success(function(data, status) {
+      if(data.result === 1){
+        $scope.reports = data.reports;
+      }
+    });
+    $scope.deal = function(index,flag) {
+       try{
+          $http({
+              method: 'post',
+              url: '/report/deal',
+              data:{
+                  _id : $scope.reports[index]._id,
+                  flag : flag
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              alert('举报处理成功');
+              $scope.reports.splice(index,1);
+            }
+            else{
+              alert('举报处理失败');
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
+
+    //$scope.formGeneral();
+}]);
 
 
 

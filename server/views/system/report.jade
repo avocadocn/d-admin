@@ -1,0 +1,36 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 举报列表
+            #collapse4.body.table_all
+              table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 日期
+                    th 举报类型
+                    th 内容类型
+                    th 内容id
+                    th 内容
+                    th 状态
+                    th 处理时间
+                    th 操作
+                tbody
+                  tr(ng-repeat="report in reports")
+                    td {{report.create_date | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    td {{report.report_type | reportMap}}
+                    td {{report.host_type}}
+                    td {{report.host_id}}
+                    td {{report.content}}
+                    td {{report.status}}
+                    td {{report.status!=='verifying' ? (report.deal_date | date:'yyyy-MM-dd' | dateView) :''}}
+                    td
+                      a(ng-click="deal($index,true)") 屏蔽
+                      span |
+                      a(ng-click="deal($index,false)") 忽略
