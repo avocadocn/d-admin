@@ -13,6 +13,10 @@ var Report = new Schema({
   },
   host_id: Schema.Types.ObjectId,  //留言主体的id,这个主体可以是 一条活动、一条评论、一张照片、一场比赛等等
   content: String,
+  content_poster:{
+    uid:Schema.Types.ObjectId,
+    cid:Schema.Types.ObjectId
+  },
   report_type:Number,
   //0:淫秽色情
   //1:敏感信息
@@ -26,15 +30,16 @@ var Report = new Schema({
     default: Date.now
   },
   deal_date:{
-    type:Date
+    type:Date,
+    default: Date.now
   },
   poster:{
-    _id:Schema.Types.ObjectId,
-    cid:Schema.Types.ObjectId,
-    cname:String,
-    nickname : String,
-    realname:String,
-    photo:String
+    poster_type:{
+      type:String,
+      enum:['user','company']
+    },
+    uid:Schema.Types.ObjectId,
+    cid:Schema.Types.ObjectId
   },
   status:{
     type: String,

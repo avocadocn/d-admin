@@ -6,6 +6,6 @@ module.exports = function(app) {
         report = require('../controllers/report');
 
     app.get('/report/home', authorization.requiresAdmin,report.home);
-    app.get('/report/get', authorization.requiresAdmin,report.pullReport);
+    app.get('/report/get/:report_status', authorization.requiresAdmin,report.pullReport);
     app.post('/report/deal', authorization.requiresAdmin,report.dealReport);
 };

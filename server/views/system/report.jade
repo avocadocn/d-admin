@@ -9,28 +9,34 @@
               .icons
                 i.fa.fa-table
               h5 举报列表
+            .form-group
+              label.col-lg-2.control-label 请选择要查看的举报状态：
+              .col-lg-2
+                select.form-control.chzn-select(tabindex="2" ng-model="report_type" ng-options="_type.view for _type in report_types" ng-change="getReport(report_type)")
             #collapse4.body.table_all
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
-                    th 日期
+                    //- th 日期
                     th 举报类型
                     th 内容类型
-                    th 内容id
-                    th 内容
+                    //- th 内容id
+                    th.table_col 内容
                     th 状态
-                    th 处理时间
+                    //- th.table_col 处理时间
+                    th 举报次数
                     th 操作
                 tbody
                   tr(ng-repeat="report in reports")
-                    td {{report.create_date | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    //- td.table_col {{report.create_date | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td {{report.report_type | reportMap}}
-                    td {{report.host_type}}
-                    td {{report.host_id}}
-                    td {{report.content}}
-                    td {{report.status}}
-                    td {{report.status!=='verifying' ? (report.deal_date | date:'yyyy-MM-dd' | dateView) :''}}
+                    td {{report._id.host_type}}
+                    //- td.table_col {{report._id.id}}
+                    td.table_col 
+                      {{report._id.content}}
+                    td {{report._id.status | reportStatusMap}}
+                    //- td.table_col {{report.status!=='verifying' ? (report.deal_date | date:'yyyy-MM-dd' | dateView) :''}}
+                    td {{report.number}}
                     td
-                      a(ng-click="deal($index,true)") 屏蔽
-                      span |
-                      a(ng-click="deal($index,false)") 忽略
+                      a.btn.btn-info(ng-if="report_type.name==='verifying'" ng-click="deal($index,true)") 屏蔽
+                      a.btn.btn-info(ng-if="report_type.name==='verifying'" ng-click="deal($index,false)") 忽略

@@ -11,3 +11,9 @@
   float:left;
   width:20px;
 }
+td.table_col,td.table_col  {
+  max-width: 400px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: center;
+}

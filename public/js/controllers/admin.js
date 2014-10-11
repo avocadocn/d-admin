@@ -170,31 +170,65 @@ adminApp.filter('week', function() {
   }
 });
 adminApp.filter('reportMap', function() {
-  return function(mapType) {
-    // input will be ginger in the usage below
-    switch(mapType){
+  var manageReportMap = function(reportType){
+    var _outPut;
+    switch(reportType){
       case 0:
-      mapType = '淫秽色情';
+        _outPut = '淫秽色情';
       break;
       case 1:
-      mapType = '敏感信息';
+        _outPut = '敏感信息';
       break;
       case 2:
-      mapType = '垃圾营销';
+        _outPut = '垃圾营销';
       break;
       case 3:
-      mapType = '诈骗';
+        _outPut = '诈骗';
       break;
       case 4:
-      mapType = '人身攻击';
+        _outPut = '人身攻击';
       break;
       case 5:
-      mapType = '泄露我的隐私';
+        _outPut = '泄露我的隐私';
       break;
       default:
-      mapType = '';
+        _outPut = '';
     }
-    return mapType;
+    return _outPut;
+  }
+  return function(mapType) {
+    // input will be ginger in the usage below
+    var outPut;
+    if (Object.prototype.toString.call(mapType) === '[object Array]'){
+      outPut = [];
+      mapType.forEach(function(value){
+        outPut.push(manageReportMap(value));
+      });
+      outPut = outPut.join();
+    }
+    else{
+      outPut = manageReportMap(mapType);
+    }
+    return outPut;
+  }
+});
+adminApp.filter('reportStatusMap', function() {
+  return function(reportStatus) {
+    var _outPut;
+    switch(reportStatus){
+      case 'verifying':
+        _outPut = '待审核';
+      break;
+      case 'active':
+        _outPut = '已处理';
+      break;
+      case 'inactive':
+        _outPut = '已忽略';
+      break;
+      default:
+        _outPut = '';
+    }
+    return _outPut;
   }
 });
 
@@ -1613,18 +1647,31 @@ adminApp.controller('RegionController', ['$http','$scope',
 adminApp.controller('ReportController', ['$http','$scope',
   function ($http, $scope) {
 
-    $http.get('/report/get').success(function(data, status) {
+    $http.get('/report/get/verifying').success(function(data, status) {
       if(data.result === 1){
         $scope.reports = data.reports;
       }
     });
+    $scope.report_types = [ {name:'verifying',view:'待审核'},
+                            {name:'active',view:'已处理'},
+                            {name:'inactive',view:'已忽略'}
+                          ];
+    $scope.report_type = $scope.report_types[0];
+    $scope.getReport = function(selectType){
+      $http.get('/report/get/'+selectType.name).success(function(data, status) {
+        if(data.result === 1){
+          $scope.reports = data.reports;
+        }
+      });
+    }
     $scope.deal = function(index,flag) {
        try{
           $http({
               method: 'post',
               url: '/report/deal',
               data:{
-                  _id : $scope.reports[index]._id,
+                  host_id : $scope.reports[index]._id.id,
+                  host_type : $scope.reports[index]._id.host_type,
                   flag : flag
               }
           }).success(function(data, status) {
