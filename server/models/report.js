@@ -14,7 +14,10 @@ var Report = new Schema({
   host_id: Schema.Types.ObjectId,  //留言主体的id,这个主体可以是 一条活动、一条评论、一张照片、一场比赛等等
   content: String,
   content_poster:{
-    uid:Schema.Types.ObjectId,
+    uid:{
+      type:Schema.Types.ObjectId,
+      ref:'User'
+    },
     cid:Schema.Types.ObjectId
   },
   report_type:Number,

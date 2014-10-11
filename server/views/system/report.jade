@@ -13,7 +13,7 @@
               label.col-lg-2.control-label 请选择要查看的举报状态：
               .col-lg-2
                 select.form-control.chzn-select(tabindex="2" ng-model="report_type" ng-options="_type.view for _type in report_types" ng-change="getReport(report_type)")
-            #collapse4.body.table_all
+            #report_table.body.table_all
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
@@ -40,3 +40,6 @@
                     td
                       a.btn.btn-info(ng-if="report_type.name==='verifying'" ng-click="deal($index,true)") 屏蔽
                       a.btn.btn-info(ng-if="report_type.name==='verifying'" ng-click="deal($index,false)") 忽略
+                      a.btn.btn-info(ng-click="detail($index)") 详情
+    .modal.fade#contentDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+      include ../partials/content_detail

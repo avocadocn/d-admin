@@ -28,7 +28,7 @@ exports.pullReport = function  (req, res) {
         res.send({'msg':'ERROR_FETCH_FAILED','result':0});
       }
       else{
-        console.log(result);
+        // console.log(result);
         return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1,'reports':result});
       }
   });
@@ -81,4 +81,37 @@ exports.dealReport = function  (req, res) {
   else{
     return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1});
   }
+}
+exports.getReportDetail = function(req, res){
+  var hostModel;
+  if(req.body.host_type==='comment'){
+    hostModel ='Comment';
+  }
+  else{
+    return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+  }
+  mongoose.model(hostModel).findOne({
+      _id: req.body.host_id
+    }).exec()
+    .then(function (comment) {
+      if (comment) {
+        comment.save(function (err) {
+          if (err) {
+            console.log(err);
+            return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+          } else {
+
+            return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1,content:comment});
+          }
+        });
+      }
+      else{
+        console.log(err);
+        return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+      }
+    })
+    .then(null, function (err) {
+      console.log(err);
+      return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+    });
 }

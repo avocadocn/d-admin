@@ -58,7 +58,6 @@ exports.apn = function(req,res){
 
 exports.baidu = function(req,res){
   var callback = function(code,data){
-    console.log(code,data);
     return res.send({'result':code,'data':data})
   }
   var app = new APP(callback,'baidu');

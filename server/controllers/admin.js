@@ -107,7 +107,7 @@ exports.loginSuccess = function(req, res){
     'name':req.user.email,
     'role':'admin'
   };
-  res.redirect('/#/mamager');
+  res.redirect('/#/parameter');
 }
 
 // 临时地初始化设置，以后需要移至别处。

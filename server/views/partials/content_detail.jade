@@ -1,0 +1,27 @@
+.modal-dialog
+  .dl-modal
+    .dl-modal-header
+      button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+      h4.modal-title 举报内容详细信息
+    .dl-modal-body
+      form.form-horizontal.clearfix
+        .dl_modal_container.clearfix
+          h4.pull-left 基本信息
+        hr
+        .dl_modal_container.clearfix
+          .info_side
+            span.control-label 内容类型: 
+          .info_detail
+            span.info_label {{reportContent.report_type}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.control-label 内容: 
+          .info_detail
+            span.info_label {{reportContent.content.content}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.control-label 发布人: 
+          .info_detail
+            span.info_label {{reportContent.content.poster.nickname}}
+    .dl-modal-footer
+      button(data-dismiss="modal") 确定

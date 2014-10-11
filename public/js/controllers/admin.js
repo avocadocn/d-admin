@@ -1664,6 +1664,35 @@ adminApp.controller('ReportController', ['$http','$scope',
         }
       });
     }
+    $scope.detail = function(index) {
+       try{
+          $http({
+              method: 'post',
+              url: '/report/contentDetail',
+              data:{
+                  host_id : $scope.reports[index]._id.id,
+                  host_type : $scope.reports[index]._id.host_type
+              }
+          }).success(function(data, status) {
+            if(data.result === 1){
+              $scope.reportContent = {
+                report_type:$scope.reports[index]._id.host_type,
+                content:data.content
+              };
+              $('#contentDetailModal').modal();
+            }
+            else{
+              alert('举报处理失败');
+            }
+          }).error(function(data, status) {
+              //TODO:更改对话框
+              alert('数据发生错误！');
+          });
+      }
+      catch(e){
+          console.log(e);
+      }
+    };
     $scope.deal = function(index,flag) {
        try{
           $http({

@@ -7,5 +7,6 @@ module.exports = function(app) {
 
     app.get('/report/home', authorization.requiresAdmin,report.home);
     app.get('/report/get/:report_status', authorization.requiresAdmin,report.pullReport);
+    app.post('/report/contentDetail', authorization.requiresAdmin,report.getReportDetail);
     app.post('/report/deal', authorization.requiresAdmin,report.dealReport);
 };
