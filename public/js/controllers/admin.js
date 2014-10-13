@@ -75,6 +75,16 @@ function($routeProvider, $locationProvider) {
       controller: 'ReportController',
       controllerAs: 'report',
     })
+    .when('component',{
+      templateUrl: '',
+      controller:'',
+      controllerAs: '',
+    })
+    .when('mold',{
+      templateUrl: '',
+      controller:'',
+      controllerAs:'',
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
