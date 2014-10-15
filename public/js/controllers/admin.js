@@ -75,15 +75,15 @@ function($routeProvider, $locationProvider) {
       controller: 'ReportController',
       controllerAs: 'report',
     })
-    .when('component',{
-      templateUrl: '',
-      controller:'',
-      controllerAs: '',
+    .when('/component',{
+      templateUrl: '/component/home',
+      controller:'ComponentController',
+      controllerAs: 'component',
     })
-    .when('mold',{
-      templateUrl: '',
-      controller:'',
-      controllerAs:'',
+    .when('/mold',{
+      templateUrl: '/mold/home',
+      controller:'MoldController',
+      controllerAs:'mold',
     })
     .otherwise({
       redirectTo: '/parameter'
@@ -346,6 +346,46 @@ adminApp.directive('datatable', ['$timeout', '$compile',
 // adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
 //   function ($http, $scope, $rootScope)
 // ])
+
+adminApp.controller('ComponentController',['$http','$scope',function ($http, $scope) {
+  $http.get('/component/componentlist').success(function(data, status) {
+    $scope.components = data;
+  });
+  $scope.newcomponent = {};
+  $scope.addComponent = function(){
+    $http.post('/component/addComponent',$scope.newcomponent).success(function(data,status){
+      if(data.result===1)
+        window.location.reload();
+      else
+        alert(data.msg);
+    });
+  };
+  $scope.activate =function(index,value){
+    $http.post('/component/activate',{'id':$scope.components[index]._id,'value':value}).success(function(data,status){
+      if(data.result===1)
+        $scope.components[index].enable = value;
+      else
+        alert(data.msg);
+    });
+  };
+  $scope.delete=function(index){
+    if(confirm('慎重!!按了确定真的会删数据库数据!!')){
+      $http.delete('/component/delete/'+$scope.components[index]._id).success(function(data,status){
+        if(data.result===1)
+          window.location.reload();
+        else
+          alert(data.msg);
+      });
+    }
+  };
+}]);
+
+adminApp.controller('MoldController',['$http','$scope',function ($http, $scope) {
+  $http.get('/component/componentlist').success(function(data, status) {
+    $scope.components = data;
+  });
+}]);
+
 adminApp.controller('AppController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
     //返回第一个公司的所有员工

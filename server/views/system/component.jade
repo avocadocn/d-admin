@@ -1,0 +1,47 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 组件管理(请勿随便增加!)
+              button.dl_btn.dl_btn_right.pull-right(data-toggle="modal" data-target="#addComponentModal") 增加
+            #collapse4.body.table_all
+              table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 组件名称（注释）
+                    th 组件名称（数据库名)
+                    th 操作
+                tbody
+                  tr(ng-repeat="component in components")
+                    td {{component.note}}
+                    td {{component.name}}
+                    td 
+                      button.dl_btn.dl_btn_small(ng-if="component.enable" ng-click="activate($index,false)") 禁用
+                      button.dl_btn.dl_btn_small(ng-if="!component.enable" ng-click="activate($index,true)") 启用
+                      button.dl_btn.dl_btn_small(ng-click="delete($index)") 删除
+.modal.fade#addComponentModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  .modal-dialog
+    .dl-modal
+      form.form-horizontal.clearfix(name="componentForm")
+        .dl-modal-header
+          button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+          h4.modal-title#myModalLabel 增加组件
+        .dl-modal-body.clearfix
+          .dl_modal_container.clearfix
+            .info_side
+              span.info_label 数据库名:
+            .info_detail
+              input.info_label(ng-model="newcomponent.name" required)
+          .dl_modal_container.clearfix
+            .info_side
+              span.info_label 注释:
+            .info_detail
+              input.info_label(ng-model="newcomponent.note" required)
+        .dl-modal-footer
+          button.dl_btn.dl_btn_large(ng-disabled="componentForm.$invalid" ng-click="addComponent()" data-dismiss="modal") 确定

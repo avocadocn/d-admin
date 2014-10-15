@@ -4,77 +4,77 @@
       button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
       h4.modal-title#myModalLabel 该公司详细信息
     .dl-modal-body
-        form.form-horizontal.clearfix(name="infoForm")
-          .dl_modal_container.clearfix
-            h4.pull-left 基本信息
-          hr
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 公司名:
-            .info_detail
-              span.info_label(ng-if='!namedit') {{info.name}}
-              input.info_label(ng-if='nameEdit' ng-model="info.name")
-              a(ng-if='!nameEdit' ng-click='editName()') 编辑
-              a(ng-if='nameEdit' ng-click = 'saveName()') 保存
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 官方公司名:
-            .info_detail
-              span.info_label {{info.official_name}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 邮箱后缀:
-            .info_detail
-              .domain_container(ng-repeat="domain in emailDomains track by $index")
-                span.info_label(ng-if='!domainEdit') {{emailDomains[$index]}}
-                input.info_label(ng-if='domainEdit' ng-model="emailDomains[$index]")
-                a(ng-click='removeDomain($index)') 删除
-              a(ng-click='addDomain()') 添加
-              a.pull-right(ng-if='domainEdit' ng-click = 'saveDomain()') 保存
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 地区:
-            .info_detail
-              span.info_label {{info.city.province}}  {{info.city.city}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 详细地址:
-            .info_detail
-              span.info_label {{info.address}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 人数:
-            .info_detail
-              span.info_label {{info.membernumber}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 联系人电话:
-            .info_detail
-              span.info_label {{info.phone}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 公司座机:
-            .info_detail
-              span.info_label {{info.lindline.areacode}} - {{info.lindline.number}} - {{info.lindline.extension}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 联系人:
-            .info_detail
-              span.info_label {{info.linkman}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label Email:
-            .info_detail
-              span.info_label {{login_email}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 简介:
-            .info_detail
-              span.info_label {{info.brief}}
-          .dl_modal_container.clearfix
-            .info_side
-              span.control-label 注册时间:
-            .info_detail
-              span.info_label {{register_date}}
+      form.form-horizontal.clearfix(name="infoForm")
+        .dl_modal_container.clearfix
+          h4.pull-left 基本信息
+        hr
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 公司名:
+          .info_detail
+            span.info_label(ng-if='!nameEdit') {{info.name}}
+            input.info_label(ng-if='nameEdit' ng-model="info.name")
+            a(ng-if='!nameEdit' ng-click='editName()') 编辑
+            a(ng-if='nameEdit' ng-click = 'saveName()') 保存
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 官方公司名:
+          .info_detail
+            span.info_label {{info.official_name}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 邮箱后缀:
+          .info_detail
+            .domain_container(ng-repeat="domain in emailDomains track by $index")
+              span.info_label(ng-if='!domainEdit') {{emailDomains[$index]}}
+              input.info_label(ng-if='domainEdit' ng-model="emailDomains[$index]")
+              a(ng-click='removeDomain($index)') 删除
+            a(ng-click='addDomain()') 添加
+            a.pull-right(ng-if='domainEdit' ng-click = 'saveDomain()') 保存
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 地区:
+          .info_detail
+            span.info_label {{info.city.province}}  {{info.city.city}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 详细地址:
+          .info_detail
+            span.info_label {{info.address}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 人数:
+          .info_detail
+            span.info_label {{info.membernumber}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 联系人电话:
+          .info_detail
+            span.info_label {{info.phone}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 公司座机:
+          .info_detail
+            span.info_label {{info.lindline.areacode}} - {{info.lindline.number}} - {{info.lindline.extension}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 联系人:
+          .info_detail
+            span.info_label {{info.linkman}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label Email:
+          .info_detail
+            span.info_label {{login_email}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 简介:
+          .info_detail
+            span.info_label {{info.brief}}
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 注册时间:
+          .info_detail
+            span.info_label {{register_date}}
     .dl-modal-footer
-      button(data-dismiss="modal") 确定
+      button.dl_btn.dl_btn_large(data-dismiss="modal") 确定

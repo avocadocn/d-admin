@@ -1,0 +1,50 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 活动类型管理
+              a.dl_btn.dl_btn_right(ng-if="!edit" ng-click="edit=true;") 编辑
+              a.dl_btn.dl_btn_right(ng-if="edit" ng-click="save();edit=false;") 保存
+            #collapse4.body.table_all
+              table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 活动类型\组件
+                    th(ng-repeat="component in components")
+                      input(type="checkbox" ng-model="component.value" ng-change="changeall(component._id)")
+                      label component.name
+                tbody
+                  tr(ng-repeat="error in errors")
+                    td {{error.date | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    td {{error.error.target.kind}}
+                    td {{error.error.target.name}}
+                    td {{error.error.target.email}}
+                    td
+                      .td_err
+                        h5
+                          span(ng-if="error.error.method") 方法
+                          | &nbsp;
+                          span(ng-if="error.error.url") 路由
+                          | &nbsp;
+                          span(ng-if="error.error.kind") 状态码
+                        p
+                          span.text-primary {{error.error.method}}
+                          | &nbsp;
+                          span {{error.error.url}}
+                          | &nbsp;
+                          span.text-danger {{error.error.kind}}
+                        h5(ng-if="error.error.headers") headers
+                        p(ng-repeat="(key, value) in error.error.headers track by $index")
+                          span.text-primary {{key}}
+                          | :&nbsp;
+                          span {{value}}
+                        h5(ng-if="error.error.body") 服务器错误信息
+                        p(ng-repeat="line in error.errorLines track by $index") {{line}}
+                    td
+                      a(ng-click="delete(error._id)") 删除

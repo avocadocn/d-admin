@@ -2,41 +2,43 @@
   .outer
     .inner
       .row
-        a.dl_btn.dl_btn_right(ng-if="push_status.value=='off'" ng-click="pushConfig('set')") 开启
-        a.dl_btn.dl_btn_right(ng-if="push_status.value=='on'" ng-click="pushConfig('set')") 关闭
+        .col-lg-12
+          a.dl_btn.dl_btn_right(ng-if="push_status.value=='off'" ng-click="pushConfig('set')") 开启
+          a.dl_btn.dl_btn_right(ng-if="push_status.value=='on'" ng-click="pushConfig('set')") 关闭
     .inner
       .row
-        .area_left
-          .row
-            span AppKey
-            input(type='text' ng-model="push.baidu.ak")
-          .row
-            span SecretKey
-            input(type='text' ng-model="push.baidu.sk")
-          .row
-            a.dl_btn.dl_btn_right(ng-click="baidu('set')")
-        .area_right
-          .row
-            span 网关
-            input(type='text' ng-model="push.apn.gateway")
-            input(type='text' ng-model="push.apn.port")
-          .row
-            span 证书文件
-            input(type='text')
-          .row
-            span 密码文件
-            input(type='text')
-          .row
-            span APN密码
-            input(type='text' ng-model="push.apn.passphrase")
-          .row
-            span PUSHWOOSH_APPLICATION_ID
-            input(type='text' ng-model="push.apn.pw_ap_id")
-          .row
-            span PUSHWOOSH_AUTH_TOKEN
-            input(type='text' ng-model="push.apn.pw_auth")
-          .row
-            a.dl_btn.dl_btn_right(ng-click="apn('set')")
+        .col-lg-12
+          .area_left
+            .dl_row
+              span AppKey
+              input(type='text' ng-model="push.baidu.ak")
+            .dl_row
+              span SecretKey
+              input(type='text' ng-model="push.baidu.sk")
+            .dl_row
+              a.dl_btn.dl_btn_right(ng-click="baidu('set')") 保存
+          .area_right
+            .dl_row
+              span 网关
+              input(type='text' ng-model="push.apn.gateway")
+              input(type='text' ng-model="push.apn.port")
+            .dl_row
+              span 证书文件
+              input(type='text')
+            .dl_row
+              span 密码文件
+              input(type='text')
+            .dl_row
+              span APN密码
+              input(type='text' ng-model="push.apn.passphrase")
+            .dl_row
+              span PUSHWOOSH_APPLICATION_ID
+              input(type='text' ng-model="push.apn.pw_ap_id")
+            .dl_row
+              span PUSHWOOSH_AUTH_TOKEN
+              input(type='text' ng-model="push.apn.pw_auth")
+            .dl_row
+              a.dl_btn.dl_btn_right(ng-click="apn('set')") 保存
     .inner
       .row
         .col-lg-12
