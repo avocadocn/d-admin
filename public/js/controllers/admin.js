@@ -360,15 +360,15 @@ adminApp.controller('ComponentController',['$http','$scope',function ($http, $sc
         alert(data.msg);
     });
   };
-  $scope.activate =function(index,value){
+  $scope.activate = function(index,value){
     $http.post('/component/activate',{'id':$scope.components[index]._id,'value':value}).success(function(data,status){
       if(data.result===1)
-        $scope.components[index].enable = value;
+        window.location.reload();
       else
         alert(data.msg);
     });
   };
-  $scope.delete=function(index){
+  $scope.delete = function(index){
     if(confirm('慎重!!按了确定真的会删数据库数据!!')){
       $http.delete('/component/delete/'+$scope.components[index]._id).success(function(data,status){
         if(data.result===1)
@@ -381,9 +381,49 @@ adminApp.controller('ComponentController',['$http','$scope',function ($http, $sc
 }]);
 
 adminApp.controller('MoldController',['$http','$scope',function ($http, $scope) {
-  $http.get('/component/componentlist').success(function(data, status) {
-    $scope.components = data;
+  
+  $http.get('/mold/moldList').success(function(data,status){
+    $scope.components = data.components;
+    $scope.molds = data.molds;
   });
+
+  $scope.addMold = function(){
+    $http.post('/mold/addMold',{'name':$scope.newMold}).success(function(data,status){
+        if(data.result===1)
+          window.location.reload();
+        else
+          alert(data.msg);
+    });
+  };
+
+  $scope.activate = function(index,value){
+    $http.post('/mold/activate',{'id':$scope.molds[index]._id,'value':value}).success(function(data,status){
+      if(data.result===1)
+        $scope.molds[index].enable = value;
+      else
+        alert(data.msg);
+    });
+  };
+
+  $scope.save = function(){
+    $http.post('/mold/saveMolds',$scope.molds).success(function(data,status){
+      if(data.result===1)
+        alert(data.msg);
+      else
+        alert(data.msg);
+    });
+  };
+
+  $scope.delete = function(index){
+    if(confirm('慎重!!按了确定真的会删数据库数据!!')){
+      $http.delete('/mold/delete/'+$scope.molds[index]._id).success(function(data,status){
+        if(data.result===1)
+          window.location.reload();
+        else
+          alert(data.msg);
+      });
+    };
+  };
 }]);
 
 adminApp.controller('AppController', ['$http','$scope','$rootScope',

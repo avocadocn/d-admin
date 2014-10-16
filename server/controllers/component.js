@@ -15,7 +15,7 @@ exports.componentList = function (req, res) {
     }
     else
       return res.send(modules);
-  })
+  });
 };
 
 exports.addComponent = function (req, res) {
@@ -55,5 +55,5 @@ exports.deleteComponent = function (req, res) {
     else{
       return res.send({'result':1,'msg':'删除成功'})
     }
-  })
-}
+  });
+};

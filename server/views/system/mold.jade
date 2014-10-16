@@ -9,8 +9,9 @@
               .icons
                 i.fa.fa-table
               h5 活动类型管理
-              a.dl_btn.dl_btn_right(ng-if="!edit" ng-click="edit=true;") 编辑
-              a.dl_btn.dl_btn_right(ng-if="edit" ng-click="save();edit=false;") 保存
+              button.dl_btn.dl_btn_right(data-toggle="modal" data-target="#addMoldModal") 增加活动类型
+              button.dl_btn.dl_btn_right.pull-right(ng-show="!edit" ng-click="edit=true;") 编辑
+              butoon.dl_btn.dl_btn_right.pull-right(ng-show="edit" ng-click="save();edit=false;") 保存
             #collapse4.body.table_all
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
@@ -18,33 +19,35 @@
                     th 活动类型\组件
                     th(ng-repeat="component in components")
                       input(type="checkbox" ng-model="component.value" ng-change="changeall(component._id)")
-                      label component.name
+                      label {{component.note}}
+                    th 其它
+                    th 操作
                 tbody
-                  tr(ng-repeat="error in errors")
-                    td {{error.date | date:'yyyy-MM-dd HH:mm' | dateView}}
-                    td {{error.error.target.kind}}
-                    td {{error.error.target.name}}
-                    td {{error.error.target.email}}
+                  tr(ng-repeat="mold in molds")
+                    td {{mold.name}}
+                    td(ng-repeat="module in mold.components")
+                      input(type="checkbox" ng-model="module.value")
+                      label {{module.note}}
                     td
-                      .td_err
-                        h5
-                          span(ng-if="error.error.method") 方法
-                          | &nbsp;
-                          span(ng-if="error.error.url") 路由
-                          | &nbsp;
-                          span(ng-if="error.error.kind") 状态码
-                        p
-                          span.text-primary {{error.error.method}}
-                          | &nbsp;
-                          span {{error.error.url}}
-                          | &nbsp;
-                          span.text-danger {{error.error.kind}}
-                        h5(ng-if="error.error.headers") headers
-                        p(ng-repeat="(key, value) in error.error.headers track by $index")
-                          span.text-primary {{key}}
-                          | :&nbsp;
-                          span {{value}}
-                        h5(ng-if="error.error.body") 服务器错误信息
-                        p(ng-repeat="line in error.errorLines track by $index") {{line}}
+                      p(ng-repeat="module in mold.otherModules")
+                        button 删除
+                        label {{module.name}}
                     td
-                      a(ng-click="delete(error._id)") 删除
+                      button.btn.btn-xs.btn-warning(ng-show="mold.enable" ng-click="activate($index,false)") 禁用
+                      button.btn.btn-xs.btn-success(ng-show="!mold.enable" ng-click="activate($index,true)") 启用
+                      button.btn.btn-xs.btn-danger(ng-click="delete($index)") 删除
+.modal.fade#addMoldModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  .modal-dialog
+    .dl-modal
+      form.form-horizontal.clearfix(name="moldForm")
+        .dl-modal-header
+          button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+          h4.modal-title#myModalLabel 增加活动类型
+        .dl-modal-body.clearfix
+          .dl_modal_container.clearfix
+            .info_side
+              span.info_label 活动名:
+            .info_detail
+              input.dl_form_control(ng-model="newMold" required)
+        .dl-modal-footer
+          button.dl_btn.dl_btn_large(ng-disabled="moldForm.$invalid" ng-click="addMold()" data-dismiss="modal") 确定

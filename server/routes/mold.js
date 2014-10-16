@@ -6,7 +6,9 @@ module.exports = function(app) {
         mold = require('../controllers/mold');
 
     app.get('/mold/home', authorization.requiresAdmin,mold.home);
-    // app.get('/component/get/:report_status', authorization.requiresAdmin,report.pullReport);
-    // app.post('/component/contentDetail', authorization.requiresAdmin,report.getReportDetail);
-    // app.post('/component/deal', authorization.requiresAdmin,report.dealReport);
+    app.get('/mold/moldList', authorization.requiresAdmin,mold.moldList);
+    app.post('/mold/addMold', authorization.requiresAdmin,mold.addMold);
+    app.post('/mold/activate', authorization.requiresAdmin,mold.activate);
+    app.post('/mold/saveMolds', authorization.requiresAdmin,mold.saveMolds);
+    app.delete('/mold/delete/:moldId', authorization.requiresAdmin,mold.delete);
 };
