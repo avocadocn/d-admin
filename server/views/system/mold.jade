@@ -18,7 +18,7 @@
                   tr
                     th 活动类型\组件
                     th(ng-repeat="component in components")
-                      input(type="checkbox" ng-model="component.value" ng-change="changeall(component._id)")
+                      input(type="checkbox" ng-disabled="!edit" ng-model="component.value" ng-change="changeall(component._id)")
                       label {{component.note}}
                     th 其它
                     th 操作
@@ -26,7 +26,7 @@
                   tr(ng-repeat="mold in molds")
                     td {{mold.name}}
                     td(ng-repeat="module in mold.components")
-                      input(type="checkbox" ng-model="module.value")
+                      input(type="checkbox" ng-disabled="!edit" ng-model="module.value")
                       label {{module.note}}
                     td
                       p(ng-repeat="module in mold.otherModules")
