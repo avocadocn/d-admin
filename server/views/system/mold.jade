@@ -9,33 +9,27 @@
               .icons
                 i.fa.fa-table
               h5 活动类型管理
-              button.dl_btn.dl_btn_right(data-toggle="modal" data-target="#addMoldModal") 增加活动类型
-              button.dl_btn.dl_btn_right.pull-right(ng-show="!edit" ng-click="edit=true;") 编辑
-              butoon.dl_btn.dl_btn_right.pull-right(ng-show="edit" ng-click="save();edit=false;") 保存
+              button.btn.btn-primary.pull-right(data-toggle="modal" data-target="#addMoldModal") 增加活动类型
             #collapse4.body.table_all
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
-                    th 活动类型\组件
-                    th(ng-repeat="component in components")
-                      input(type="checkbox" ng-disabled="!edit" ng-model="component.value" ng-change="changeall(component._id)")
-                      label {{component.note}}
-                    th 其它
+                    th 活动类型
+                    th 已有组件
                     th 操作
                 tbody
                   tr(ng-repeat="mold in molds")
                     td {{mold.name}}
-                    td(ng-repeat="module in mold.components")
-                      input(type="checkbox" ng-disabled="!edit" ng-model="module.value")
-                      label {{module.note}}
                     td
-                      p(ng-repeat="module in mold.otherModules")
-                        button 删除
-                        label {{module.name}}
+                      p(ng-repeat="module in mold.module") 
+                        label.label.label-info {{module}} 
                     td
+                      button.btn.btn-xs.btn-success(ng-click="editMold($index)") 编辑
                       button.btn.btn-xs.btn-warning(ng-show="mold.enable" ng-click="activate($index,false)") 禁用
                       button.btn.btn-xs.btn-success(ng-show="!mold.enable" ng-click="activate($index,true)") 启用
                       button.btn.btn-xs.btn-danger(ng-click="delete($index)") 删除
+.modal.fade#editMoldModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/editMold
 .modal.fade#addMoldModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   .modal-dialog
     .dl-modal

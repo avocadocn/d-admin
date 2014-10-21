@@ -1,0 +1,21 @@
+.modal-dialog
+  .dl-modal
+    form.form-horizontal.clearfix(name="eidMoldForm")
+      .dl-modal-header
+        button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+        h4.modal-title#myModalLabel 编辑活动类型
+      .dl-modal-body.clearfix
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 活动名:
+          .info_detail
+            input.dl_form_control(ng-model="editingMold.name" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 组件:
+          .info_detail
+            div.col-sm-6(ng-repeat="module in editingMold.modules")
+              input(type="checkbox" ng-model="module.value")
+              span {{module.note}}
+      .dl-modal-footer
+        button.dl_btn.dl_btn_large(ng-disabled="eidMoldForm.$invalid" ng-click="save()" data-dismiss="modal") 保存

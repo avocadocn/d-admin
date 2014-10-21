@@ -13,7 +13,7 @@
             span.info_label 公司名:
           .info_detail
             span.info_label(ng-if='!nameEdit') {{info.name}}
-            input.info_label(ng-if='nameEdit' ng-model="info.name")
+            input.dl_form_control(ng-if='nameEdit' ng-model="info.name")
             a(ng-if='!nameEdit' ng-click='editName()') 编辑
             a(ng-if='nameEdit' ng-click = 'saveName()') 保存
         .dl_modal_container.clearfix
@@ -27,7 +27,7 @@
           .info_detail
             .domain_container(ng-repeat="domain in emailDomains track by $index")
               span.info_label(ng-if='!domainEdit') {{emailDomains[$index]}}
-              input.info_label(ng-if='domainEdit' ng-model="emailDomains[$index]")
+              input.dl_form_control(ng-if='domainEdit' ng-model="emailDomains[$index]")
               a(ng-click='removeDomain($index)') 删除
             a(ng-click='addDomain()') 添加
             a.pull-right(ng-if='domainEdit' ng-click = 'saveDomain()') 保存

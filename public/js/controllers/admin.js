@@ -262,80 +262,80 @@ var colorGenerator = function(){
 
 
 adminApp.directive('datatable', ['$timeout', '$compile',
-    function($timeout, $compile) {
+  function($timeout, $compile) {
 
-        // default options to be used on to all datatables
-        var defaults = {};
+    // default options to be used on to all datatables
+    var defaults = {};
 
-        return {
-            restrict: 'A',
-            compile: function(element, attrs) {
-                var repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]'),
-                    repeatAttr,
-                    watch,
-                    original = $(repeatOption).clone();
+    return {
+      restrict: 'A',
+      compile: function(element, attrs) {
+        var repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]'),
+          repeatAttr,
+          watch,
+          original = $(repeatOption).clone();
 
-                // enable watching of the dataset if in use
-                repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]');
+        // enable watching of the dataset if in use
+        repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]');
 
-                if (repeatOption.length) {
-                    repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
-                    watch = $.trim(repeatAttr.split('|')[0]).split(' ').pop();
-                }
+        if (repeatOption.length) {
+          repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
+          watch = $.trim(repeatAttr.split('|')[0]).split(' ').pop();
+        }
 
-                // post-linking function
-                return function(scope, element, attrs, controller) {
+        // post-linking function
+        return function(scope, element, attrs, controller) {
 
-                    // merge default options with table specific override options
-                    var options = angular.extend({}, defaults, scope.$eval(attrs.datatable)),
-                        table = null;
+          // merge default options with table specific override options
+          var options = angular.extend({}, defaults, scope.$eval(attrs.datatable)),
+              table = null;
 
-                    // add default css style
-                    element.addClass('table table-striped');
+          // add default css style
+          element.addClass('table table-striped');
 
-                    // if (watch) {
+          // if (watch) {
 
-                    //     // deep watching of dataset to re-init on change
-                    //     scope.$watch(watch, function(newValue, oldValue) {
-                    //         if (newValue) {
+          //     // deep watching of dataset to re-init on change
+          //     scope.$watch(watch, function(newValue, oldValue) {
+          //         if (newValue) {
 
-                    //             // check for class, 'fnIsDataTable' doesn't work here
-                    //             if (!element.hasClass('dataTable')) {
+          //             // check for class, 'fnIsDataTable' doesn't work here
+          //             if (!element.hasClass('dataTable')) {
 
-                    //                 // init datatables after data load for first time
-                    //                 $timeout(function() {
-                    //                     table = element.dataTable(options);
-                    //                 });
+          //                 // init datatables after data load for first time
+          //                 $timeout(function() {
+          //                     table = element.dataTable(options);
+          //                 });
 
-                    //             } else if (newValue != oldValue) {
+          //             } else if (newValue != oldValue) {
 
-                    //                 // destroy and re-init datatable with new data (fnDraw not working here)
-                    //                 table.fnDestroy();
+          //                 // destroy and re-init datatable with new data (fnDraw not working here)
+          //                 table.fnDestroy();
 
-                    //                 // DataTables addes specifc 'width' property after destroy, have to manually remove
-                    //                 element.removeAttr('style');
+          //                 // DataTables addes specifc 'width' property after destroy, have to manually remove
+          //                 element.removeAttr('style');
 
-                    //                 // empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
-                    //                 var body = element.find('tbody');
-                    //                 body.empty();
-                    //                 body.append($compile(original)(scope));
+          //                 // empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
+          //                 var body = element.find('tbody');
+          //                 body.empty();
+          //                 body.append($compile(original)(scope));
 
-                    //                 // 'timeout' to allow ng-repeat time to render
-                    //                 $timeout(function() {
-                    //                     table.dataTable(options);
-                    //                 });
+          //                 // 'timeout' to allow ng-repeat time to render
+          //                 $timeout(function() {
+          //                     table.dataTable(options);
+          //                 });
 
-                    //             }
-                    //         }
-                    //     }, true);
-                    // } else {
-                    //     // no dataset present, init normally
-                    //     table = element.dataTable(options);
-                    // }
-                };
-            }
+          //             }
+          //         }
+          //     }, true);
+          // } else {
+          //     // no dataset present, init normally
+          //     table = element.dataTable(options);
+          // }
         };
-    }
+      }
+    };
+  }
 ]);
 
 
@@ -383,7 +383,6 @@ adminApp.controller('ComponentController',['$http','$scope',function ($http, $sc
 adminApp.controller('MoldController',['$http','$scope',function ($http, $scope) {
   
   $http.get('/mold/moldList').success(function(data,status){
-    $scope.components = data.components;
     $scope.molds = data.molds;
   });
 
@@ -405,15 +404,6 @@ adminApp.controller('MoldController',['$http','$scope',function ($http, $scope) 
     });
   };
 
-  $scope.save = function(){
-    $http.post('/mold/saveMolds',$scope.molds).success(function(data,status){
-      if(data.result===1)
-        alert(data.msg);
-      else
-        alert(data.msg);
-    });
-  };
-
   $scope.delete = function(index){
     if(confirm('慎重!!按了确定真的会删数据库数据!!')){
       $http.delete('/mold/delete/'+$scope.molds[index]._id).success(function(data,status){
@@ -424,6 +414,22 @@ adminApp.controller('MoldController',['$http','$scope',function ($http, $scope) 
       });
     };
   };
+
+  //todo
+  $scope.save = function(){
+    $http.post('/mold/saveMold',$scope.editingMold).success(function(data,status){
+      alert(data.msg);
+      if(data.result===1)
+        window.location.reload();
+    });
+  };
+
+  $scope.editMold = function(index){
+    $http.get('/mold/editMold/'+$scope.molds[index]._id).success(function(data,status){
+      $scope.editingMold = data;
+      $('#editMoldModal').modal();
+    });
+  }
 }]);
 
 adminApp.controller('AppController', ['$http','$scope','$rootScope',

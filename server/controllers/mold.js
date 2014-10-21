@@ -5,78 +5,26 @@ var mongoose = require('mongoose'),
   CampaignMold = mongoose.model('CampaignMold'),
   async = require('async');
 
+var arrayObjectIndexOf = function(myArray, searchTerm, property) {
+  for(var i = 0, len = myArray.length; i < len; i++) {
+      if (myArray[i][property].toString() === searchTerm.toString()) return i;
+  }
+  return -1;
+};
+
 exports.home = function (req, res){
   res.render('system/mold');
 };
 
 exports.moldList = function(req, res){
-  CampaignModule.find(function(err,modules){
+  CampaignMold.find(function(err,molds){
     if(err){
       console.log(err);
       return res.send(500,{'result':0,'msg':'查找失败!'+err});
     }
-    CampaignMold.find(function(err,molds){
-      if(err){
-        console.log(err);
-        return res.send(500,{'result':0,'msg':'查找失败!'+err});
-      }
-      async.parallel([
-        function(allcallback){
-          async.map(modules,function(module, callback){
-            module.set('value',true,{strict:false});
-            for(var i =0;i<molds.length;i++){
-              if(!molds[i].modules||molds[i].modules.indexOf(module.name)===-1){
-                module.set('value',false,{strict:false});
-              }
-            }
-            callback(null,module);
-          },function(err,results){
-            if(err){
-              return res.send({'result':0,'msg':'map1失败'+err});
-            }
-            else{
-              allcallback(null,results)
-            }
-          });
-        },
-        function(allcallback){
-          async.map(molds, function(mold, callback){
-            var newmold = {
-              name:mold.name,
-              _id:mold._id,
-              enable:mold.enable,
-              module:mold.module,
-              components:[]
-            }
-            for(var i=0;i<modules.length;i++){
-              newmold.components[i]={
-                value:mold.module.indexOf(modules[i])>-1? 1:0,
-                name:modules[i].name,
-                note:modules[i].note
-              };
-            }
-            // console.log('mold',newmold);
-            callback(null,newmold);
-          },function(err,results){
-            if(err){
-              return res.send({'result':0,'msg':'map2失败'+err});
-            }
-            else{
-              // console.log(results);
-              // console.log(results[0].components);
-              // console.log(results[0].components[0]);
-              allcallback(null,results);
-              // console.log('done');
-              // var newMolds = results;
-              // return res.send({'molds':newMolds,'modules':newModules});
-            }
-          });          
-        }
-      ],function(err,results){
-        // console.log(results);
-        return res.send({'components':results[0],'molds':results[1]});
-      });
-    });
+    else{
+      return res.send({'result':1,'molds':molds})
+    }
   });
 };
 
@@ -107,11 +55,74 @@ exports.activate = function(req, res){
   });
 };
 
-exports.saveMolds = function(req, res){
-
+exports.editMold = function(req, res){
+  CampaignModule.find(function(err,modules){
+    if(err){
+      console.log(err);
+      return res.send(500,{'result':0,'msg':'查找失败!'+err});
+    }
+    else{
+      CampaignMold.findOne({'_id':req.params.moldId},function(err,mold){
+        if(err){
+          console.log(err);
+          return res.send(500,{'result':0,'msg':'查找失败!'+err});
+        }
+        else{
+          var temp ={
+            '_id':mold._id,
+            'name':mold.name,
+            'modules':[]
+          };
+          if(mold.module){
+            for(var i=0; i<mold.module.length; i++){
+              var name = mold.module[i];
+              var index = arrayObjectIndexOf(modules,name,'name');
+              temp.modules.push({
+                'name':name,
+                'note':index>-1? modules[index].note : name,
+                'value':true
+              });
+            }
+          }
+          for(var i=0; i<modules.length; i++){
+            if(mold.module.length===0||mold.module.indexOf(modules[i].name)==-1){
+              temp.modules.push({
+                'name':modules[i].name,
+                'note':modules[i].note,
+                'value':false
+              });
+            }
+          }
+          return res.send(temp);
+        }
+      });
+    }
+  });
 };
 
-exports.delete = function(req, res){
+exports.saveMold = function(req, res){
+  CampaignMold.findOne({'_id':req.body._id},function(err,mold){
+    mold.name = req.body.name;
+    mold.module=[];
+    var modules = req.body.modules;
+    for(var i=0;i<modules.length;i++){
+      if(modules[i].value === true){
+        mold.module.push(modules[i].name);
+      }
+    }
+    mold.save(function(err){
+      if(err){
+        console.log(err);
+        return res.send(500,{'result':0,'msg':'保存失败!'});
+      }
+      else{
+        return res.send({'result':1,'msg':'保存成功'});
+      }
+    });
+  });
+};
+
+exports.deleteMold = function(req, res){
   CampaignMold.remove({'_id':req.params.moldId},function(err){
     if(err){
       console.log(err);

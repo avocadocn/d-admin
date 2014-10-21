@@ -24,6 +24,7 @@
   width: 100%;
   float: left;
   clear: left;
+  margin-bottom: 2px;
 }
 .dl-modal .dl-modal-body .dl_modal_container .dl_modal_half_container {
   width: 280px;

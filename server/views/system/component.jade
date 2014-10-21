@@ -36,12 +36,12 @@
           .dl_modal_container.clearfix
             .info_side
               span.info_label 组件名:
-            .info_detail
+            .info_detail_2
               input.dl_form_control(ng-model="newcomponent.name" required)
           .dl_modal_container.clearfix
             .info_side
               span.info_label 注释:
-            .info_detail
+            .info_detail_2
               input.dl_form_control(ng-model="newcomponent.note" required)
         .dl-modal-footer
           button.dl_btn.dl_btn_large(ng-disabled="componentForm.$invalid" ng-click="addComponent()" data-dismiss="modal") 确定
