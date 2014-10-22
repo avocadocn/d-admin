@@ -95,7 +95,8 @@
 }
 .info_detail {
   min-width: 300px;
-  float: left;
+  max-width: 480px;
+  float: right;
   padding: 7px 7px;
 }
 .control-label{
