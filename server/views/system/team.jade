@@ -2,12 +2,14 @@
   .outer
     .inner
       .form-group.dl_row.margin_top_10
-        .col-lg-3
+        .col-md-6
           select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getTeam(company_selected)")
         //- .col-lg-1
         //-   input.dl_form-control(type="text" ng-model="company_regx.value")
         //- .col-lg-2
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
+        .dl_md_1.pull-right
+          button.dl_btn.dl_btn_right(ng-click="teamAddCity()") 增加城市属性
     .inner
       .dl_row.dl_code.table_all
         table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped

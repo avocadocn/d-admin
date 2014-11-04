@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
   CompanyGroup = mongoose.model('CompanyGroup'),
   Config = mongoose.model('Config'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  async = require('async');
 
 
 exports.home = function (req ,res){
@@ -94,4 +95,30 @@ exports.getTeamByGroup = function(req,res){
   }else{
     companySelect({'_id':req.body.cid},res,teamHandle);
   }
+}
+
+exports.teamAddCity = function(req,res){
+  CompanyGroup.find().populate('cid').exec().then(function(teams){
+    async.map(teams,function(team,callback){
+      team.city = team.cid.info.city;
+      team.save(function(err) {
+        if(err){
+          callback(err);
+        }
+        else
+          callback();
+      });
+    },function(err,result){
+      if(err){
+        console.log(err);
+        return res.send({'result':0,'msg':'查询错误'});
+      }else{
+        return res.send({'result':1,'msg':'增加城市属性成功'});
+      }
+    });
+  })
+  .then(null,function(err) {
+    console.log(err);
+    return res.send({result:0,msg:'查询错误'});
+  });
 }

@@ -810,28 +810,28 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
     //根据公司找到小队
     $scope.getTeam = function(company) {
       try{
-          $http({
-              method: 'post',
-              url: '/team/search',
-              data:{
-                  _id : company._id
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.teams = data.teams;
-              $scope.host = data.host;
-              if($scope.first){
-                $scope.first = false;
-              }
-
-              if($scope.group_selected.id == 1){
-                $scope.teamByGroup(false);
-              }
+        $http({
+            method: 'post',
+            url: '/team/search',
+            data:{
+                _id : company._id
             }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
+        }).success(function(data, status) {
+          if(data.result === 1){
+            $scope.teams = data.teams;
+            $scope.host = data.host;
+            if($scope.first){
+              $scope.first = false;
+            }
+
+            if($scope.group_selected.id == 1){
+              $scope.teamByGroup(false);
+            }
+          }
+        }).error(function(data, status) {
+            //TODO:更改对话框
+            alert('数据发生错误！');
+        });
       }
       catch(e){
           console.log(e);
@@ -839,6 +839,22 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
     };
     $scope.searchCompany(true);
     $scope.teamByGroup(true);
+    $scope.teamAddCity =function(){
+      try{
+        $http.post('/team/addCity').success(function(data,status){
+          if(data.result===1){
+            alert('成功');
+          }else{
+            alert('失败');
+          }
+        }).error(function(data,status){
+          alert('失败');
+        });
+      }
+      catch(e){
+        console.log(e);
+      }
+    };
 }]);
 
 
