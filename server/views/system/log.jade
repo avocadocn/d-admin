@@ -1,0 +1,34 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 登录日志
+            #collapse4.body.table_all
+              table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 日期
+                    th 类型
+                    th 公司id
+                    th 用户id
+                    th 用户角色
+                    th 登录ip
+                    th 活动id
+                    //- th 操作
+                tbody
+                  tr(ng-repeat="log in logs")
+                    td {{log.created | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    td {{log.log_type}}
+                    td {{log.cid}}
+                    td {{log.userid}}
+                    td {{log.role}}
+                    td {{log.ip}}
+                    td {{log.campaignid}}
+                    //- td
+                    //-   a(ng-click="delete(log._id)") 删除

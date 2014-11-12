@@ -85,6 +85,11 @@ function($routeProvider, $locationProvider) {
       controller:'MoldController',
       controllerAs:'mold',
     })
+    .when('/log',{
+      templateUrl: '/log/home',
+      controller:'LogController',
+      controllerAs:'log',
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -1836,7 +1841,14 @@ adminApp.controller('ReportController', ['$http','$scope',
     //$scope.formGeneral();
 }]);
 
-
+adminApp.controller('LogController', ['$http','$scope','$rootScope',
+  function ($http, $scope, $rootScope) {
+    $http.get('/log/logList').success(function(data, status) {
+      if(data.result === 1){
+        $scope.logs = data.logs;
+      }
+    });
+}]);
 
 
 
