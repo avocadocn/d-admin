@@ -61,6 +61,10 @@ var UserSchema = new Schema({
         type: Boolean,
         default: false
     },
+    invite_active:{
+        type:Boolean,
+        default: true
+    },
     hashed_password: String,
     provider: {
         type: String,
@@ -71,7 +75,6 @@ var UserSchema = new Schema({
         type: String,
         default: '/img/icons/default_user_photo.png'
     },
-
     nickname: String,
     realname: String,
     department: {

@@ -94,7 +94,8 @@ var CompanySchema = new Schema({
     },
     salt: String,
     // 企业注册用的邀请码
-    register_invite_code: [String]
+    register_invite_code: [String],
+    invite_key: String
 });
 
 /**
