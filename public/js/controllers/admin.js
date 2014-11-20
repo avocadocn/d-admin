@@ -298,45 +298,45 @@ adminApp.directive('datatable', ['$timeout', '$compile',
           // add default css style
           element.addClass('table table-striped');
 
-          // if (watch) {
+          if (watch) {
 
-          //     // deep watching of dataset to re-init on change
-          //     scope.$watch(watch, function(newValue, oldValue) {
-          //         if (newValue) {
+            // deep watching of dataset to re-init on change
+            scope.$watch(watch, function(newValue, oldValue) {
+              if (newValue) {
 
-          //             // check for class, 'fnIsDataTable' doesn't work here
-          //             if (!element.hasClass('dataTable')) {
+                // check for class, 'fnIsDataTable' doesn't work here
+                if (!element.hasClass('dataTable')) {
 
-          //                 // init datatables after data load for first time
-          //                 $timeout(function() {
-          //                     table = element.dataTable(options);
-          //                 });
+                  // init datatables after data load for first time
+                  $timeout(function() {
+                      table = element.dataTable(options);
+                  });
 
-          //             } else if (newValue != oldValue) {
+                } else if (newValue != oldValue) {
 
-          //                 // destroy and re-init datatable with new data (fnDraw not working here)
-          //                 table.fnDestroy();
+                  // destroy and re-init datatable with new data (fnDraw not working here)
+                  // table.fnDestroy();
 
-          //                 // DataTables addes specifc 'width' property after destroy, have to manually remove
-          //                 element.removeAttr('style');
+                  // DataTables addes specifc 'width' property after destroy, have to manually remove
+                  // element.removeAttr('style');
 
-          //                 // empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
-          //                 var body = element.find('tbody');
-          //                 body.empty();
-          //                 body.append($compile(original)(scope));
+                  // empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
+                  // var body = element.find('tbody');
+                  // body.empty();
+                  // body.append($compile(original)(scope));
 
-          //                 // 'timeout' to allow ng-repeat time to render
-          //                 $timeout(function() {
-          //                     table.dataTable(options);
-          //                 });
+                  // 'timeout' to allow ng-repeat time to render
+                  // $timeout(function() {
+                  //     table.dataTable(options);
+                  // });
 
-          //             }
-          //         }
-          //     }, true);
-          // } else {
-          //     // no dataset present, init normally
-          //     table = element.dataTable(options);
-          // }
+                }
+              }
+            }, true);
+          } else {
+            // no dataset present, init normally
+            table = element.dataTable(options);
+          }
         };
       }
     };
@@ -368,7 +368,8 @@ adminApp.controller('ComponentController',['$http','$scope',function ($http, $sc
   $scope.activate = function(index,value){
     $http.post('/component/activate',{'id':$scope.components[index]._id,'value':value}).success(function(data,status){
       if(data.result===1)
-        window.location.reload();
+        // window.location.reload();
+        $scope.components[index].enable=value;
       else
         alert(data.msg);
     });
