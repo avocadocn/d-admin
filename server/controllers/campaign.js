@@ -39,7 +39,7 @@ var companySelect = function(condition,res,start,end){
       if(start && end){
         condition['$or'] = [{'$and':[{'end_time':{'$lte':end}},{'end_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':end}},{'start_time':{'$gte':start}}]},{'$and':[{'start_time':{'$lte':start}},{'end_time':{'$gte':end}}]}];
       }
-      Campaign.find(condition).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
+      Campaign.find(condition).sort({'start_time':-1}).exec(function (err,campaigns){
         if(err || !campaigns){
           return res.send({'msg':'CAMPAIGN_FETCH_FAILED','result':0});
         }else{
@@ -50,7 +50,7 @@ var companySelect = function(condition,res,start,end){
                 campaigns[i].set('group_type','公司',{'strict':false});
               break;
               case 2:
-                campaigns[i].set('group_type',campaigns[i].team[0].group_type,{'strict':false});
+                campaigns[i].set('group_type',campaigns[i].campaign_mold,{'strict':false});
               break;
               case 6:
                 campaigns[i].set('group_type','部门',{'strict':false});
@@ -86,7 +86,7 @@ exports.searchCompanyForCampaign = function (req ,res){
 }
 
 exports.campaignByTeam = function(req,res){
-  Campaign.find({'team':req.body.teamId}).populate('team').sort({'start_time':-1}).exec(function (err,campaigns){
+  Campaign.find({'team':req.body.teamId}).sort({'start_time':-1}).exec(function (err,campaigns){
     if(err || !campaigns){
       return res.send({'msg':'TEAM_CAMPAIGN_FETCH_FAILED','result':0});
     }else{
@@ -140,7 +140,7 @@ var campaignHandle = function(campaigns){
           }
         break;
         case 2:
-          if(campaign_by_group[j].group_type === campaigns[i].team[0].group_type){
+          if(campaign_by_group[j].group_type === campaigns[i].campaign_mold){
             find_group = true;
             campaign_by_group[j].campaigns.push(campaigns[i].theme);
           }
@@ -177,7 +177,7 @@ var campaignHandle = function(campaigns){
         break;
         case 2:
           campaign_by_group.push({
-            'group_type':campaigns[i].team[0].group_type,
+            'group_type':campaigns[i].campaign_mold,
             'campaigns':[campaigns[i].theme]
           });
         break;
@@ -216,7 +216,7 @@ var byRule = function(cid,res){
   }else{
     condition = null;
   }
-  Campaign.find(condition,{'theme':1,'team':1,'group_type':1,'campaign_type':1}).populate('team').exec(function (err,campaigns){
+  Campaign.find(condition,{'theme':1,'team':1,'group_type':1,'campaign_type':1,'campaign_mold':1}).exec(function (err,campaigns){
     if(err || !campaigns){
       res.send({'result':0,'msg':'TYPE_CAMPAIGN_FETCH_FAILED','campaigns':[]});
     }else{
