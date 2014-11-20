@@ -45,21 +45,9 @@ var companySelect = function(condition,res,start,end){
         }else{
           console.log(condition);
           for(var i = 0 ; i < campaigns.length ; i ++){
-            switch(campaigns[i].campaign_type){
-              case 1:
-                campaigns[i].set('group_type','公司',{'strict':false});
-              break;
-              case 2:
-                campaigns[i].set('group_type',campaigns[i].campaign_mold,{'strict':false});
-              break;
-              case 6:
-                campaigns[i].set('group_type','部门',{'strict':false});
-              break;
-              default:
-                campaigns[i].set('group_type','混合',{'strict':false});
-              break;
-            }
+            campaigns[i].set('group_type',campaigns[i].campaign_mold,{'strict':false});
             campaigns[i].set('campaign_type_value',filter(campaigns[i].campaign_type),{'strict':false});
+            campaigns[i].set('member_length',campaigns[i].members.length,{'strict':false});
           }
           Config.findOne({'name':'admin'},{'host':1},function (err,config){
             if(err || !config){
@@ -130,69 +118,25 @@ var campaignHandle = function(campaigns){
   var find_group = false;
   var find_type = false;
   for(var i =0; i < campaigns.length; i ++){
+    campaigns[i].set('member_length',campaigns[i].members.length,{'strict':false});
     for(var j = 0 ; j < campaign_by_group.length; j ++){
       //如果已经存在分组就把活动push进去
-      switch(campaigns[i].campaign_type){
-        case 1:
-          if(campaign_by_group[j].group_type === '公司'){
-            find_group = true;
-            campaign_by_group[j].campaigns.push(campaigns[i].theme);
-          }
-        break;
-        case 2:
-          if(campaign_by_group[j].group_type === campaigns[i].campaign_mold){
-            find_group = true;
-            campaign_by_group[j].campaigns.push(campaigns[i].theme);
-          }
-        break;
-        case 6:
-          if(campaign_by_group[j].group_type === '部门'){
-            find_group = true;
-            campaign_by_group[j].campaigns.push(campaigns[i].theme);
-          }
-        break;
-        default:
-          if(campaign_by_group[j].group_type === '混合'){
-            find_group = true;
-            campaign_by_group[j].campaigns.push(campaigns[i].theme);
-          }
-        break;
-      }
-    }
-
-    for(var k = 0; k < campaign_by_type.length ; k ++){
-      if(campaign_by_type[k].typeId === campaigns[i].campaign_type){
-        find_type = true;
-        campaign_by_type[k].campaigns.push(campaigns[i].theme);
+      if(campaign_by_group[j].group_type === campaigns[i].campaign_mold){
+        find_group = true;
+        campaign_by_group[j].campaigns.push(campaigns[i].theme);
       }
     }
     //新建分组
     if(!find_group){
-      switch(campaigns[i].campaign_type){
-        case 1:
-          campaign_by_group.push({
-            'group_type':'公司',
-            'campaigns':[campaigns[i].theme]
-          });
-        break;
-        case 2:
-          campaign_by_group.push({
-            'group_type':campaigns[i].campaign_mold,
-            'campaigns':[campaigns[i].theme]
-          });
-        break;
-        case 6:
-          campaign_by_group.push({
-            'group_type':'部门',
-            'campaigns':[campaigns[i].theme]
-          });
-        break;
-        default:
-          campaign_by_group.push({
-            'group_type':'混合',
-            'campaigns':[campaigns[i].theme]
-          });
-        break;
+      campaign_by_group.push({
+        'group_type':campaigns[i].campaign_mold,
+        'campaigns':[campaigns[i].theme]
+      });
+    }
+    for(var k = 0; k < campaign_by_type.length ; k ++){
+      if(campaign_by_type[k].typeId === campaigns[i].campaign_type){
+        find_type = true;
+        campaign_by_type[k].campaigns.push(campaigns[i].theme);
       }
     }
     //新建分组
@@ -216,7 +160,7 @@ var byRule = function(cid,res){
   }else{
     condition = null;
   }
-  Campaign.find(condition,{'theme':1,'team':1,'group_type':1,'campaign_type':1,'campaign_mold':1}).exec(function (err,campaigns){
+  Campaign.find(condition,{'theme':1,'campaign_type':1,'campaign_mold':1,'campaign_unit':1}).exec(function (err,campaigns){
     if(err || !campaigns){
       res.send({'result':0,'msg':'TYPE_CAMPAIGN_FETCH_FAILED','campaigns':[]});
     }else{

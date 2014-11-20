@@ -905,55 +905,55 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
     // chartGenerator(data,length_property,label_property,ctxPie,ctxBar)
     $scope.campaignByRule = function(cid){
       try{
-          $http({
-              method: 'post',
-              url: '/campaign/rule',
-              data:{
-                cid : cid
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              var ctxPieGroup = $("#pieGroup").get(0).getContext("2d");
-              var ctxBarGroup = $("#barGroup").get(0).getContext("2d");
-              chartGenerator(data.campaign_by_group,'campaigns','group_type',ctxPieGroup,ctxBarGroup);
+        $http({
+          method: 'post',
+          url: '/campaign/rule',
+          data:{
+            cid : cid
+          }
+        }).success(function(data, status) {
+          if(data.result === 1){
+            var ctxPieGroup = $("#pieGroup").get(0).getContext("2d");
+            var ctxBarGroup = $("#barGroup").get(0).getContext("2d");
+            chartGenerator(data.campaign_by_group,'campaigns','group_type',ctxPieGroup,ctxBarGroup);
 
-              var ctxPieType = $("#pieType").get(0).getContext("2d");
-              var ctxBarType = $("#barType").get(0).getContext("2d");
-              chartGenerator(data.campaign_by_type,'campaigns','type',ctxPieType,ctxBarType);
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
+            var ctxPieType = $("#pieType").get(0).getContext("2d");
+            var ctxBarType = $("#barType").get(0).getContext("2d");
+            chartGenerator(data.campaign_by_type,'campaigns','type',ctxPieType,ctxBarType);
+          }
+        }).error(function(data, status) {
+            //TODO:更改对话框
+            alert('数据发生错误！');
+        });
       }
       catch(e){
-          console.log(e);
+        console.log(e);
       }
     }
     $scope.searchCompany = function(all){
       try{
-          $http({
-              method: 'post',
-              url: '/manager/search',
-              data:{
-                regx : $scope.company_regx.value,
-                all : all
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.companies = data.companies;
-              $scope.company_selected = data.companies[0];
-              if($scope.first){
-                $scope.getCampaign($scope.company_selected,$scope.start_time,$scope.end_time);
-              }
+        $http({
+          method: 'post',
+          url: '/manager/search',
+          data:{
+            regx : $scope.company_regx.value,
+            all : all
+          }
+        }).success(function(data, status) {
+          if(data.result === 1){
+            $scope.companies = data.companies;
+            $scope.company_selected = data.companies[0];
+            if($scope.first){
+              $scope.getCampaign($scope.company_selected,$scope.start_time,$scope.end_time);
             }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
+          }
+        }).error(function(data, status) {
+          //TODO:更改对话框
+          alert('数据发生错误！');
+        });
       }
       catch(e){
-          console.log(e);
+        console.log(e);
       }
     }
 
