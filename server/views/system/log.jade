@@ -9,14 +9,18 @@
               .icons
                 i.fa.fa-table
               h5 登录日志
+            .form-group
+              label.col-lg-2.control-label 请选择要查看的日志类型：
+              .col-lg-2
+                select.form-control.chzn-select(tabindex="2" ng-model="select_type" ng-options="_type.view for _type in log_types" ng-change="getLog(select_type)")
             #collapse4.body.table_all
               table(datatable)#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
                     th 日期
                     th 类型
-                    th 公司id
-                    th 用户id
+                    th 公司全称
+                    th 用户昵称
                     th 用户角色
                     th 登录ip
                     th 活动id
@@ -24,9 +28,9 @@
                 tbody
                   tr(ng-repeat="log in logs")
                     td {{log.created | date:'yyyy-MM-dd HH:mm' | dateView}}
-                    td {{log.log_type}}
-                    td {{log.cid}}
-                    td {{log.userid}}
+                    td {{log.log_type | logType}}
+                    td {{log.cid.info.name}}
+                    td {{log.userid.nickname}}
                     td {{log.role}}
                     td {{log.ip}}
                     td {{log.campaignid}}

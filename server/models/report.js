@@ -28,6 +28,8 @@ var Report = new Schema({
   //4:人身攻击
   //5:泄露我的隐私
 
+  //6:虚假资料
+  //冒用他人资料
   create_date:{
     type:Date,
     default: Date.now

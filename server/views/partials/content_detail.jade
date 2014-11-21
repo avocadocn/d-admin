@@ -15,13 +15,26 @@
             span.info_label {{reportContent.report_type}}
         .dl_modal_container.clearfix
           .info_side
-            span.control-label 内容: 
+            span.control-label 用户: 
           .info_detail
-            span.info_label {{reportContent.content.content}}
+            span.info_label {{reportContent.report_type==='user'?reportContent.content.nickname:reportContent.content.poster.nickname}}
         .dl_modal_container.clearfix
           .info_side
-            span.control-label 发布人: 
-          .info_detail
-            span.info_label {{reportContent.content.poster.nickname}}
+            span.control-label 评论: 
+          .info_detail(ng-if="reportContent.report_type==='comment'")
+            span.info_label {{reportContent.content.content}} 
+          .info_detail(ng-if="reportContent.report_type==='user'")
+            .body.table_all
+              table#commentTable.table.table-bordered.table-condensed.table-hover.table-striped(datatable)
+                thead
+                  tr
+                    th 日期
+                    th.table_col 内容
+                tbody
+                  tr( ng-repeat="comment in reportContent.content.comments")
+                    td.table_col {{comment.create_date | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    //- td.table_col {{report._id.id}}
+                    td.table_col 
+                      {{comment.content}}
     .dl-modal-footer
       button(data-dismiss="modal") 确定

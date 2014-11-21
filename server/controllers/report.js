@@ -10,12 +10,12 @@ exports.home = function  (req, res) {
 }
 exports.pullReport = function  (req, res) {
   Report.aggregate()
-  .match({'status': req.params.report_status})
+  .match({'status': req.params.report_status,'host_type':req.params.report_type})
   // .project({"_id":0,'host_type'})
   .group({_id : { id:"$host_id",
                   host_type: "$host_type",
-                  content: "$content",
-                  status:"$status"
+                  status:"$status",
+                  content: "$content"
                 },
           report_type : {$addToSet:"$report_type"},
           number: { $sum : 1}
@@ -29,7 +29,7 @@ exports.pullReport = function  (req, res) {
       }
       else{
         // console.log(result);
-        return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1,'reports':result});
+        return res.send({'msg':'FETCH_SUCCESS','result':1,'reports':result});
       }
   });
 }
@@ -45,6 +45,12 @@ exports.dealReport = function  (req, res) {
   var hostModel;
   if(req.body.host_type==='comment'){
     hostModel ='Comment';
+  }
+  else if(req.body.host_type==='user'){
+    hostModel ='User';
+  }
+  else{
+    return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
   }
   Report.update({'status':'verifying','host_type': req.body.host_type,'host_id':req.body.host_id},{$set:{'status':_status}},{multi: true},function(err,num){
     if(err){
@@ -87,26 +93,32 @@ exports.getReportDetail = function(req, res){
   if(req.body.host_type==='comment'){
     hostModel ='Comment';
   }
+  else if(req.body.host_type==='user'){
+    hostModel ='User';
+  }
   else{
     return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
   }
   mongoose.model(hostModel).findOne({
       _id: req.body.host_id
     }).exec()
-    .then(function (comment) {
-      if (comment) {
-        comment.save(function (err) {
-          if (err) {
-            console.log(err);
-            return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
-          } else {
+    .then(function (host) {
+      if (host) {
+        if(req.body.host_type==='user'){
+          mongoose.model('Comment').find({
+            'poster._id': req.body.host_id
+          }).exec()
+          .then(function (comments) {
+            host.set('comments',comments,{strict:false});
+            return res.send({'msg':'FETCH_SUCCESS','result':1,content:host});
+          });
+        }
+        else{
+          return res.send({'msg':'FETCH_SUCCESS','result':1,content:host});
+        }
 
-            return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1,content:comment});
-          }
-        });
       }
       else{
-        console.log(err);
         return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
       }
     })

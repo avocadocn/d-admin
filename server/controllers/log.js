@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 
 //获取错误日志
 exports.getLogs = function(req,res){
-  Log.find().sort({'created':-1}).limit(100).exec(function(err,logs){
+  Log.find({log_type:req.params.logType}).populate('cid userid').sort({'created':-1}).limit(100).exec(function(err,logs){
     if(err || !logs){
       res.send({'msg':'ERROR_FETCH_FAILED','result':0});
     }else{
