@@ -95,6 +95,20 @@ function($routeProvider, $locationProvider) {
     });
 }]);
 
+adminApp.filter('logType', function() {
+  return function(input) {
+    switch(input){
+      case 'userlog':
+        return '用户登录';
+        break;
+      case 'joinCampaign':
+        return '参加活动';
+        break;
+      default:
+        return input;
+    }
+  }
+});
 adminApp.filter('dateView', function() {
   return function(input) {
     var today = new Date();
@@ -205,6 +219,9 @@ adminApp.filter('reportMap', function() {
       break;
       case 5:
         _outPut = '泄露我的隐私';
+      break;
+      case 6:
+        _outPut = '虚假资料';
       break;
       default:
         _outPut = '';
@@ -1764,91 +1781,90 @@ adminApp.controller('RegionController', ['$http','$scope',
 
 adminApp.controller('ReportController', ['$http','$scope',
   function ($http, $scope) {
-
-    $http.get('/report/get/verifying').success(function(data, status) {
-      if(data.result === 1){
-        $scope.reports = data.reports;
-      }
-    });
-    $scope.report_types = [ {name:'verifying',view:'待审核'},
+    $scope.report_statuses = [ {name:'verifying',view:'待审核'},
                             {name:'active',view:'已处理'},
                             {name:'inactive',view:'已忽略'}
                           ];
-    $scope.report_type = $scope.report_types[0];
-    $scope.getReport = function(selectType){
-      $http.get('/report/get/'+selectType.name).success(function(data, status) {
+    $scope.report_types = [ {name:'user',view:'用户'},
+                            {name:'comment',view:'评论'}
+                          ];
+    $scope.select_status = $scope.report_statuses[0].name;
+    $scope.select_type = $scope.report_types[0];
+    $scope.getReport = function(select_status){
+      if(!$scope.select_type.name||!$scope.select_status){
+        return;
+      }
+      $http.get('/report/get/'+$scope.select_type.name+'/'+$scope.select_status).success(function(data, status) {
         if(data.result === 1){
           $scope.reports = data.reports;
         }
       });
     }
     $scope.detail = function(index) {
-       try{
-          $http({
-              method: 'post',
-              url: '/report/contentDetail',
-              data:{
-                  host_id : $scope.reports[index]._id.id,
-                  host_type : $scope.reports[index]._id.host_type
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.reportContent = {
-                report_type:$scope.reports[index]._id.host_type,
-                content:data.content
-              };
-              $('#contentDetailModal').modal();
-            }
-            else{
-              alert('举报处理失败');
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-      }
-      catch(e){
-          console.log(e);
-      }
+      $http({
+          method: 'post',
+          url: '/report/contentDetail',
+          data:{
+              host_id : $scope.reports[index]._id.id,
+              host_type : $scope.reports[index]._id.host_type
+          }
+      }).success(function(data, status) {
+        if(data.result === 1){
+          $scope.reportContent = {
+            report_type:$scope.reports[index]._id.host_type,
+            content:data.content
+          };
+          $('#contentDetailModal').modal();
+          $('#commentTable').dataTable();
+        }
+        else{
+          alert('数据获取失败');
+        }
+      }).error(function(data, status) {
+          //TODO:更改对话框
+          alert('数据发生错误！');
+      });
     };
     $scope.deal = function(index,flag) {
-       try{
-          $http({
-              method: 'post',
-              url: '/report/deal',
-              data:{
-                  host_id : $scope.reports[index]._id.id,
-                  host_type : $scope.reports[index]._id.host_type,
-                  flag : flag
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              alert('举报处理成功');
-              $scope.reports.splice(index,1);
-            }
-            else{
-              alert('举报处理失败');
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-      }
-      catch(e){
-          console.log(e);
-      }
+      $http({
+          method: 'post',
+          url: '/report/deal',
+          data:{
+              host_id : $scope.reports[index]._id.id,
+              host_type : $scope.reports[index]._id.host_type,
+              flag : flag
+          }
+      }).success(function(data, status) {
+        if(data.result === 1){
+          alert('举报处理成功');
+          $scope.reports.splice(index,1);
+        }
+        else{
+          alert('举报处理失败');
+        }
+      }).error(function(data, status) {
+          //TODO:更改对话框
+          alert('数据发生错误！');
+      });
     };
-
-    //$scope.formGeneral();
+    $scope.getReport();
 }]);
 
 adminApp.controller('LogController', ['$http','$scope','$rootScope',
   function ($http, $scope, $rootScope) {
-    $http.get('/log/logList').success(function(data, status) {
-      if(data.result === 1){
-        $scope.logs = data.logs;
-      }
-    });
+    $scope.log_types =  [ {name:'userlog',view:'用户登录'},
+                          {name:'joinCampaign',view:'参加活动'}
+                        ];
+    $scope.select_type = $scope.log_types[0];
+
+    $scope.getLog = function(selectType){
+      $http.get('/log/logList/'+selectType.name).success(function(data, status) {
+        if(data.result === 1){
+          $scope.logs = data.logs;
+        }
+      });
+    }
+    $scope.getLog($scope.select_type);
 }]);
 
 
