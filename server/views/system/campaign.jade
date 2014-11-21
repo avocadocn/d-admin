@@ -26,7 +26,7 @@
               a.dl_btn.dl_btn_small(ng-click="campaignByDate()") 获取
     .inner
       .dl_row.dl_code.table_all
-        table(datatable)#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
+        table(datatable="ng")#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
               th 主题

@@ -25,7 +25,7 @@
             span.info_label {{reportContent.content.content}} 
           .info_detail(ng-if="reportContent.report_type==='user'")
             .body.table_all
-              table#commentTable.table.table-bordered.table-condensed.table-hover.table-striped(datatable)
+              table#commentTable.table.table-bordered.table-condensed.table-hover.table-striped(datatable="ng")
                 thead
                   tr
                     th 日期
