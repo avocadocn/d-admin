@@ -1,0 +1,25 @@
+{
+  "name": "chatroom",
+  "description": "yali-chatroom",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.4.x"
+  },
+  "dependencies": {
+    "express": "~4.10.2",
+    "mongoose": "~3.8.19",
+    "socket.io": "latest",
+    "morgan": "~1.5.0",
+    "body-parser": "~1.9.3",
+    "underscore": "~1.7.0"
+  },
+  "devDependencies": {
+    "gulp": "~3.8.10",
+    "gulp-nodemon": "~1.0.4"
+  },
+  "scripts": {
+    "start": "node node_modules/gulp/bin/gulp"
+  }
+}
