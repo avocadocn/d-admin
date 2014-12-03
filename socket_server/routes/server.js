@@ -2,6 +2,6 @@
 
 module.exports = function (app, ctrl) {
 
-  app.get('/', ctrl.index);
+  // app.get('/', ctrl.index);
 
 };

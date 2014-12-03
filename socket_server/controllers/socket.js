@@ -12,8 +12,9 @@ module.exports = function (io) {
       console.log(text);
       index++;
       socket.broadcast.send('message',text);
-      socket.emit('message',text);
-      console.log(io.sockets.adapter.rooms);
+      io.sockets.emit('message',text);
+      console.log(users);
+      console.log(io.sockets.adapter);
     });
 
     socket.on('disconnect',function(){
@@ -21,37 +22,47 @@ module.exports = function (io) {
       var whereIsUser = _.indexOf(users, socket.id);
       if(whereIsUser!==-1)
         users[whereIsUser] = null;
+      console.log(users);
       var text = 'user'+whereIsUser+'disconnected';
       console.log(text);
-      socket.broadcast.send(text);
+      io.sockets.emit('message',text);
     });
     
     socket.on('enterRoom',function(roomIndex){
-      socket.join(roomIndex);
-      var whereIsUser = _.indexOf(users, socket.id);
-      var text = 'user'+whereIsUser + 'has entered room'+ roomIndex;
-      console.log(text);
-      // socket.broadcast.to(roomIndex).emit('message',text);
-      io.sockets.in(roomIndex).emit('message', text);
+      if(socket.rooms[1]){
+        socket.emit('message','Sorry ,you have entered a room, please quit.');
+      }
+      else{
+        socket.join(roomIndex);
+        var whereIsUser = _.indexOf(users, socket.id);
+        var text = 'user'+whereIsUser + 'has entered room'+ roomIndex;
+        console.log(text);
+        io.sockets.in(roomIndex).emit('message', text);
+      }
     });
 
-    socket.on('quitRoom',function(roomIndex){
-      var whereIsUser = _.indexOf(users, socket.id);
-      var text = 'user'+whereIsUser + 'has quitted room'+ roomIndex;
-      console.log(text);
-      socket.leave(roomIndex);
-      // socket.broadcast.to(socket.rooms).emit('message',text);
-      io.sockets.in(roomIndex).emit('message', text);
+    socket.on('quitRoom',function(){
+      if(socket.rooms.length===2){
+        var roomIndex = socket.rooms[1];
+        var whereIsUser = _.indexOf(users, socket.id);
+        var text = 'user'+whereIsUser + 'has quitted room'+ roomIndex;
+        console.log(text);
+        io.sockets.in(roomIndex).emit('message', text);
+        socket.leave(roomIndex);
+      }
+      else{
+        socket.emit('message','Please select a room to enter.');
+      }
     });
 
-    socket.on('talk',function(text){
-      var whereIsUser = _.indexOf(users, socket.id);
-      if(whereIsUser!==-1)
-        users[whereIsUser] = null;
-      var text = 'user'+whereIsUser+':'+text;
-      console.log(socket.rooms[1]);
-      // socket.broadcast.to(socket.rooms).emit('message',text);
-      io.sockets.in(socket.rooms[1]).emit('message', text);
+    socket.on('talk',function(conversation){
+      if(socket.rooms.length===2){
+        var whereIsUser = _.indexOf(users, socket.id);
+        var text = 'user'+whereIsUser+':'+conversation;
+        io.sockets.in(socket.rooms[1]).emit('message', text);
+      }else{
+        socket.emit('message','Sorry, you must enter a room.');
+      }
     });
   });
 };
