@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var port = 3700;
+var port = 3005;
  
 var app = require('express')();
 var server = require('http').Server(app);
@@ -9,6 +9,8 @@ var io = require('socket.io')(server);
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var socket = require('./controllers/socket');
+var serveStatic = require('serve-static');
+
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/donler-beta');
@@ -48,6 +50,7 @@ walk('./routes', function (file, path) {
   }
   require(path)(app,ctrl);
 });
+app.use(serveStatic('public'));
 
 socket(io);
 

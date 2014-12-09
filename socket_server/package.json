@@ -13,7 +13,9 @@
     "socket.io": "latest",
     "morgan": "~1.5.0",
     "body-parser": "~1.9.3",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "socketio-jwt": "~2.3.5",
+    "serve-static": "latest"
   },
   "devDependencies": {
     "gulp": "~3.8.10",

@@ -23,6 +23,14 @@ var _device = new Schema({
     }
 });
 
+var latestCommentCampaign = new Schema({
+    _id: Schema.Types.ObjectId,
+    unread: {
+        type: Number,
+        default: 0
+    }
+});
+
 var _team = new Schema({
     gid: {
         type: String,
@@ -134,7 +142,9 @@ var UserSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Campaign'
     },
-    last_comment_time: Date
+    last_comment_time: Date,
+    commentCampaigns: [latestCommentCampaign],//参加了的讨论列表
+    unjoinedCommentCampaigns: [latestCommentCampaign] //未参加的讨论列表
 });
 
 /**
