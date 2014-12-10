@@ -1,19 +1,29 @@
 'use strict';
 var _ = require('underscore')._;
-var socketioJwt = require('socketio-jwt');
+var jwt = require('jsonwebtoken');
 
-var onlineUsers= [];//user的映射表，看某人在不在线
-var index = 0;
+var tokenSecret = 'donler';
+var onlineUsers= {};//user的映射表，看某人在不在线
 module.exports = function (io) {
   io.use(function(socket,next){
-    var token = socket.request._query.token
-    console.log('token:', token);
-    //auth todo
-    socket.request._query._id = token;
-    next();
-  })
+    var token = socket.request._query.token;
+    if(token){
+      jwt.verify(token,tokenSecret,function(err, decoded){
+        if(decoded.type==='server'&&decoded.id==='server'){
+          socket.request._query._id = 'server';
+          // console.log(decoded.id);
+          next();
+        }else if(decoded.type==='user'&&decoded.exp>Date.now()){
+          socket.request._query._id = decoded.id;
+          // console.log(decoded.id);
+          next();
+        }
+        //hr和token不对进不来
+      });
+    }
+  });
 
-  io.on('connection', function (socket) {
+  io.on('connect', function (socket) {
     socket.on('login',function(){
       var userId = socket.request._query._id;
       onlineUsers[userId]=socket.id;
