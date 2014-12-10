@@ -4,6 +4,43 @@ var jwt = require('jsonwebtoken');
 
 var tokenSecret = 'donler';
 var onlineUsers= {};//user的映射表，看某人在不在线
+
+var actions = function (action, data) {
+  switch(action){
+    //告诉相关user有newComments(首页红点)
+    case 'updateNotication':
+      var uids = data.uids;
+      for(var i=0; i<uids; i++){
+        var uid = uids[i];
+        if(onlineUsers[uid]){//如果他在线
+          var socketId = onlineUsers[uid];
+          io.sockets.socket(socketId).emit('getNewComment');
+          //need test
+        }
+      }
+      return;
+      break;
+    //更新列表1(讨论列表):
+    case 'upateCommentList':
+      var uids = data.uids;
+      for(var i=0; i<uids; i++){
+        var uid = uids[i];
+        io.sockets.in(uid).emit('newCommentCampaign', data.campaign);
+      }
+      return;
+      break;
+    //更新列表2(详情页列表): 
+    //谁在这个room 就推给谁
+    case 'updateCampaignComment':
+      var campaignId = data.campaign;
+      io.sockets.in(campaignId).emit('newCampaignComment', data.comment);
+      return;
+      break;
+    default:
+      return;
+  }
+};
+
 module.exports = function (io) {
   io.use(function(socket,next){
     var token = socket.request._query.token;
@@ -18,12 +55,14 @@ module.exports = function (io) {
           // console.log(decoded.id);
           next();
         }
-        //hr和token不对进不来
+        //hr和token不对不连接
       });
     }
   });
 
   io.on('connect', function (socket) {
+    // console.log(io.sockets.connected[io.sockets.sockets[0].id]);
+
     socket.on('login',function(){
       var userId = socket.request._query._id;
       onlineUsers[userId]=socket.id;
@@ -69,21 +108,19 @@ module.exports = function (io) {
     });
 
     /*
-     * 用户评论操作，可能是个人，也可能是某活动（前端到某页面时触发）
-     * @param {Object|String} roomId ObjectId和String均可 可能是活动id 也可能是个人id
+     * 用户评论操作 
+     * 
      */
 
-    socket.on('comment',function(comment){
-      //new
-      //
-      
+    socket.on('commentFromServer',function(uids,campaign,comment){
+      //告诉相关user有newComments(首页红点)
+      actions('udpateNotification',{'uids':uids});
       //更新列表1(讨论列表):
-      //
-      
-
-      //更新列表2(详情页列表):
-      //
-    })
+      actions('upateCommentList',{'uids':uids,'campaign':campaign});
+      //更新列表2(详情页列表): 
+      //谁在这个room 就推给谁
+      actions('updateCampaignComment',{'campaign':campaign,'comment':comment});
+    });
 
     socket.on('talk',function(conversation){
       if(socket.rooms.length===2){
