@@ -5,10 +5,10 @@ var jwt = require('jsonwebtoken');
 var tokenSecret = 'donler';
 var onlineUsers= {};//user的映射表，看某人在不在线
 
-var actions = function (action, data) {
+var actions = function (io, action, data) {
   switch(action){
     //告诉相关user有newComments(首页红点)
-    case 'updateNotication':
+    case 'udpateNotification':
       var uids = data.uids;
       for(var i=0; i<uids; i++){
         var uid = uids[i];
@@ -23,7 +23,7 @@ var actions = function (action, data) {
     //更新列表1(讨论列表):
     case 'upateCommentList':
       var uids = data.uids;
-      for(var i=0; i<uids; i++){
+      for(var i=0; i<uids; i++) {
         var uid = uids[i];
         io.sockets.in(uid).emit('newCommentCampaign', data.campaign);
       }
@@ -46,9 +46,9 @@ module.exports = function (io) {
     var token = socket.request._query.token;
     if(token){
       jwt.verify(token,tokenSecret,function(err, decoded){
-        if(decoded.type==='server'&&decoded.id==='server'){
-          socket.request._query._id = 'server';
-          // console.log(decoded.id);
+        if(decoded.type==='server'&&decoded.exp>Date.now()){
+          socket.request._query._id = decoded.id;
+          // console.log(decoded.id+'conne');
           next();
         }else if(decoded.type==='user'&&decoded.exp>Date.now()){
           socket.request._query._id = decoded.id;
@@ -62,7 +62,7 @@ module.exports = function (io) {
 
   io.on('connect', function (socket) {
     // console.log(io.sockets.connected[io.sockets.sockets[0].id]);
-
+    console.log( socket.request._query._id+' connected.');
     socket.on('login',function(){
       var userId = socket.request._query._id;
       onlineUsers[userId]=socket.id;
@@ -79,7 +79,7 @@ module.exports = function (io) {
       // 从onlineUsers里删掉这个人
       var userId = socket.request._query._id;
       delete onlineUsers[userId];
-      var text = 'user'+userId+'disconnected';
+      var text = 'user'+userId+' disconnected';
       console.log(text);
     });
 
@@ -114,12 +114,12 @@ module.exports = function (io) {
 
     socket.on('commentFromServer',function(uids,campaign,comment){
       //告诉相关user有newComments(首页红点)
-      actions('udpateNotification',{'uids':uids});
+      actions(io,'udpateNotification',{'uids':uids});
       //更新列表1(讨论列表):
-      actions('upateCommentList',{'uids':uids,'campaign':campaign});
+      actions(io,'upateCommentList',{'uids':uids,'campaign':campaign});
       //更新列表2(详情页列表): 
       //谁在这个room 就推给谁
-      actions('updateCampaignComment',{'campaign':campaign,'comment':comment});
+      actions(io,'updateCampaignComment',{'campaign':campaign,'comment':comment});
     });
 
     socket.on('talk',function(conversation){
