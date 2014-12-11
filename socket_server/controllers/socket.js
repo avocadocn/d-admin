@@ -10,11 +10,16 @@ var actions = function (io, action, data) {
     //告诉相关user有newComments(首页红点)
     case 'udpateNotification':
       var uids = data.uids;
-      for(var i=0; i<uids; i++){
+      console.log(uids);
+      // console.log(onlineUsers);
+      for(var i=0; i<uids.length; i++){
         var uid = uids[i];
+        console.log('uid:',uid)
         if(onlineUsers[uid]){//如果他在线
+          console.log('...')
           var socketId = onlineUsers[uid];
-          io.sockets.socket(socketId).emit('getNewComment');
+          console.log('socketId:',socketId);
+          io.sockets.in(socketId).emit('getNewComment');
           //need test
         }
       }
@@ -23,7 +28,7 @@ var actions = function (io, action, data) {
     //更新列表1(讨论列表):
     case 'upateCommentList':
       var uids = data.uids;
-      for(var i=0; i<uids; i++) {
+      for(var i=0; i<uids.length; i++) {
         var uid = uids[i];
         io.sockets.in(uid).emit('newCommentCampaign', data.campaign);
       }
@@ -63,11 +68,14 @@ module.exports = function (io) {
   io.on('connect', function (socket) {
     // console.log(io.sockets.connected[io.sockets.sockets[0].id]);
     console.log( socket.request._query._id+' connected.');
+
     socket.on('login',function(){
       var userId = socket.request._query._id;
       onlineUsers[userId]=socket.id;
       var text = 'user'+userId+'has logined';
       console.log(text);
+      console.log(onlineUsers);
+      // socket.emit('getNewComment');
       // console.log(io.sockets.adapter);
     });
 
