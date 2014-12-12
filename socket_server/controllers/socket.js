@@ -10,15 +10,11 @@ var actions = function (io, action, data) {
     //告诉相关user有newComments(首页红点)
     case 'udpateNotification':
       var uids = data.uids;
-      console.log(uids);
       // console.log(onlineUsers);
       for(var i=0; i<uids.length; i++){
         var uid = uids[i];
-        console.log('uid:',uid)
         if(onlineUsers[uid]){//如果他在线
-          console.log('...')
           var socketId = onlineUsers[uid];
-          console.log('socketId:',socketId);
           io.sockets.in(socketId).emit('getNewComment');
           //need test
         }
