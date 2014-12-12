@@ -23,10 +23,15 @@ var actions = function (io, action, data) {
       break;
     //更新列表1(讨论列表):
     case 'upateCommentList':
-      var uids = data.uids;
-      for(var i=0; i<uids.length; i++) {
-        var uid = uids[i];
-        io.sockets.in(uid).emit('newCommentCampaign', data.campaign);
+      var joinedUids = data.joinedUids;
+      for(var i=0; i<joinedUids.length; i++) {
+        var uid = joinedUids[i];
+        io.sockets.in(uid).emit('newCommentCampaign', data.campaign);//已参加
+      }
+      var unjoinedUids = data.unjoinedUids;
+      for(var i=0; i<unjoinedUids.length; i++) {
+        var uid = unjoinedUids[i];
+        io.sockets.in(uid).emit('newUnjoinedCommentCampaign', data.campaign);//未参加
       }
       return;
       break;
@@ -116,26 +121,26 @@ module.exports = function (io) {
      * 
      */
 
-    socket.on('commentFromServer',function(uids,campaign,comment){
+    socket.on('commentFromServer',function(joinedUids, unjoinedUids, campaign, comment){
       //告诉相关user有newComments(首页红点)
-      actions(io,'udpateNotification',{'uids':uids});
+      actions(io,'udpateNotification',{'uids':joinedUids.concat(unjoinedUids)});
       //更新列表1(讨论列表):
-      actions(io,'upateCommentList',{'uids':uids,'campaign':campaign});
+      actions(io,'upateCommentList',{'joinedUids':joinedUids, 'unjoinedUids':unjoinedUids, 'campaign':campaign});
       //更新列表2(详情页列表): 
       //谁在这个room 就推给谁
-      actions(io,'updateCampaignComment',{'campaign':campaign,'comment':comment});
+      actions(io,'updateCampaignComment',{'campaign':campaign, 'comment':comment});
     });
 
-    socket.on('talk',function(conversation){
-      if(socket.rooms.length===2){
-        var whereIsUser = _.indexOf(onlineUsers, socket.id);
-        var text = 'user'+whereIsUser+':'+conversation;
-        var msg = {msg: text};
-        io.sockets.in(socket.rooms[1]).emit('message', msg);
-      }else{
-        var msg = {msg: 'Sorry, you must enter a room.'};
-        socket.emit('message',msg);
-      }
-    });
+    // socket.on('talk',function(conversation){
+    //   if(socket.rooms.length===2){
+    //     var whereIsUser = _.indexOf(onlineUsers, socket.id);
+    //     var text = 'user'+whereIsUser+':'+conversation;
+    //     var msg = {msg: text};
+    //     io.sockets.in(socket.rooms[1]).emit('message', msg);
+    //   }else{
+    //     var msg = {msg: 'Sorry, you must enter a room.'};
+    //     socket.emit('message',msg);
+    //   }
+    // });
   });
 };
