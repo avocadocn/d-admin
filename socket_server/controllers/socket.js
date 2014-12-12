@@ -70,7 +70,7 @@ module.exports = function (io) {
       onlineUsers[userId]=socket.id;
       var text = 'user'+userId+'has logined';
       console.log(text);
-      console.log(onlineUsers);
+      // console.log(onlineUsers);
       // socket.emit('getNewComment');
       // console.log(io.sockets.adapter);
     });

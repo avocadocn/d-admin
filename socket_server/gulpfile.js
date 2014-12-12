@@ -5,11 +5,11 @@ var nodemon = require('gulp-nodemon');
 
 gulp.task('nodemon', function () {
   nodemon({
-    script: 'app.js',
+    script: 'socketserver.js',
     ext: 'js',
     watch: [
       "**.js",
-      "app.js"
+      "socketserver.js"
     ],
     ignore: [
       "node_modules/**"
