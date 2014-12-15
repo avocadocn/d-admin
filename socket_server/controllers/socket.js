@@ -38,7 +38,7 @@ var actions = function (io, action, data) {
     //更新列表2(详情页列表): 
     //谁在这个room 就推给谁
     case 'updateCampaignComment':
-      var campaignId = data.campaign;
+      var campaignId = data.campaign._id;
       io.sockets.in(campaignId).emit('newCampaignComment', data.comment);
       return;
       break;
@@ -73,8 +73,8 @@ module.exports = function (io) {
     socket.on('login',function(){
       var userId = socket.request._query._id;
       onlineUsers[userId]=socket.id;
-      var text = 'user'+userId+'has logined';
-      console.log(text);
+      // var text = 'user'+userId+'has logined';
+      // console.log(text);
       // console.log(onlineUsers);
       // socket.emit('getNewComment');
       // console.log(io.sockets.adapter);
@@ -102,7 +102,7 @@ module.exports = function (io) {
       }
       socket.join(roomId);
       var whereIsUser = _.indexOf(onlineUsers, socket.id);
-      var text = 'user'+whereIsUser + 'has entered room'+ roomIndex;
+      var text = 'user'+whereIsUser + 'has entered room'+ roomId;
       console.log(text);
     });
 

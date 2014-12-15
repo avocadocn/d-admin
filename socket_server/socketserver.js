@@ -12,9 +12,6 @@ var socket = require('./controllers/socket');
 var serveStatic = require('serve-static');
 
 
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/donler-beta');
-
 
 var walk = function(path, callback) {
   fs.readdirSync(path).forEach(function(file) {
@@ -33,8 +30,8 @@ var walk = function(path, callback) {
     }
   });
 };
-// 初始化 mongoose models
-walk('./models');
+// // 初始化 mongoose models
+// walk('./models');
 
 var controllers = {};
 walk('./controllers', function (file, path) {
