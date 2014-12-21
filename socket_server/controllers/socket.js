@@ -52,14 +52,16 @@ module.exports = function (io) {
     var token = socket.request._query.token;
     if(token){
       jwt.verify(token,tokenSecret,function(err, decoded){
-        if(decoded.type==='server'&&decoded.exp>Date.now()){
-          socket.request._query._id = decoded.id;
-          // console.log(decoded.id+'conne');
-          next();
-        }else if(decoded.type==='user'&&decoded.exp>Date.now()){
-          socket.request._query._id = decoded.id;
-          // console.log(decoded.id);
-          next();
+        if(decoded){//防止有的时候解析token失败而崩掉
+          if(decoded.type==='server'&&decoded.exp>Date.now()){
+            socket.request._query._id = decoded.id;
+            // console.log(decoded.id+'conne');
+            next();
+          }else if(decoded.type==='user'&&decoded.exp>Date.now()){
+            socket.request._query._id = decoded.id;
+            // console.log(decoded.id);
+            next();
+          }
         }
         //hr和token不对不连接
       });
@@ -70,15 +72,9 @@ module.exports = function (io) {
     // console.log(io.sockets.connected[io.sockets.sockets[0].id]);
     console.log( socket.request._query._id+' connected.');
 
-    socket.on('login',function(){
-      var userId = socket.request._query._id;
-      onlineUsers[userId]=socket.id;
-      // var text = 'user'+userId+'has logined';
-      // console.log(text);
-      // console.log(onlineUsers);
-      // socket.emit('getNewComment');
-      // console.log(io.sockets.adapter);
-    });
+    var userId = socket.request._query._id;
+    onlineUsers[userId]=socket.id;
+    // console.log(io.sockets.adapter);
 
     /*
      * 失联操作（断网、关闭应用时自动的，否则为一直连接状态）
@@ -101,9 +97,6 @@ module.exports = function (io) {
         socket.leave(socket.rooms[1]);
       }
       socket.join(roomId);
-      var whereIsUser = _.indexOf(onlineUsers, socket.id);
-      var text = 'user'+whereIsUser + 'has entered room'+ roomId;
-      console.log(text);
     });
 
     /*
