@@ -14,8 +14,7 @@ exports.pullReport = function  (req, res) {
   // .project({"_id":0,'host_type'})
   .group({_id : { id:"$host_id",
                   host_type: "$host_type",
-                  status:"$status",
-                  content: "$content"
+                  status:"$status"
                 },
           report_type : {$addToSet:"$report_type"},
           number: { $sum : 1}
@@ -61,18 +60,23 @@ exports.dealReport = function  (req, res) {
     mongoose.model(hostModel).findOne({
       _id: req.body.host_id
     }).exec()
-    .then(function (comment) {
-      if (comment) {
-        comment.status = 'shield';
-        comment.save(function (err) {
-          if (err) {
-            console.log(err);
-            return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
-          } else {
+    .then(function (reportModel) {
+      if (reportModel) {
+        if(req.body.host_type==='comment'){
+          reportModel.status = 'shield';
+        }
+        else if(req.body.host_type==='user'){
+          reportModel.disabled = true;
+        }
+        reportModel.save(function (err) {
+            if (err) {
+              console.log(err);
+              return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+            } else {
 
-            return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1});
-          }
-        });
+              return res.send({'msg':'ERROR_FETCH_SUCCESS','result':1});
+            }
+          });
       }
       else{
         console.log(err);
