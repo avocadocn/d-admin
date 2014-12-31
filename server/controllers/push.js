@@ -25,106 +25,30 @@ var optionsIOS = {
   passphrase: '55yali',
   port: 2195,
   enhanced: true,
-  cacheLength: 100,
-  errorCallback: null
+  cacheLength: 100
+};
 
-  // host:'cp.pushwoosh.com',
-  // path: '/json/1.3/',
-  // application:'B13D4-3532F',
-  // link:'http://pushwoosh.com/'
-}
+var IOSfeedbackOptions = {
+  gateway: 'feedback.sandbox.push.apple.com',
+  cert: rootConfig.root+'/server/service/PushChatCert.pem',
+  key:  rootConfig.root+'/server/service/PushChatKey.pem',
+  passphrase: '55yali',
+  interval: 30,
+  port: 2196
+};
 
+var clientIOS = PushIOS.CreateService(optionsIOS);
+var iosFeedbackService = PushIOS.CreateFeedback(IOSfeedbackOptions, function (feedbackData) {
+  console.log('feedback:', feedbackData);
+  var time, device;
+  for (var i in feedbackData) {
+    time = feedbackData[i].time;
+    device = feedbackData[i].device;
+    console.log("Device: " + device.toString('hex') + " has been unreachable, since: " + time);
+  }
+}, console.log);
 
-var clientIOS = null;
-var clientAndroid = null;
-
-
-
-// function queryBindList(client) {
-//   var opt = {
-//     user_id: id0
-//   }
-//   client.queryBindList(opt, function(err, result) {
-//     if (err) {
-//       console.log(err);
-//       return;
-//     }
-//     console.log(result);
-//   })
-// }
-
-
-
-// exports.PushTest = function(req,res){
-//   clientAndroid = new PushAndroid(optionsAndroid);
-//   var opt = {
-//     message_type:1,
-//     push_type: 1,
-//     //user_id: '1125800188872535509',
-//     //user_id: '873187148634115400',
-//     user_id: '660104886647897117',
-//     messages: JSON.stringify({'title':'这是标题','description':'这是内容'}),
-//     msg_keys: 'nick667'
-//   }
-//   cilentIOS = new PushIOS(optionsIOS);
-//   var body = {
-//     'application':optionsIOS.application,
-//     'auth':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073',
-//     'notifications':{
-//       'send_date':new Date(),
-//       'content':'信刚你收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗收到了吗',
-//       'data':{
-//           'custom':'json data'
-//       },
-//       'link':optionsIOS.link
-//     }
-//   };
-
-//   var callback = function(data,counter,__callback){
-//     counter.i++;
-//     __callback();
-//     console.log(counter.i,data);
-//     return res.send(data);
-//   }
-
-//   var counter = {
-//     i:0
-//   };
-//   var sum = 3;
-//   async.whilst(
-//     function() { return counter.i < sum},
-//     function(__callback){
-//       if(req.params.platform == 'ios'){
-//         cilentIOS.pushMsg(body,function(data){return res.send(data)},counter,__callback);
-//       }
-//       if(req.params.platform == 'android'){
-//         clientAndroid.pushMsg(opt, function(err, result) {
-//           if (err) {
-//             console.log({'msg':'CAMPAIGN_PUSH_ERROR','result':0,'data':err});
-//             callback({'msg':'CAMPAIGN_PUSH_ERROR','result':0,'data':err},counter,__callback);
-//           }else{
-//             callback({'msg':'CAMPAIGN_PUSH_SUCCESS','result':1,'data':result},counter,__callback);
-//           }
-//         });
-//       }
-//     },
-//     function(err){
-//       if(err){
-//         return res.send({'result':0,'msg':'FAILURED'});
-//       }else{
-//         return res.send({'result':1,'msg':'SUCCESS'});
-//       }
-//     }
-//   );
-// }
-
-
-// var alert ={ "body" : "kakak!", "action-loc-key" : "Play" , "launch-image" : "mysplash.png"};
-// var payload = {'messageFrom': 'Holly'};
-// var token = "77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073";
-// cilentIOS.pushMsg(alert,payload,token);
-
-
+var clientAndroid = new PushAndroid(optionsAndroid);
 
 
 var _push = function(users,msg,out_callback){
@@ -326,47 +250,91 @@ exports.pushCampaign = function(req,res){
 }
 
 
-// //自动判断用户手机平台,推送对应格式的消息
-// exports.pushCampaign = function(members,msg,out_counter,out_callback){
-//   // 生产模式
-//   // var uids = [];
-//   // if(members){
-//   //   for(var i = 0; i < members.length; i ++){
-//   //     uids.push(members[i]._id);
-//   //   }
 
-//   //   // User.find({'_id':{'$in':uids}},{'_id':1,'device':1},function(err,users){
-//   //   //   if(err || !users){
-//   //   //     return res.send({'msg':'USER_NOT_FOUND','result':0});
-//   //   //   }else{
-//   //   //     var msg = {
-//   //   //       body:req.body.body,
-//   //   //       title:req.body.title,
-//   //   //       description:req.body.description
-//   //   //     }
-//   //   //     _push(users,res,msg);
-//   //   //   }
-//   //   // });
-//   // }else{
-//   //   out_counter.i++;
-//   //   out_callback();
-//   // }
 
-//   // 测试模式
-//   var users = [{
-//     '_id':'0',
-//     'nickname':'a',
-//     'device':[{
-//       'platform':'Android',
-//       'user_id':'1125800188872535509'
-//     }]},{
-//     '_id':'1',
-//     'nickname':'b',
-//     'device':[{
-//       'platform':'IOS',
-//       'token':'77743b58fdad19fe55565b31ad8eb8b457bd55d90ca56f45c7de5cd2f7bda073'
-//     }]
-//   }
-//   ];
-//   _push(users,msg,out_counter,out_callback);
-// }
+/**
+ * 推荐消息给用户
+ * example:
+ *  pushToUsers(users, {
+ *    title: '',
+ *    body: '',
+ *    description: ''
+ *  })
+ * @param {Array} users 包含_id和设备信息的用户数据
+ * @param {Object} pushMsg 要推送的消息
+ */
+var pushToUsers = function (users, pushMsg, callback) {
+  var iosUsers = users.filter(function (user) {
+    return user.token_device.platform === 'iOS';
+  });
+  var androidUsers = users.filter(function (user) {
+    return user.token_device.platform === 'Android';
+  });
+
+  var iosTokens = [];
+  iosUsers.forEach(function (iosUser) {
+    if (iosUser.token_device.device_token) {
+      iosTokens.push(iosUser.token_device.device_token);
+    }
+  });
+  console.log('iosTokens', iosTokens); // todo for debug
+  if (iosTokens.length > 0) {
+    console.log('to push'); // todo for debug
+    clientIOS.pushNotificationToMany({
+      alertText: pushMsg.body,
+      badge: 1,
+      payload: {
+        messageFrom: 'Donler'
+      }
+    }, iosTokens);
+  }
+
+
+  // todo push to androidUsers
+
+};
+
+exports.push = function (req, res) {
+  // todo 权限验证，只允许本地请求
+
+  var query = {};
+  var pushMsg = req.body.msg;
+  switch (req.body.name) {
+  case 'companyCampaign':
+    // todo 参数合法性验证
+    query.cid = { $in: req.body.target.cid };
+    break;
+  case 'teamCampaign':
+    // todo 参数合法性验证
+    query['team._id'] = { $in: req.body.target.tid };
+    break;
+  case 'users':
+    // todo 参数合法性验证
+    query._id = { $in: req.body.target.uid };
+    break;
+  default:
+    res.send(400);
+    return;
+  }
+
+  User.find(query, {
+    '_id': true,
+    'token_device': true
+  }).exec()
+    .then(function (users) {
+      // 不做回调处理，iOS的apn推送基于事件，无法获知本次推送任务的失败设备
+      pushToUsers(users, pushMsg);
+      res.send(200, {
+        success: true
+      });
+    })
+    .then(null, function (err) {
+      console.log(err);
+      console.log(err.stack);
+      res.send(500, {
+        success: false
+      });
+    });
+
+};
+

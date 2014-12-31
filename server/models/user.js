@@ -121,7 +121,17 @@ var UserSchema = new Schema({
         default: false
     },
     device:[_device],
-    push_toggle: Boolean
+    push_toggle: Boolean,
+    app_token: String,                  // 保存上次登录的token，如果注销则清除。不可用之前的属性名，否则新api会造成判断的错误。
+    token_device: {
+        platform: String,
+        version: String,
+        device_id: String,
+        device_type: String,
+        device_token: String,
+        app_id: String,
+        api_key: String
+    } // 上次登录的设备信息，如果注销则清除。
 });
 
 /**
