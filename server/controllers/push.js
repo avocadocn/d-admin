@@ -33,7 +33,7 @@ var IOSfeedbackOptions = {
   cert: rootConfig.root+'/server/service/PushChatCert.pem',
   key:  rootConfig.root+'/server/service/PushChatKey.pem',
   passphrase: '55yali',
-  interval: 30,
+  interval: 60, // 60秒请求一次推送结果
   port: 2196
 };
 
@@ -50,7 +50,8 @@ var iosFeedbackService = PushIOS.CreateFeedback(IOSfeedbackOptions, function (fe
 
 var clientAndroid = new PushAndroid(optionsAndroid);
 
-
+// 注：以下注释代码已经不能工作，仅仅是为了做安卓的推送时方便参考，一旦完成安卓的推送，应该删去这段代码
+//
 // var _push = function(users,msg,out_callback){
 //   var user_id_or_tokens = [];
 //   //第一步:获取参加活动的所有成员,取出他们的设备推送码(token或者user_id)
@@ -248,8 +249,7 @@ var clientAndroid = new PushAndroid(optionsAndroid);
 //     res.send({'msg':'PUSH_PERMISSION_DENNIED!','result':0});
 //   }
 // }
-
-
+// 以上是即将移除的注释代码
 
 
 /**
@@ -263,7 +263,7 @@ var clientAndroid = new PushAndroid(optionsAndroid);
  * @param {Array} users 包含_id和设备信息的用户数据
  * @param {Object} pushMsg 要推送的消息
  */
-var pushToUsers = function (users, pushMsg, callback) {
+var pushToUsers = function (users, pushMsg, options) {
   var iosUsers = users.filter(function (user) {
     return user.token_device.platform === 'iOS';
   });
@@ -282,7 +282,8 @@ var pushToUsers = function (users, pushMsg, callback) {
       alertText: pushMsg.body,
       badge: 1,
       payload: {
-        messageFrom: 'Donler'
+        messageFrom: 'Donler',
+        campaignId: options.campaignId
       }
     }, iosTokens);
   }
@@ -301,6 +302,7 @@ exports.push = function (req, res) {
 
   var query = {};
   var pushMsg = req.body.msg;
+  var campaignId = req.body.campaignId;
   switch (req.body.name) {
   case 'companyCampaign':
     // todo 参数合法性验证
@@ -324,8 +326,10 @@ exports.push = function (req, res) {
     'token_device': true
   }).exec()
     .then(function (users) {
-      // 不做回调处理，iOS的apn推送基于事件，无法获知本次推送任务的失败设备
-      pushToUsers(users, pushMsg);
+      // 不做回调处理，iOS推送无法立即获知是否推送成功，需要不断请求推送结果。
+      pushToUsers(users, pushMsg, {
+        campaignId: campaignId
+      });
       res.send(200, {
         success: true
       });
