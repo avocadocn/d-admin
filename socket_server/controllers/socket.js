@@ -70,7 +70,7 @@ module.exports = function (io) {
 
   io.on('connect', function (socket) {
     // console.log(io.sockets.connected[io.sockets.sockets[0].id]);
-    console.log( socket.request._query._id+' connected.');
+    // console.log( socket.request._query._id+' connected.');
 
     var userId = socket.request._query._id;
     onlineUsers[userId]=socket.id;
@@ -85,7 +85,7 @@ module.exports = function (io) {
       var userId = socket.request._query._id;
       delete onlineUsers[userId];
       var text = 'user'+userId+' disconnected';
-      console.log(text);
+      // console.log(text);
     });
 
     /*
