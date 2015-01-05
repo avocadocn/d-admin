@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
   Config = mongoose.model('Config'),
   mail = require('../service/mail'),
   webpower = require('../service/webpower'),
+  sendcloud = require('../service/sendcloud'),
   sync = require('../service/synchronization'),
   UUID = require('../kit/uuid');
 
@@ -137,8 +138,11 @@ exports.validate = function(req, res) {
                 return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
               }
             });
-          } else {
+          } else if (config.smtp === '163') {
             mail.sendCompanyActiveMail(who, name, _id, config.host.product);
+            return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
+          } else if (config.smtp === 'sendcloud') {
+            sendcloud.sendCompanyActiveMail(who, name, _id, config.host.product);
             return res.send({'msg':'MAIL_SEND_SUCCESS!','result':1});
           }
         }
