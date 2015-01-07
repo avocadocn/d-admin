@@ -57,23 +57,29 @@ exports.sendCompanyActiveMail = function (who, name, id, host) {
   var from = '动梨<service@donler.com>';
   var to = who;
   var subject = name + ' 动梨账号激活';
-  var content = '<p>我们收到您在动梨的申请信息，请点击下面的链接来激活帐户：</p>' +
-    '<a style="text-decoration: none; word-break: break-all;" href="http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id + '">激活账号</a>';
+  var description = '我们收到您在动梨的申请信息，请点击下面的链接来激活帐户：';
+  var link = 'http://' + host + '/company/validate?key=' + encrypt.encrypt(id,SECRET) + '&id=' + id;
 
-    fs.readFile(rootConfig.root+'/server/views/partials/mailTemplate.jade', 'utf8', function (err, data) {
-        if (err) throw err;
-        var fn = jade.compile(data);
-        var html = fn({'title':'注册激活','host':siteProtocol+host,'who':who,'content':content});
-        sendMail({
-          from: from,
-          to: to,
-          subject: subject,
-          html: html
-        },{
-          type:'company',
-          _id:id,
-          name:name,
-          email:who
-        },'COMPANY_CREATE_EMAIL_SEND_ERROR');
+  fs.readFile(rootConfig.root + '/server/views/partials/mailTemplate.jade', 'utf8', function(err, data) {
+    if (err) throw err;
+    var fn = jade.compile(data);
+    var html = fn({
+      'title': '注册激活',
+      'host': siteProtocol + host,
+      'who': who,
+      'description': description,
+      'link': link
     });
+    sendMail({
+      from: from,
+      to: to,
+      subject: subject,
+      html: html
+    }, {
+      type: 'company',
+      _id: id,
+      name: name,
+      email: who
+    }, 'COMPANY_CREATE_EMAIL_SEND_ERROR');
+  });
 };
