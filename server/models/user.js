@@ -5,19 +5,22 @@
  */
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    validate = require('mongoose-validate'),
     crypto = require('crypto');
 
 var _device = new Schema({
     platform:{
         type:String,
-        enum:['Android','IOS','WindowsPhone','BlackBerry']
+        enum:['Android','iOS','WindowsPhone','BlackBerry']
     },
     version:String,
     device_id:String,
     device_type:String,            //同一platform设备的类型(比如ios系统有iPhone和iPad)
-    token:String,                  //只有APN推送才会用到
+    access_token:String,           //每次登录时生成
+    ios_token:String,              //只有iosd的APN推送才会用到
     user_id:String,                //只有Android的百度云推送才会用到
+    channle_id:String,             //只有Android的百度云推送才会用到
+    app_id: String,
+    api_key: String,
     update_date:{
         type: Date,
         default: Date.now
@@ -40,6 +43,13 @@ var _team = new Schema({
     logo: String
 });
 
+var latestCommentCampaign = new Schema({
+    _id: Schema.Types.ObjectId,
+    unread: {
+        type: Number,
+        default: 0
+    }
+});
 /**
  * User Schema
  */
@@ -50,21 +60,24 @@ var UserSchema = new Schema({
     },
     email: {
         type: String,
-        unique: true,
-        validate: [validate.email, '请填写正确的邮箱地址']
+        unique: true
     },
+    //HR是否关闭此人
     active: {
         type: Boolean,
         default: false
     },
+    //邮件激活
     mail_active:{
         type: Boolean,
         default: false
     },
-    invite_active:{
-        type:Boolean,
-        default: true
-    },
+    //已不需要
+    //是否填了公司验证码
+    // invite_active:{
+    //     type:Boolean,
+    //     default: true
+    // },
     hashed_password: String,
     provider: {
         type: String,
@@ -75,6 +88,7 @@ var UserSchema = new Schema({
         type: String,
         default: '/img/icons/default_user_photo.png'
     },
+
     nickname: String,
     realname: String,
     department: {
@@ -108,30 +122,67 @@ var UserSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['LEADER','EMPLOYEE']      //HR 队长 普通员工
+        enum: ['LEADER','EMPLOYEE']      //队长 普通员工
     },
     cid: {
         type: Schema.Types.ObjectId,
         ref: 'Company'
     },
     cname: String,
+    company_official_name: String,
     team: [_team],
+    established_team: [_team],           //自己创建的小队
+    //本系统是否关闭此人
     disabled:{
         type: Boolean,
         default: false
     },
     device:[_device],
-    push_toggle: Boolean,
-    app_token: String,                  // 保存上次登录的token，如果注销则清除。不可用之前的属性名，否则新api会造成判断的错误。
-    token_device: {
-        platform: String,
-        version: String,
-        device_id: String,
-        device_type: String,
-        device_token: String,
-        app_id: String,
-        api_key: String
-    } // 上次登录的设备信息，如果注销则清除。
+    push_toggle:{                   //免打扰开关 false为接收push
+        type:Boolean,
+        default:false
+    },
+    top_campaign:{
+        type: Schema.Types.ObjectId,
+        ref: 'Campaign'
+    },
+    last_comment_time: Date,
+    commentCampaigns: [latestCommentCampaign],//参加了的讨论列表
+    unjoinedCommentCampaigns: [latestCommentCampaign], //未参加的讨论列表
+    score: {
+        // 积分总数
+        total: {
+            type: Number,
+            default: 0
+        },
+
+        // 参加的官方小队活动成功结束
+        officialCampaignSucceded: {
+            type: Number,
+            default: 0
+        },
+
+        // 参加官方小队
+        joinOfficialTeam: {
+            type: Number,
+            default: 0
+        },
+
+        // 退出官方小队
+        quitOfficialTeam: {
+            type: Number,
+            default: 0
+        },
+
+        // 上传照片到官方小队相册
+        uploadPhotoToOfficialTeam: {
+            type: Number,
+            default: 0
+        }
+    },
+    //自己写的标签
+    tags: [String],
+    campaignCount:Number
 });
 
 /**
@@ -201,6 +252,119 @@ UserSchema.methods = {
         if (!password || !this.salt) return '';
         var salt = new Buffer(this.salt, 'base64');
         return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
+    },
+
+    /**
+     * 是否是某个队的成员
+     * @param  {Object|String}  tid
+     * @return {Boolean}
+     */
+    isTeamMember: function (tid) {
+        tid = tid.toString();
+        for (var i = 0; i < this.team.length; i++) {
+            if (tid === this.team[i]._id.toString()) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    isTeamLeader: function (tid) {
+        tid = tid.toString();
+        for (var i = 0; i < this.team.length; i++) {
+            if (tid === this.team[i]._id.toString()) {
+                return this.team[i].leader;
+            }
+        }
+        return false;
+    },
+
+    isLeader: function () {
+        for (var i = 0; i < this.team.length; i++) {
+            if (this.team[i].leader) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    getCid: function () {
+        return this.cid;
+    },
+
+    /**
+     * 添加设备信息到用户的设备记录中
+     * @param {Object} headers req.headers
+     * @param {Object} token 生成的新token
+     * @param {Object} pushData push的相关数据
+     */
+    addDevice: function (headers, access_token, pushData) {
+        var headersKeys = ['x-app-id', 'x-api-key', 'x-device-id', 'x-device-type', 'x-platform', 'x-version'];
+        var modelKeys = ['app_id', 'api_key', 'device_id', 'device_type', 'platform', 'version'];
+        var device = {};
+        for (var i = 0; i < headersKeys.length; i++) {
+            var headersKey = headersKeys[i];
+            var modelKey = modelKeys[i];
+            if (headers[headersKey]) {
+              device[modelKey] = headers[headersKey];
+            } else {
+              device[modelKey] = null;
+            }
+        }
+        device.access_token = access_token;
+        if ('Android iOS WindowsPhone BlackBerry'.indexOf(device.platform) === -1) {
+            return;
+        }
+        if(device.platform=='iOS' && pushData.ios_token){
+            device.ios_token = pushData.ios_token;
+        }
+        else if(device.platform=='Android' && pushData.user_id&&pushData.channle_id){
+            device.user_id = pushData.user_id;
+            device.channle_id = pushData.channle_id;
+        }
+        if (!this.device) {
+            this.device = [];
+        }
+        for (var i = 0; i < this.device.length; i++) {
+            var historyDevice = this.device[i];
+            if (historyDevice.platform === device.platform) {
+                this.device.splice(i,1);
+                break;
+            }
+        }
+        this.device.push(device);
+    },
+    /**
+     * 移除用户的设备记录中的设备信息
+     * @param  {[type]} headers [description]
+     * @return {[type]}         [description]
+     */
+    removeDevice:function(headers) {
+        var headersKeys = ['x-device-id', 'x-device-type', 'x-platform', 'x-version'];
+        var modelKeys = ['device_id', 'device_type', 'platform', 'version'];
+        var device = {};
+        for (var i = 0; i < headersKeys.length; i++) {
+            var headersKey = headersKeys[i];
+            var modelKey = modelKeys[i];
+            if (headers[headersKey]) {
+              device[modelKey] = headers[headersKey];
+            } else {
+              device[modelKey] = null;
+            }
+        }
+        if ('Android iOS WindowsPhone BlackBerry'.indexOf(device.platform) === -1) {
+            return;
+        }
+        if (!this.device) {
+            this.device = [];
+        }
+        for (var i = 0; i < this.device.length; i++) {
+            var historyDevice = this.device[i];
+            if (historyDevice.platform === device.platform) {
+                this.device.splice(i,1);
+                break;
+            }
+        }
     }
 };
 

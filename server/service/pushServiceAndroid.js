@@ -117,7 +117,6 @@ function getSign(method, url, params, sk) {
  * @param {function} cb cb(err, result)
  */
 function request(bodyArgs, path, sk, id, host, cb) {
-
     assert.ok(bodyArgs.method);
     assert.ok(path);
     assert.ok(sk);
@@ -236,6 +235,7 @@ function checkOptions(options, must){
   }
 
   if (options['user_id'] && !(typeof options['user_id'] === 'string' && options['user_id'].length <= 256)) {
+    console.log(options['user_id'] ,typeof options['user_id'] === 'string' , options['user_id'].length <= 256)
     throw new Error(errMsg.INVALID_USER_ID);
   }
   if (options['start'] && !(typeof options['start'] === 'number' && options['start'] >= 0)) {
@@ -390,7 +390,6 @@ Push.prototype.pushMsg = function (options, cb) {
       opt[i] = options[i];
     }
   }
-
   var must = ['push_type', 'messages', 'msg_keys'];
 
   if (opt['push_type'] === 1) {
