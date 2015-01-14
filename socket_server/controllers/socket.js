@@ -13,7 +13,7 @@ var actions = function (io, action, data) {
       // console.log(onlineUsers);
       for(var i=0; i<uids.length; i++){
         var uid = uids[i];
-        if(onlineUsers[uid]){//如果他在线
+        if(onlineUsers[uid] && uid!==data.comment.poster._id){//如果他在线，并且不是自己
           var socketId = onlineUsers[uid];
           io.sockets.in(socketId).emit('getNewComment');
           //need test
@@ -116,7 +116,7 @@ module.exports = function (io) {
 
     socket.on('commentFromServer',function(joinedUids, unjoinedUids, campaign, comment){
       //告诉相关user有newComments(首页红点)
-      actions(io,'udpateNotification',{'uids':joinedUids.concat(unjoinedUids)});
+      actions(io,'udpateNotification',{'uids':joinedUids.concat(unjoinedUids), 'comment':comment});
       //更新列表1(讨论列表):
       actions(io,'upateCommentList',{'joinedUids':joinedUids, 'unjoinedUids':unjoinedUids, 'campaign':campaign});
       //更新列表2(详情页列表): 
