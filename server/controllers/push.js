@@ -1,4 +1,6 @@
 //推送的具体操作
+var path = require('path');
+
 var mongoose = require('mongoose'),
     PushAndroid = require('../service/pushServiceAndroid'),
     PushIOS = require('../service/pushServiceIOS'),
@@ -6,7 +8,11 @@ var mongoose = require('mongoose'),
     encrypt = require('../kit/encrypt'),
     rootConfig = require('../config/config'),
     async = require('async'),
-    User = mongoose.model('User');
+    User = mongoose.model('User')
+    Config = mongoose.model('Config');
+
+var meanConfig = require('../config/config');
+var pemPath = path.join(meanConfig.root, 'server/service/ios-push-pem/');
 
 var optionsAndroid = {
    ak: 'pSGg3PHKgD7vdah7eHDydQOu',
@@ -18,34 +24,81 @@ var optionsAndroid = {
 //    sk: 'nyPPYGqDmybQcQyQlOeehLUZAXegfciP'
 // };
 
-var optionsIOS = {
-  gateway: 'gateway.sandbox.push.apple.com',
-  cert: rootConfig.root+'/server/service/PushChatCert.pem',
-  key:  rootConfig.root+'/server/service/PushChatKey.pem',
-  passphrase: '55yali',
-  port: 2195,
-  enhanced: true,
-  cacheLength: 100
+var clientIOS, iosFeedbackService;
+
+
+exports.getConfig = function (req, res, next) {
+  Config.findOne({ 'name': 'admin' }).exec()
+    .then(function (config) {
+      if (!config) {
+        console.error('获取配置数据失败')
+        res.send(500, {
+          success: false
+        });
+        return;
+      }
+      req.donlerConfig = config;
+      next();
+    })
+    .then(null, function (err) {
+      console.error(err.stack);
+      res.send(500, {
+        success: false
+      });
+    });
 };
 
-var IOSfeedbackOptions = {
-  gateway: 'feedback.sandbox.push.apple.com',
-  cert: rootConfig.root+'/server/service/PushChatCert.pem',
-  key:  rootConfig.root+'/server/service/PushChatKey.pem',
-  passphrase: '55yali',
-  interval: 60, // 60秒请求一次推送结果
-  port: 2196
-};
-
-var clientIOS = PushIOS.CreateService(optionsIOS);
-var iosFeedbackService = PushIOS.CreateFeedback(IOSfeedbackOptions, function (feedbackData) {
-  var time, device;
-  for (var i in feedbackData) {
-    time = feedbackData[i].time;
-    device = feedbackData[i].device;
-    console.log("Device: " + device.toString('hex') + " has been unreachable, since: " + time);
+exports.shouldPush = function (req, res, next) {
+  var config = req.donlerConfig;
+  if (config.push.status === 'on') {
+    next();
+  } else {
+    res.send(200, {
+      success: false
+    });
   }
-}, console.log);
+};
+
+exports.initIOS = function (req, res, next) {
+  if (clientIOS && iosFeedbackService) {
+    next();
+  } else {
+    var config = req.donlerConfig;
+    if (!config || !config.push || !config.push.apn) {
+      console.error('没有配置apn');
+      res.send(500, {
+        success: false
+      });
+      return;
+    }
+    var apn = config.push.apn;
+    clientIOS = PushIOS.CreateService({
+      gateway: apn.push.gateway,
+      cert: path.join(pemPath, apn.cert_path),
+      key:  path.join(pemPath, apn.key_path),
+      passphrase: apn.passphrase,
+      port: apn.push.port,
+      enhanced: true,
+      cacheLength: 100
+    });
+    var iosFeedbackService = PushIOS.CreateFeedback({
+      gateway: apn.feedback.gateway,
+      cert: path.join(pemPath, apn.cert_path),
+      key:  path.join(pemPath, apn.cert_path),
+      passphrase: apn.passphrase,
+      interval: apn.feedback.interval,
+      port: apn.feedback.port
+    }, function (feedbackData) {
+      var time, device;
+      for (var i in feedbackData) {
+        time = feedbackData[i].time;
+        device = feedbackData[i].device;
+        console.log("Device: " + device.toString('hex') + " has been unreachable, since: " + time);
+      }
+    }, console.log);
+    next();
+  }
+};
 
 
 var clientAndroid = new PushAndroid(optionsAndroid);
@@ -77,7 +130,6 @@ var pushToUsers = function (users, pushMsg, options) {
         androidUserIds.push(device.user_id);
       }
     });
-    
   });
   if (iosTokens.length > 0) {
     clientIOS.pushNotificationToMany({
@@ -140,7 +192,6 @@ exports.push = function (req, res) {
     'device': 1
   }).exec()
     .then(function (users) {
-      // 不做回调处理，iOS推送无法立即获知是否推送成功，需要不断请求推送结果。
       pushToUsers(users, pushMsg, {
         campaignId: campaignId
       });

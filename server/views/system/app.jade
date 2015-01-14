@@ -3,8 +3,8 @@
     .inner
       .row
         .col-lg-12
-          a.dl_btn.dl_btn_right(ng-if="push_status.value=='off'" ng-click="pushConfig('set')") 开启
-          a.dl_btn.dl_btn_right(ng-if="push_status.value=='on'" ng-click="pushConfig('set')") 关闭
+          a.dl_btn.dl_btn_right(ng-if="push_status.value=='off'" ng-click="pushConfig('set')") 开启推送
+          a.dl_btn.dl_btn_right(ng-if="push_status.value=='on'" ng-click="pushConfig('set')") 关闭推送
     .inner
       .row
         .col-lg-12
@@ -19,26 +19,34 @@
               a.dl_btn.dl_btn_right(ng-click="baidu('set')") 保存
           .area_right
             .dl_row
-              span 网关
-              input(type='text' ng-model="push.apn.gateway")
-              input(type='text' ng-model="push.apn.port")
-            .dl_row
-              span 证书文件
-              input(type='text')
-            .dl_row
-              span 密码文件
-              input(type='text')
-            .dl_row
-              span APN密码
-              input(type='text' ng-model="push.apn.passphrase")
-            .dl_row
-              span PUSHWOOSH_APPLICATION_ID
-              input(type='text' ng-model="push.apn.pw_ap_id")
-            .dl_row
-              span PUSHWOOSH_AUTH_TOKEN
-              input(type='text' ng-model="push.apn.pw_auth")
-            .dl_row
-              a.dl_btn.dl_btn_right(ng-click="apn('set')") 保存
+              h2 apn设置
+            form(name="apnForm")
+              .dl_row
+                span 模式(切换模式只是将下面数据改为预设值，方便填写，实际仍以表单数据为准)
+                select(ng-model="apnModeCurrentSelectd" ng-options="opt for opt in apnModeOptions")
+              .dl_row
+                span push gateway
+                input(type='text' ng-model="apnSettings.push.gateway" required)
+                span port
+                input(type='text' ng-model="apnSettings.push.port" required)
+              .dl_row
+                span feedback gateway
+                input(type='text' ng-model="apnSettings.feedback.gateway" required)
+                span port
+                input(type='text' ng-model="apnSettings.feedback.port" required)
+                span interval(获取推送反馈的时间间隔，单位为秒)
+                input(type="number" ng-model="apnSettings.feedback.interval")
+              .dl_row
+                span PushChatCert.pem(相对路径，下同)
+                input(type='text' ng-model="apnSettings.cert_path" required)
+              .dl_row
+                span PushChatKey.pem
+                input(type='text' ng-model="apnSettings.cert_path" required)
+              .dl_row
+                span password
+                input(type='password' ng-model="apnSettings.passphrase" required)
+              .dl_row
+                button.dl_btn.dl_btn_right(type="submit" ng-click="setApnSettings()") 保存
     .inner
       .row
         .col-lg-12

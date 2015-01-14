@@ -6,7 +6,6 @@ var mongoose = require('mongoose'),
   Config = mongoose.model('Config'),
   User = mongoose.model('User');
 
-
 var APP = function(callback,type){
   this.TYPE = type;
   this.callback = callback;
@@ -40,21 +39,59 @@ var APP = function(callback,type){
   }
 }
 
-exports.apn = function(req,res){
-  console.log(1);
-  var callback = function(code,data){
-    return res.send({'result':code,'data':data})
-  }
-  var app = new APP(callback,'apn');
-  var operate = req.body.operate;
-  if(operate =='get'){
-    app.get();
-  }
-  if(operate == 'set'){
-    app.setModifyData(req.body.data);
-    app.set();
-  }
-}
+exports.getApn = function (req, res) {
+  Config.findOne({ name: 'admin' }, { 'push.apn': true }).exec()
+  .then(function (config) {
+    if (config) {
+      var apn = {};
+      if (config.push && config.push.apn) {
+        apn = config.push.apn;
+      }
+      res.send(200, {
+        apn: apn,
+        devPemPath: {
+          certPath: 'dev/PushChatCert.pem',
+          keyPath: 'dev/PushChatKey.pem'
+        },
+        proPemPath: {
+          certPath: 'pro/PushChatCert.pem',
+          keyPath: 'pro/PushChatKey.pem'
+        }
+      });
+    } else {
+      res.send(404);
+    }
+  })
+  .then(null, function (err) {
+    console.error(err.stack);
+  });
+};
+
+exports.setApn = function (req, res) {
+  Config.findOne({ name: 'admin'}).exec()
+  .then(function (config) {
+    if (!config) {
+      res.send(404);
+      return;
+    }
+    if (!config.push) {
+      config.push = {};
+    }
+    config.push.apn = req.body.apn;
+    config.save(function (err) {
+      if (err) {
+        console.error(err.stack);
+      } else {
+        res.send(200, { msg: '修改成功' });
+      }
+    });
+
+  })
+  .then(null, function (err) {
+    console.error(err.stack);
+    res.send(500, { msg: '服务器错误' });
+  });
+};
 
 exports.baidu = function(req,res){
   var callback = function(code,data){

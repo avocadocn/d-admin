@@ -469,13 +469,61 @@ adminApp.controller('AppController', ['$http','$scope','$rootScope',
       sk:''
     }
 
-    $scope.apn = {
-      gateway:'',
-      cert_path:'',
-      key_path:'',
-      passphrase:'',
-      port:0
-    }
+    var defaultApn = {
+      dev: {
+        push: {
+          gateway: 'gateway.sandbox.push.apple.com',
+          port: '2195'
+        },
+        feedback: {
+          gateway: 'feedback.sandbox.push.apple.com',
+          port: '2196',
+          interval: 60
+        }
+      },
+      pro: {
+        push: {
+          gateway: 'gateway.push.apple.com',
+          port: '2195'
+        },
+        feedback: {
+          gateway: 'feedback.push.apple.com',
+          port: '2196',
+          interval: 60
+        }
+      }
+    };
+
+    $scope.apnModeOptions = ['dev', 'pro'];
+    $scope.apnModeCurrentSelectd = '';
+
+    $scope.$watch('apnModeCurrentSelectd', function (newVal) {
+      if (newVal) {
+        switch (newVal) {
+        case 'dev':
+          $scope.apnSettings = defaultApn.dev;
+          break;
+        case 'pro':
+          $scope.apnSettings = defaultApn.pro;
+          break;
+        }
+      }
+    })
+
+    $scope.apnSettings = {
+      push: {
+        gateway: String,
+        port: String
+      },
+      feedback: {
+        gateway: String,
+        port: String,
+        interval: Number // 获取推送结果的间隔，单位为秒
+      },
+      cert_path: String,
+      key_path: String,
+      passphrase: String
+    };
 
     $scope.app_users = [];
 
@@ -508,11 +556,6 @@ adminApp.controller('AppController', ['$http','$scope','$rootScope',
       god($scope,'app_users',$http,'info','get','get');
     }
 
-    //苹果推送设置
-    $scope.apn = function(operate){
-      god($scope,'apn',$http,'apn',operate,'post');
-    }
-
     //百度推送设置
     $scope.baidu = function(operate){
       god($scope,'baidu',$http,'baidu',operate,'post');
@@ -523,9 +566,35 @@ adminApp.controller('AppController', ['$http','$scope','$rootScope',
     }
 
     $scope.info();
-    $scope.apn('get');
     $scope.baidu('get');
     $scope.pushConfig('get');
+
+
+    var getApnSettings = function () {
+      $http.get('/app/apn')
+        .success(function (data, status, headers, config) {
+          $scope.apnSettings = data.apn;
+          defaultApn.dev.cert_path = data.devPemPath.certPath;
+          defaultApn.dev.key_path = data.devPemPath.keyPath;
+          defaultApn.pro.cert_path = data.proPemPath.certPath;
+          defaultApn.pro.key_path = data.proPemPath.keyPath;
+        })
+        .error(function (data, status, headers, config) {
+          alert('获取推送设置失败');
+        });
+    };
+    getApnSettings();
+
+    $scope.setApnSettings = function () {
+      $http.post('/app/apn', { apn: $scope.apnSettings })
+        .success(function (data, status, headers, config) {
+          alert(data.msg);
+        })
+        .error(function (data, status, headers, config) {
+          alert(data.msg || '设置失败');
+        });
+    };
+
 }]);
 
 

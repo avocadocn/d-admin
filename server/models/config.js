@@ -38,12 +38,19 @@ var Config = new Schema({
                 default:true
             }
         },
-        apn:{
-            gateway:String,
-            cert_path:String,
-            key_path:String,
-            passphrase:String,
-            port:Number
+        apn: {
+            push: {
+                gateway: String,
+                port: String
+            },
+            feedback: {
+                gateway: String,
+                port: String,
+                interval: Number // 获取推送结果的间隔，单位为秒
+            },
+            cert_path: String,
+            key_path: String,
+            passphrase: String
         }
     },
 
