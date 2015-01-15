@@ -8,7 +8,7 @@ var mongoose = require('mongoose'),
     encrypt = require('../kit/encrypt'),
     rootConfig = require('../config/config'),
     async = require('async'),
-    User = mongoose.model('User')
+    User = mongoose.model('User'),
     Config = mongoose.model('Config');
 
 var meanConfig = require('../config/config');
@@ -25,7 +25,55 @@ var optionsAndroid = {
 // };
 
 var clientIOS, iosFeedbackService;
+var currentApnConfig;
 
+var isTheSameApnConfig = function (config1, config2) {
+  try {
+    if (config1.push.gateway === config2.push.gateway
+      && config1.push.port === config2.push.port
+      && config1.feedback.gateway === config2.feedback.gateway
+      && config1.feedback.port === config2.feedback.port
+      && config1.feedback.interval === config2.feedback.interval
+      && config1.cert_path === config2.cert_path
+      && config1.key_path === config2.key_path
+      && config1.passphrase === config2.passphrase) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+};
+
+var initApn = function (config) {
+  var apn = config.push.apn;
+  currentApnConfig = apn;
+  clientIOS = PushIOS.CreateService({
+    gateway: apn.push.gateway,
+    cert: path.join(pemPath, apn.cert_path),
+    key:  path.join(pemPath, apn.key_path),
+    passphrase: apn.passphrase,
+    port: apn.push.port,
+    enhanced: true,
+    cacheLength: 100
+  });
+  iosFeedbackService = PushIOS.CreateFeedback({
+    gateway: apn.feedback.gateway,
+    cert: path.join(pemPath, apn.cert_path),
+    key:  path.join(pemPath, apn.key_path),
+    passphrase: apn.passphrase,
+    interval: apn.feedback.interval,
+    port: apn.feedback.port
+  }, function (feedbackData) {
+    var time, device;
+    for (var i in feedbackData) {
+      time = feedbackData[i].time;
+      device = feedbackData[i].device;
+      console.log("Device: " + device.toString('hex') + " has been unreachable, since: " + time);
+    }
+  }, console.log);
+};
 
 exports.getConfig = function (req, res, next) {
   Config.findOne({ 'name': 'admin' }).exec()
@@ -60,44 +108,18 @@ exports.shouldPush = function (req, res, next) {
 };
 
 exports.initIOS = function (req, res, next) {
-  if (clientIOS && iosFeedbackService) {
-    next();
-  } else {
-    var config = req.donlerConfig;
-    if (!config || !config.push || !config.push.apn) {
-      console.error('没有配置apn');
-      res.send(500, {
-        success: false
-      });
-      return;
-    }
-    var apn = config.push.apn;
-    clientIOS = PushIOS.CreateService({
-      gateway: apn.push.gateway,
-      cert: path.join(pemPath, apn.cert_path),
-      key:  path.join(pemPath, apn.key_path),
-      passphrase: apn.passphrase,
-      port: apn.push.port,
-      enhanced: true,
-      cacheLength: 100
+  var config = req.donlerConfig;
+  if (!config || !config.push || !config.push.apn) {
+    console.error('没有配置apn');
+    res.send(500, {
+      success: false
     });
-    var iosFeedbackService = PushIOS.CreateFeedback({
-      gateway: apn.feedback.gateway,
-      cert: path.join(pemPath, apn.cert_path),
-      key:  path.join(pemPath, apn.cert_path),
-      passphrase: apn.passphrase,
-      interval: apn.feedback.interval,
-      port: apn.feedback.port
-    }, function (feedbackData) {
-      var time, device;
-      for (var i in feedbackData) {
-        time = feedbackData[i].time;
-        device = feedbackData[i].device;
-        console.log("Device: " + device.toString('hex') + " has been unreachable, since: " + time);
-      }
-    }, console.log);
-    next();
+    return;
   }
+  if (!isTheSameApnConfig(currentApnConfig, config.push.apn)) {
+    initApn(config);
+  }
+  next();
 };
 
 
