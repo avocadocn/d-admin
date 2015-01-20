@@ -167,9 +167,10 @@ var pushToUsers = function (users, pushMsg, options) {
     var opt = {
       message_type:1,
       push_type: 1,
-      messages: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body}),
+      messages: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
       msg_keys: 'donler'
     }
+
     androidUserIds.forEach(function(androidUserId){
       opt.user_id = androidUserId;
       clientAndroid.pushMsg(opt, function(err, result) {
