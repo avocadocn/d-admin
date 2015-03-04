@@ -7,39 +7,64 @@ var onlineUsers= {};//user的映射表，看某人在不在线
 
 var actions = function (io, action, data) {
   switch(action){
-    //告诉相关user有newComments(首页红点)
+    // //告诉相关user有newComments(首页红点)
+    // case 'udpateNotification':
+    //   var uids = data.uids;
+    //   // console.log(onlineUsers);
+    //   for(var i=0; i<uids.length; i++){
+    //     var uid = uids[i];
+    //     if(onlineUsers[uid] && uid!==data.comment.poster._id){//如果他在线，并且不是自己
+    //       var socketId = onlineUsers[uid];
+    //       io.sockets.in(socketId).emit('getNewComment');
+    //       //need test
+    //     }
+    //   }
+    //   return;
+    //   break;
+    // //更新列表1(讨论列表):
+    // case 'upateCommentList':
+    //   var joinedUids = data.joinedUids;
+    //   for(var i=0; i<joinedUids.length; i++) {
+    //     var uid = joinedUids[i];
+    //     io.sockets.in(uid).emit('newCommentCampaign', data.campaign);//已参加
+    //   }
+    //   var unjoinedUids = data.unjoinedUids;
+    //   for(var i=0; i<unjoinedUids.length; i++) {
+    //     var uid = unjoinedUids[i];
+    //     io.sockets.in(uid).emit('newUnjoinedCommentCampaign', data.campaign);//未参加
+    //   }
+    //   return;
+    //   break;
+    // //更新列表2(详情页列表): 
+    // //谁在这个room 就推给谁
+    // case 'updateCampaignComment':
+    //   var campaignId = data.campaign._id;
+    //   io.sockets.in(campaignId).emit('newCampaignComment', data.comment);
+    //   return;
+    //   break;
+    //告诉相关user有newChat(首页红点)
     case 'udpateNotification':
       var uids = data.uids;
-      // console.log(onlineUsers);
       for(var i=0; i<uids.length; i++){
         var uid = uids[i];
-        if(onlineUsers[uid] && uid!==data.comment.poster._id){//如果他在线，并且不是自己
+        if(onlineUsers[uid] && uid!==data.chat.poster.toString()){//如果他在线，并且不是自己
           var socketId = onlineUsers[uid];
-          io.sockets.in(socketId).emit('getNewComment');
-          //need test
+          io.sockets.in(socketId).emit('getNewChat');
         }
       }
       return;
       break;
-    //更新列表1(讨论列表):
-    case 'upateCommentList':
-      var joinedUids = data.joinedUids;
-      for(var i=0; i<joinedUids.length; i++) {
-        var uid = joinedUids[i];
-        io.sockets.in(uid).emit('newCommentCampaign', data.campaign);//已参加
-      }
-      var unjoinedUids = data.unjoinedUids;
-      for(var i=0; i<unjoinedUids.length; i++) {
-        var uid = unjoinedUids[i];
-        io.sockets.in(uid).emit('newUnjoinedCommentCampaign', data.campaign);//未参加
+    case 'updateChatrooms':
+      var uids = data.uids;
+      for(var i=0; i<uids.length; i++) {
+        var uid = uids[i];
+        io.sockets.in(uid).emit('newChat', data.chat);
       }
       return;
       break;
-    //更新列表2(详情页列表): 
-    //谁在这个room 就推给谁
-    case 'updateCampaignComment':
-      var campaignId = data.campaign._id;
-      io.sockets.in(campaignId).emit('newCampaignComment', data.comment);
+    case 'upadteChat':
+      var chatroomId = data.chat._id;
+      io.sockets.in(chatroomId).emit('newChat', data.chat);
       return;
       break;
     default:
@@ -110,18 +135,27 @@ module.exports = function (io) {
     });
 
     /*
-     * 用户评论操作 
+     * 用户评论操作 (2015/3/4后已不用)
      * 
      */
 
-    socket.on('commentFromServer',function(joinedUids, unjoinedUids, campaign, comment){
-      //告诉相关user有newComments(首页红点)
-      actions(io,'udpateNotification',{'uids':joinedUids.concat(unjoinedUids), 'comment':comment});
-      //更新列表1(讨论列表):
-      actions(io,'upateCommentList',{'joinedUids':joinedUids, 'unjoinedUids':unjoinedUids, 'campaign':campaign});
-      //更新列表2(详情页列表): 
-      //谁在这个room 就推给谁
-      actions(io,'updateCampaignComment',{'campaign':campaign, 'comment':comment});
+    // socket.on('commentFromServer',function(joinedUids, unjoinedUids, campaign, comment){
+    //   //告诉相关user有newComments(首页红点)
+    //   actions(io,'udpateNotification',{'uids':joinedUids.concat(unjoinedUids), 'comment':comment});
+    //   //更新列表1(讨论列表):
+    //   actions(io,'upateCommentList',{'joinedUids':joinedUids, 'unjoinedUids':unjoinedUids, 'campaign':campaign});
+    //   //更新列表2(详情页列表): 
+    //   //谁在这个room 就推给谁
+    //   actions(io,'updateCampaignComment',{'campaign':campaign, 'comment':comment});
+    // });
+
+    socket.on('chatFromServer', function(chatroomId, chat, userIds) {
+      //告诉相关user有newChat(首页红点)
+      actions(io, 'udpateNotification', {'uids': userIds, 'chat': chat});
+      //更新chatroom列表的最新讨论
+      actions(io, 'updateChatrooms', {'uids': userIds, 'chat': chat});
+      //更新讨论详情页
+      actions(io, 'upadteChat', {'uids': userIds, 'chat': chat});
     });
 
     // socket.on('talk',function(conversation){
