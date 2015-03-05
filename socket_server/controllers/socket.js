@@ -67,6 +67,26 @@ var actions = function (io, action, data) {
       io.sockets.in(chatroomId).emit('newChat', data.chat);
       return;
       break;
+    case 'updateCircleContent':
+      var uids = data.userIds;
+      for(var i=0; i<uids.length; i++) {
+        //除了自己都通知content有新内容，带头像。
+        //其实发过来的数据应该是没有发的人的id的...以防万一而已。
+        if(onlineUsers[uid] && uid!==data.poster._id.toString()) {
+          var socketId = onlineUsers[uid];
+          io.sockets.in(socketId).emit('getNewCircleContent', data.poster.photo);
+        }
+      }
+      return;
+      break;
+    case 'updateCircleComment':
+      var uids = data.userIds;
+      for(var i=0; i<uids.length; i++) {
+        if(onlineUsers[uid] && uid!==data.poster._id.toString()) {
+          var socketId = onlineUsers[uid];
+          io.sockets.in(socketId).emit('getNewCircleComment', data.photo);
+        }
+      }
     default:
       return;
   }
@@ -156,6 +176,15 @@ module.exports = function (io) {
       actions(io, 'updateChatrooms', {'uids': userIds, 'chat': chat});
       //更新讨论详情页
       actions(io, 'upadteChat', {'uids': userIds, 'chat': chat});
+    });
+
+    //公司页红点、同事圈头像显示or红点?
+    socket.on('circleContent', function(userIds, poster) {
+      actions(io, 'updateCircleContent', {'userIds':userIds, 'poster':poster});
+    });
+    //同事圈带数字红点、公司页带数字红点or红点?
+    socket.on('circleComment', function(userIds, photo) {
+      actions(io, 'updateCircleComment', {'userIds':userIds, 'photo':photo});
     });
 
     // socket.on('talk',function(conversation){
