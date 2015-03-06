@@ -94,6 +94,11 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/terms/templates/manager',
       controller: 'TermController'
     })
+    .when('/stadium',{
+      templateUrl: '/stadiums/home',
+      controller: 'StadiumsController',
+      controllerAs:'stadium',
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -372,6 +377,10 @@ var colorGenerator = function(){
 // adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
 //   function ($http, $scope, $rootScope)
 // ])
+
+adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $scope) {
+
+}]);
 
 adminApp.controller('ComponentController',['$http','$scope',function ($http, $scope) {
   $http.get('/component/componentlist').success(function(data, status) {

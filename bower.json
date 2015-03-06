@@ -10,6 +10,7 @@
     "bootstrap": "3.0.3",
     "angular-bootstrap": "0.10.0",
     "angular-ui-router": "#master",
+    "angular-carousel": "https://github.com/CahaVar/angular-carousel.git#master",
     "SubtlePatterns": "https://github.com/subtlepatterns/SubtlePatterns.git",
     "jquery.sparkline.min": "http://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js",
     "chosen_v1.1.0": "https://github.com/harvesthq/chosen/releases/download/v1.1.0/chosen_v1.1.0.zip",

@@ -1,0 +1,34 @@
+#content
+  .outer
+    .inner
+      <!--Begin Datatables-->
+      .row
+        .col-lg-12
+          .box
+            header
+              .icons
+                i.fa.fa-table
+              h5 场馆管理
+              button.dl_btn.dl_btn_right.pull-right(data-toggle="modal" data-target="#addStadiumModal") 增加
+            #collapse4.body.table_all
+              table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+                thead
+                  tr
+                    th 场馆名称
+                    th 场馆地址
+                    th 场馆类型
+                    th 场馆简介
+                    th 操作
+                tbody
+                  tr(ng-repeat="stadium in stadiums")
+                    td {{stadium.name}}
+                    td {{stadium.location.city.province}} {{stadium.location.city.city}} {{stadium.location.city.district}} {{stadium.location.name}}
+                    td {{stadium.location.group_type}}
+                    td {{stadium.location.introduce}}
+                    td 
+                      button.btn.btn-xs.btn-warning(ng-show="component.enable" ng-click="activate($index,false)") 禁用
+                      button.btn.btn-xs.btn-success(ng-show="!component.enable" ng-click="activate($index,true)") 启用
+                      button.btn.btn-xs.btn-info(data-toggle="modal" data-target="#")
+
+.modal.fade#addStadiumModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/addStadiumModal
