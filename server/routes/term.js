@@ -6,4 +6,7 @@ module.exports = function(app) {
 
   app.post('/terms', authorization.requiresAdmin, termCtrl.createTerm);
   app.put('/terms/:termId', authorization.requiresAdmin, termCtrl.editTerm);
+  app.delete('/terms/:termId', authorization.requiresAdmin, termCtrl.deleteTerm);
+  app.get('/terms', authorization.requiresAdmin, termCtrl.getTermList);
+  app.get('/terms/:termId', authorization.requiresAdmin, termCtrl.getTerm);
 };
