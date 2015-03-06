@@ -11,11 +11,11 @@ exports.createTerm = function (req, res) {
   });
   term.save(function (err) {
     if (err) {
-      res.send({msg: '创建成功'});
-    }
-    else {
       console.log(err.stack);
       res.send(500, {msg: '服务器错误，创建失败'});
+    }
+    else {
+      res.send({msg: '创建成功'});
     }
   });
 };

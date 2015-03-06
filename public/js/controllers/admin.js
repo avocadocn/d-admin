@@ -2196,14 +2196,53 @@ adminApp.factory('TermService', ['$http', function ($http) {
   };
 }]);
 
-adminApp.controller('TermController', ['$scope', 'TermService', function ($scope, TermService) {
+adminApp.controller('TermController', [
+  '$scope',
+  '$filter',
+  'TermService',
+  function ($scope, $filter, TermService) {
 
-  TermService.getTermList()
-    .success(function (data) {
-      $scope.terms = data.terms;
-    })
-    .error(function (data) {
-      alert(data.msg || '获取数据失败');
-    });
+    var getTermList = function () {
+      TermService.getTermList()
+        .success(function (data) {
+          $scope.terms = data.terms;
+        })
+        .error(function (data) {
+          alert(data.msg || '获取数据失败');
+        });
+    };
+    getTermList();
 
-}]);
+    $scope.addFormModel = {
+      content: '',
+      start_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
+      end_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss')
+    };
+    $scope.addTerm = function () {
+      TermService.createTerm($scope.addFormModel)
+        .success(function (data) {
+          alert(data.msg || '添加成功');
+          getTermList();
+        })
+        .error(function (data) {
+          alert(data.msg || '添加失败');
+        });
+    };
+
+    $scope.deleteTerm = function (term) {
+      var sureDelete = confirm('确定要删除 ' + term.content + ' 吗？');
+      if (!sureDelete) {
+        return;
+      }
+      TermService.deleteTerm(term._id)
+        .success(function (data) {
+          alert(data.msg || '删除成功');
+          getTermList();
+        })
+        .error(function (data) {
+          alert(data.msg || '删除失败');
+        });
+    };
+
+  }
+]);
