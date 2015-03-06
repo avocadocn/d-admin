@@ -2213,13 +2213,13 @@ adminApp.controller('TermController', [
     };
     getTermList();
 
-    $scope.addFormModel = {
+    $scope.addTermFormModel = {
       content: '',
       start_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
       end_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss')
     };
     $scope.addTerm = function () {
-      TermService.createTerm($scope.addFormModel)
+      TermService.createTerm($scope.addTermFormModel)
         .success(function (data) {
           alert(data.msg || '添加成功');
           getTermList();
@@ -2241,6 +2241,30 @@ adminApp.controller('TermController', [
         })
         .error(function (data) {
           alert(data.msg || '删除失败');
+        });
+    };
+
+    var editTermModal = $('#editTermModal');
+
+    $scope.openEditTermModal = function (term) {
+      $scope.editingTerm = term;
+      $scope.editTermFormModel = {
+        content: term.content,
+        start_time: $filter('date')(term.start_time, 'yyyy-MM-dd HH:mm:ss'),
+        end_time: $filter('date')(term.end_time, 'yyyy-MM-dd HH:mm:ss')
+      };
+      editTermModal.modal('show');
+    };
+
+    $scope.editTerm = function () {
+      TermService.editTerm($scope.editingTerm._id, $scope.editTermFormModel)
+        .success(function (data) {
+          editTermModal.modal('hide');
+          alert(data.msg || '编辑成功');
+          $scope.editingTerm.content = $scope.editTermFormModel.content;
+        })
+        .error(function (data) {
+          alert(data.msg || '编辑失败');
         });
     };
 

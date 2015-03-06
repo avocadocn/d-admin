@@ -3,16 +3,16 @@
     .inner
       .dl_row
         h4 添加一期抢场地活动
-        form.form-inline(name="addForm")
+        form.form-inline(name="addTermForm")
           .form-group
             label 描述
-            input.form-control(type="text" ng-model="addFormModel.content")
+            input.form-control(type="text" ng-model="addTermFormModel.content")
           .form-group
             label 开始时间
-            input.form-control(type="text" ng-model="addFormModel.start_time")
+            input.form-control(type="text" ng-model="addTermFormModel.start_time")
           .form-group
             label 结束时间
-            input.form-control(type="text" ng-model="addFormModel.end_time")
+            input.form-control(type="text" ng-model="addTermFormModel.end_time")
           button.btn.btn-default(type="submit" ng-click="addTerm()") 添加
         hr
       .dl_row.dl_code.table_all
@@ -33,6 +33,27 @@
               td {{term.create_time | date:'yyyy-MM-dd HH:mm:ss'}}
               td {{term.status}}
               td
-                a 编辑
+                a(ng-click="openEditTermModal(term)") 编辑
                 span &nbsp;|&nbsp;
                 a(ng-click="deleteTerm(term)") 删除
+
+.modal.fade#editTermModal
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(data-dismiss="modal" aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title 编辑
+      form(name="editTermForm")
+        .modal-body
+          .form-group
+            label 描述
+            input.form-control(type="text" ng-model="editTermFormModel.content")
+          .form-group
+            label 开始时间
+            input.form-control(type="text" ng-model="editTermFormModel.start_time")
+          .form-group
+            label 结束时间
+            input.form-control(type="text" ng-model="editTermFormModel.end_time")
+        .modal-footer
+          button.btn.btn-default(type="submit" ng-click="editTerm()") 编辑
