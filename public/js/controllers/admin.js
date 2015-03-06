@@ -58,17 +58,17 @@ function($routeProvider, $locationProvider) {
     .when('/message', {
       templateUrl: '/manager/message',
       controller: 'MessageController',
-      controllerAs: 'message',
+      controllerAs: 'message'
     })
     .when('/error', {
       templateUrl: '/manager/error',
       controller: 'ErrorController',
-      controllerAs: 'error',
+      controllerAs: 'error'
     })
     .when('/app', {
       templateUrl: '/manager/app',
       controller: 'AppController',
-      controllerAs: 'app',
+      controllerAs: 'app'
     })
     .when('/report', {
       templateUrl: '/report/home',
