@@ -73,22 +73,26 @@ function($routeProvider, $locationProvider) {
     .when('/report', {
       templateUrl: '/report/home',
       controller: 'ReportController',
-      controllerAs: 'report',
+      controllerAs: 'report'
     })
     .when('/component',{
       templateUrl: '/component/home',
       controller:'ComponentController',
-      controllerAs: 'component',
+      controllerAs: 'component'
     })
     .when('/mold',{
       templateUrl: '/mold/home',
       controller:'MoldController',
-      controllerAs:'mold',
+      controllerAs:'mold'
     })
     .when('/log',{
       templateUrl: '/log/home',
       controller:'LogController',
-      controllerAs:'log',
+      controllerAs:'log'
+    })
+    .when('/terms', {
+      templateUrl: '/terms/templates/manager',
+      controller: 'TermController'
     })
     .otherwise({
       redirectTo: '/parameter'
@@ -2171,3 +2175,35 @@ adminApp.controller('LogController', ['$http','$scope','$rootScope',
 //     }
 //     $scope.dashboard();
 // }]);
+
+adminApp.factory('TermService', ['$http', function ($http) {
+  return {
+    getTermList: function () {
+      return $http.get('/terms');
+    },
+    getTerm: function (id) {
+      return $http.get('/terms/' + id);
+    },
+    deleteTerm: function (id) {
+      return $http.delete('/terms/' + id);
+    },
+    editTerm: function (id, data) {
+      return $http.put('/terms/' + id, data);
+    },
+    createTerm: function (data) {
+      return $http.post('/terms', data);
+    }
+  };
+}]);
+
+adminApp.controller('TermController', ['$scope', 'TermService', function ($scope, TermService) {
+
+  TermService.getTermList()
+    .success(function (data) {
+      $scope.terms = data.terms;
+    })
+    .error(function (data) {
+      alert(data.msg || '获取数据失败');
+    });
+
+}]);

@@ -9,4 +9,5 @@ module.exports = function(app) {
   app.delete('/terms/:termId', authorization.requiresAdmin, termCtrl.deleteTerm);
   app.get('/terms', authorization.requiresAdmin, termCtrl.getTermList);
   app.get('/terms/:termId', authorization.requiresAdmin, termCtrl.getTerm);
+  app.get('/terms/templates/manager', authorization.requiresAdmin, termCtrl.renderMangerTemplateView);
 };

@@ -1,0 +1,21 @@
+#content
+  .outer
+    .inner
+      .dl_row.dl_code.table_all
+        table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+          thead
+            tr
+              th 描述
+              th 开始时间
+              th 结束时间
+              th 创建时间
+              th 状态
+              th 操作
+          tbody
+            tr(ng-repeat="term in terms")
+              td {{term.content}}
+              td {{term.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+              td {{term.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+              td {{term.create_time | date:'yyyy-MM-dd HH:mm:ss'}}
+              td {{term.status}}
+              td 编辑 | 删除

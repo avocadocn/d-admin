@@ -105,3 +105,7 @@ exports.getTerm = function (req, res) {
       res.send(500, {msg: '服务器错误，获取数据失败'});
     });
 };
+
+exports.renderMangerTemplateView = function (req, res) {
+  res.render('system/term');
+};
