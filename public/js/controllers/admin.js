@@ -2281,9 +2281,11 @@ adminApp.controller('TermController', [
 
     $scope.addTermFormModel = {
       content: '',
-      start_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss'),
-      end_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss')
+      start_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm'),
+      end_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm')
     };
+    $('#addTermFormStartTime').datetimepicker();
+    $('#addTermFormEndTime').datetimepicker();
     $scope.addTerm = function () {
       termService.createTerm($scope.addTermFormModel)
         .success(function (data) {
@@ -2312,12 +2314,14 @@ adminApp.controller('TermController', [
 
     var editTermModal = $('#editTermModal');
 
+    $('#editTermFormStartTime').datetimepicker();
+    $('#editTermFormEndTime').datetimepicker();
     $scope.openEditTermModal = function (term) {
       $scope.editingTerm = term;
       $scope.editTermFormModel = {
         content: term.content,
-        start_time: $filter('date')(term.start_time, 'yyyy-MM-dd HH:mm:ss'),
-        end_time: $filter('date')(term.end_time, 'yyyy-MM-dd HH:mm:ss')
+        start_time: $filter('date')(term.start_time, 'yyyy-MM-dd HH:mm'),
+        end_time: $filter('date')(term.end_time, 'yyyy-MM-dd HH:mm')
       };
       editTermModal.modal('show');
     };
@@ -2328,6 +2332,8 @@ adminApp.controller('TermController', [
           editTermModal.modal('hide');
           alert(data.msg || '编辑成功');
           $scope.editingTerm.content = $scope.editTermFormModel.content;
+          $scope.editingTerm.start_time = $scope.editTermFormModel.start_time;
+          $scope.editingTerm.end_time = $scope.editTermFormModel.end_time;
         })
         .error(function (data) {
           alert(data.msg || '编辑失败');
@@ -2432,7 +2438,7 @@ adminApp.controller('QuestionController', [
 
 adminApp.factory('groupService', ['$http', function ($http) {
   return {
-    getGroups: function (req, res) {
+    getGroups: function () {
       return $http.get('/groups');
     }
   };
