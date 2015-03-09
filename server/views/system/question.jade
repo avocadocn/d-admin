@@ -1,0 +1,57 @@
+#content
+  .outer
+    .inner
+      .dl_row
+        h4 添加一个验证问题
+        form.form-inline(name="addQuestionForm")
+          .form-group
+            label 类型
+            input.form-control(type="text" ng-model="addQuestionFormModel.group_type")
+          .form-group
+            label 问题
+            input.form-control(type="text" ng-model="addQuestionFormModel.content")
+          .form-group
+            label 答案
+            input.form-control(type="text" ng-model="addQuestionFormModel.answer")
+          button.btn.btn-default(type="submit" ng-click="addQuestion()") 添加
+        hr
+      .dl_row.dl_code.table_all
+        table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+          thead
+            tr
+              th 类型
+              th 问题
+              th 答案
+              th 状态
+              th 操作
+          tbody
+            tr(ng-repeat="question in questions")
+              td {{question.group_type}}
+              td {{question.content}}
+              td {{question.answer}}
+              td {{question.status}}
+              td
+                a(ng-click="openEditQuestionModal(question)") 编辑
+.modal.fade#editQuestionModal
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(data-dismiss="modal" aria-label="Close")
+          span(aria-hidden="true") &times;
+        h4.modal-title 编辑
+      form(name="editQuestionForm")
+        .modal-body
+          .form-group
+            label 类型
+            input.form-control(type="text" ng-model="editQuestionFormModel.group_type")
+          .form-group
+            label 问题
+            input.form-control(type="text" ng-model="editQuestionFormModel.content")
+          .form-group
+            label 答案
+            input.form-control(type="text" ng-model="editQuestionFormModel.answer")
+          .form-group
+            label 状态
+            input.form-control(type="text" ng-model="editQuestionFormModel.status")
+        .modal-footer
+          button.btn.btn-default(type="submit" ng-click="editQuestion()") 编辑

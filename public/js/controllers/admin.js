@@ -97,7 +97,10 @@ function($routeProvider, $locationProvider) {
     .when('/stadium',{
       templateUrl: '/stadiums/home',
       controller: 'StadiumsController',
-      controllerAs:'stadium',
+      controllerAs:'stadium'
+    .when('/question', {
+      templateUrl: '/questions/templates/manager',
+      controller: 'QuestionController'
     })
     .otherwise({
       redirectTo: '/parameter'
@@ -2274,6 +2277,83 @@ adminApp.controller('TermController', [
         })
         .error(function (data) {
           alert(data.msg || '编辑失败');
+        });
+    };
+
+  }
+]);
+
+adminApp.factory('QuestionService', ['$http', function ($http) {
+  return {
+    createQuestion: function (data) {
+      return $http.post('/questions', data);
+    },
+    editQuestion: function (id, data) {
+      return $http.put('/questions/' + id, data);
+    },
+    getQuestionList: function () {
+      return $http.get('/questions');
+    }
+  };
+}]);
+
+adminApp.controller('QuestionController', [
+  '$scope',
+  'QuestionService',
+  function ($scope, QuestionService) {
+
+    var getQuestionList = function () {
+      QuestionService.getQuestionList()
+        .success(function (data) {
+          $scope.questions = data.questions;
+        })
+        .error(function (data) {
+          alert(data.msg || '获取失败');
+        });
+    };
+    getQuestionList();
+
+    $scope.addQuestionFormModel = {
+      group_type: '',
+      content: '',
+      answer: ''
+    };
+
+    $scope.addQuestion = function () {
+      QuestionService.createQuestion($scope.addQuestionFormModel)
+        .success(function (data) {
+          alert(data.msg || '添加成功');
+          getQuestionList();
+        })
+        .error(function (data) {
+          alert(data.msg || '添加失败');
+        });
+    };
+
+    var editQuestionModal = $('#editQuestionModal');
+    $scope.openEditQuestionModal = function (question) {
+      $scope.editingQuestion = question;
+      $scope.editQuestionFormModel = {
+        group_type: question.group_type,
+        content: question.content,
+        answer: question.answer,
+        status: question.status
+      };
+      editQuestionModal.modal('show');
+    };
+
+    $scope.editQuestion = function () {
+      QuestionService.editQuestion($scope.editingQuestion._id, $scope.editQuestionFormModel)
+        .success(function (data) {
+          editQuestionModal.modal('hide');
+          alert(data.msg || '修改成功');
+          $scope.editingQuestion.group_type = $scope.editQuestionFormModel.group_type;
+          $scope.editingQuestion.content = $scope.editQuestionFormModel.content;
+          $scope.editingQuestion.answer = $scope.editQuestionFormModel.answer;
+          $scope.editingQuestion.status = $scope.editQuestionFormModel.status;
+        })
+        .error(function (data) {
+          alert(data.msg || '修改失败');
         });
     };
 
