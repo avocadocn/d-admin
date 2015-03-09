@@ -94,10 +94,11 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/terms/templates/manager',
       controller: 'TermController'
     })
-    .when('/stadium',{
+    .when('/stadium', {
       templateUrl: '/stadiums/home',
       controller: 'StadiumsController',
-      controllerAs:'stadium'
+      controllerAs: 'stadium'
+    })
     .when('/question', {
       templateUrl: '/questions/templates/manager',
       controller: 'QuestionController'
