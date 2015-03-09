@@ -41,7 +41,7 @@ exports.createStadiums = function (req, res) {
   var stadium = new Stadium({
     name: req.body.name,
     location: req.body.location,
-    group_type: req.body.group_type,
+    group_type: req.body.groupType,
     introduce: req.body.introduce
   });
   stadium.save(function(err) {

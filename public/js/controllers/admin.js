@@ -383,6 +383,59 @@ var colorGenerator = function(){
 // ])
 
 adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $scope) {
+  $scope.newStadium = {
+    name:'',
+    location:{city:{}, name:''}
+  };
+  var seletor = new LinkageSelector(document.getElementById('location'), function(selectValues) {
+    $scope.newStadium.location.city.province = selectValues[0];
+    $scope.newStadium.location.city.city = selectValues[1];
+    $scope.newStadium.location.city.district = selectValues[2];
+    $scope.$digest();
+  });
+  $scope.addStadium = function() {
+    $http.post('/stadiums',$scope.newStadium).success(function(data, status) {
+      alert('保存成功!');
+      window.location.reload();
+    })
+    .error(function(data, status) {
+      alert('保存失败!');
+    });
+  };
+
+  $http.get('/stadiums/list').success(function(data, status) {
+    $scope.stadiums = data.stadiums;
+  });
+
+  $http.get('/mold/moldList').success(function(data,status){
+    $scope.molds = data.molds;
+    $scope.newStadium.groupType = $scope.molds[0].name;
+  });
+
+  $scope.activate = function(stadium, activateStatus) {
+    $http.put('/stadiums/'+stadium._id, {'status': status}).success(function(data, status) {
+      stadium.status = activateStatus;
+    })
+    .error(function(data, status) {
+      alert('操作失败请重试!');
+    });
+  };
+
+  $scope.edit = function (stadium) {
+    $scope.editingStadium = stadium;
+    $('#editStadiumModal').modal('show');
+    var seletor = new LinkageSelector(document.getElementById('editLocation'), function(selectValues) {
+    $scope.$digest();
+  });
+  };
+  $scope.saveStadium = function () {
+    $http.put('/stadiums/'+$scope.editingStadium._id, $scope.editingStadium).success(function(data, status) {
+      alert('保存成功!');
+    })
+    .error(function(data, status) {
+      alert('保存失败!');
+    });
+  };
 
 }]);
 

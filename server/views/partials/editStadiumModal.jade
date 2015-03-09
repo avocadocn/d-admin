@@ -3,34 +3,33 @@
     form.form-horizontal.clearfix(name="stadiumForm")
       .dl-modal-header
         button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
-        h4.modal-title#myModalLabel 增加场馆
+        h4.modal-title#myModalLabel 编辑场馆
       .dl-modal-body.clearfix
         .dl_modal_container.clearfix
           .info_side
             span.info_label 场馆名:
           .info_detail_2
-            input.dl_form_control(ng-model="newStadium.name" required)
+            input.dl_form_control(ng-model="editingStadium.name" required)
         .dl_modal_container.clearfix
           .info_side
             span.info_label 场馆地址:
-          .info_detail_2#location(data-src="/region/json" data-select="province city district")
+          .info_detail_2#editLocation(data-src="/region/json" data-select="province city district" data-init="{{editingStadium.location.city.province}} {{editingStadium.location.city.city}} {{editingStadium.location.city.district}}")
             select(type="text" name="province")
             select(type="text" name="city")
             select(type="text" name="district")
         .dl_modal_container.clearfix
           .info_side
           .info_detail_2
-            input.dl_form_control(ng-model="newStadium.location.name" required)
+            input.dl_form_control(ng-model="editingStadium.location.name" required)
         .dl_modal_container.clearfix
           .info_side
             span.info_label 简介:
           .info_detail_2
-            input.dl_form_control(ng-model="newStadium.introduce" required)
+            input.dl_form_control(ng-model="editingStadium.introduce" required)
         .dl_modal_container.clearfix
           .info_side
             span.info_label 场地类型:
           .info_detail_2
-            select(ng-model="newStadium.groupType" ng-options="mold.name for mold in molds" required)
-            //- input.dl_form_control(ng-model="newStadium.groupType" required)
+            select(ng-model="editingStadium.group_type" ng-options="mold.name as mold.name for mold in molds" required)
       .dl-modal-footer
-        button.dl_btn.dl_btn_large(ng-disabled="stadiumForm.$invalid" ng-click="addStadium()" data-dismiss="modal") 确定
+        button.dl_btn.dl_btn_large(ng-disabled="stadiumForm.$invalid" ng-click="saveStadium()" data-dismiss="modal") 确定

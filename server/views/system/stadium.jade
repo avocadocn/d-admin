@@ -23,12 +23,14 @@
                   tr(ng-repeat="stadium in stadiums")
                     td {{stadium.name}}
                     td {{stadium.location.city.province}} {{stadium.location.city.city}} {{stadium.location.city.district}} {{stadium.location.name}}
-                    td {{stadium.location.group_type}}
-                    td {{stadium.location.introduce}}
+                    td {{stadium.group_type}}
+                    td {{stadium.introduce}}
                     td 
-                      button.btn.btn-xs.btn-warning(ng-show="component.enable" ng-click="activate($index,false)") 禁用
-                      button.btn.btn-xs.btn-success(ng-show="!component.enable" ng-click="activate($index,true)") 启用
-                      button.btn.btn-xs.btn-info(data-toggle="modal" data-target="#")
+                      button.btn.btn-xs.btn-warning(ng-if="stadium.status==='active'" ng-click="activate(stadium,'delete')") 禁用
+                      button.btn.btn-xs.btn-success(ng-if="stadium.status==='delete'" ng-click="activate(stadium,'active')") 启用
+                      button.btn.btn-xs.btn-info(ng-click="edit(stadium)") 编辑
 
 .modal.fade#addStadiumModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/addStadiumModal
+.modal.fade#editStadiumModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/editStadiumModal
