@@ -2188,7 +2188,7 @@ adminApp.controller('LogController', ['$http','$scope','$rootScope',
 //     $scope.dashboard();
 // }]);
 
-adminApp.factory('TermService', ['$http', function ($http) {
+adminApp.factory('termService', ['$http', function ($http) {
   return {
     getTermList: function () {
       return $http.get('/terms');
@@ -2211,11 +2211,11 @@ adminApp.factory('TermService', ['$http', function ($http) {
 adminApp.controller('TermController', [
   '$scope',
   '$filter',
-  'TermService',
-  function ($scope, $filter, TermService) {
+  'termService',
+  function ($scope, $filter, termService) {
 
     var getTermList = function () {
-      TermService.getTermList()
+      termService.getTermList()
         .success(function (data) {
           $scope.terms = data.terms;
         })
@@ -2231,7 +2231,7 @@ adminApp.controller('TermController', [
       end_time: $filter('date')(Date.now(), 'yyyy-MM-dd HH:mm:ss')
     };
     $scope.addTerm = function () {
-      TermService.createTerm($scope.addTermFormModel)
+      termService.createTerm($scope.addTermFormModel)
         .success(function (data) {
           alert(data.msg || '添加成功');
           getTermList();
@@ -2246,7 +2246,7 @@ adminApp.controller('TermController', [
       if (!sureDelete) {
         return;
       }
-      TermService.deleteTerm(term._id)
+      termService.deleteTerm(term._id)
         .success(function (data) {
           alert(data.msg || '删除成功');
           getTermList();
@@ -2269,7 +2269,7 @@ adminApp.controller('TermController', [
     };
 
     $scope.editTerm = function () {
-      TermService.editTerm($scope.editingTerm._id, $scope.editTermFormModel)
+      termService.editTerm($scope.editingTerm._id, $scope.editTermFormModel)
         .success(function (data) {
           editTermModal.modal('hide');
           alert(data.msg || '编辑成功');
@@ -2283,7 +2283,7 @@ adminApp.controller('TermController', [
   }
 ]);
 
-adminApp.factory('QuestionService', ['$http', function ($http) {
+adminApp.factory('questionService', ['$http', function ($http) {
   return {
     createQuestion: function (data) {
       return $http.post('/questions', data);
@@ -2299,11 +2299,12 @@ adminApp.factory('QuestionService', ['$http', function ($http) {
 
 adminApp.controller('QuestionController', [
   '$scope',
-  'QuestionService',
-  function ($scope, QuestionService) {
+  'questionService',
+  'groupService',
+  function ($scope, questionService, groupService) {
 
     var getQuestionList = function () {
-      QuestionService.getQuestionList()
+      questionService.getQuestionList()
         .success(function (data) {
           $scope.questions = data.questions;
         })
@@ -2313,14 +2314,29 @@ adminApp.controller('QuestionController', [
     };
     getQuestionList();
 
+    groupService.getGroups()
+      .success(function (data) {
+        $scope.groupSelectOptions = data.groups.map(function (group) {
+          return group.group_type;
+        });
+      })
+      .error(function (data) {
+        alert(data.msg || '获取类型列表失败');
+      });
+
     $scope.addQuestionFormModel = {
       group_type: '',
       content: '',
       answer: ''
     };
 
+    $scope.statusSelectOptions = [
+      'active',
+      'delete'
+    ];
+
     $scope.addQuestion = function () {
-      QuestionService.createQuestion($scope.addQuestionFormModel)
+      questionService.createQuestion($scope.addQuestionFormModel)
         .success(function (data) {
           alert(data.msg || '添加成功');
           getQuestionList();
@@ -2343,7 +2359,7 @@ adminApp.controller('QuestionController', [
     };
 
     $scope.editQuestion = function () {
-      QuestionService.editQuestion($scope.editingQuestion._id, $scope.editQuestionFormModel)
+      questionService.editQuestion($scope.editingQuestion._id, $scope.editQuestionFormModel)
         .success(function (data) {
           editQuestionModal.modal('hide');
           alert(data.msg || '修改成功');
@@ -2359,3 +2375,11 @@ adminApp.controller('QuestionController', [
 
   }
 ]);
+
+adminApp.factory('groupService', ['$http', function ($http) {
+  return {
+    getGroups: function (req, res) {
+      return $http.get('/groups');
+    }
+  };
+}]);

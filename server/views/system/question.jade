@@ -6,7 +6,7 @@
         form.form-inline(name="addQuestionForm")
           .form-group
             label 类型
-            input.form-control(type="text" ng-model="addQuestionFormModel.group_type")
+            select.form-control(ng-model="addQuestionFormModel.group_type" ng-options="group for group in groupSelectOptions")
           .form-group
             label 问题
             input.form-control(type="text" ng-model="addQuestionFormModel.content")
@@ -43,7 +43,7 @@
         .modal-body
           .form-group
             label 类型
-            input.form-control(type="text" ng-model="editQuestionFormModel.group_type")
+            select.form-control(ng-model="editQuestionFormModel.group_type" ng-options="group for group in groupSelectOptions")
           .form-group
             label 问题
             input.form-control(type="text" ng-model="editQuestionFormModel.content")
@@ -52,6 +52,6 @@
             input.form-control(type="text" ng-model="editQuestionFormModel.answer")
           .form-group
             label 状态
-            input.form-control(type="text" ng-model="editQuestionFormModel.status")
+            select.form-control(ng-model="editQuestionFormModel.status" ng-options="status for status in statusSelectOptions")
         .modal-footer
           button.btn.btn-default(type="submit" ng-click="editQuestion()") 编辑
