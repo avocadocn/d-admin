@@ -103,6 +103,10 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/questions/templates/manager',
       controller: 'QuestionController'
     })
+    .when('/loot', {
+      templateUrl: '/loots/home',
+      controller: 'LootsController'
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -425,8 +429,8 @@ adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $
     $scope.editingStadium = stadium;
     $('#editStadiumModal').modal('show');
     var seletor = new LinkageSelector(document.getElementById('editLocation'), function(selectValues) {
-    $scope.$digest();
-  });
+      $scope.$digest();
+    });
   };
   $scope.saveStadium = function () {
     $http.put('/stadiums/'+$scope.editingStadium._id, $scope.editingStadium).success(function(data, status) {
@@ -437,6 +441,26 @@ adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $
     });
   };
 
+}]);
+
+adminApp.controller('LootsController', ['$http','$scope', function ($http, $scope) {
+  $http.get('/stadiums/list').success(function(data, status) {
+    $scope.stadiums = data.stadiums;
+  });
+  $http.get('/terms').success(function(data, status) {
+    $scope.terms = data.terms;
+  });
+  $http.get('/mold/moldList').success(function(data,status){
+    $scope.molds = data.molds;
+  });
+  $scope.addLoot = function() {
+    $http.post('/loots', $scope.newLoot).success(function(data, status) {
+      alert('保存成功!');
+    })
+    .error(function(data, status) {
+      alert('保存失败!');
+    })
+  }
 }]);
 
 adminApp.controller('ComponentController',['$http','$scope',function ($http, $scope) {

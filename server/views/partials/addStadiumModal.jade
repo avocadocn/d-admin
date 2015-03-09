@@ -28,9 +28,9 @@
             input.dl_form_control(ng-model="newStadium.introduce" required)
         .dl_modal_container.clearfix
           .info_side
-            span.info_label 场地类型:
+            span.info_label 场馆类型:
           .info_detail_2
-            select(ng-model="newStadium.groupType" ng-options="mold.name for mold in molds" required)
+            select(ng-model="newStadium.groupType" ng-options="mold.name as mold.name for mold in molds" required)
             //- input.dl_form_control(ng-model="newStadium.groupType" required)
       .dl-modal-footer
         button.dl_btn.dl_btn_large(ng-disabled="stadiumForm.$invalid" ng-click="addStadium()" data-dismiss="modal") 确定

@@ -12,14 +12,15 @@ exports.getLoots = function (req, res) {
   var options = {};
   if(req.query.term) options.term = req.query.term;
   // if(req.query.stadium) options.stadium = new RegExp(req.query.stadium);
-  Loot.find(options, function(err, loots) {
-    if(err) {
-      console.log(err);
-      return res.status(500).send({msg: '查找失败'});
-    }
-    else {
-      return res.status(200).send({loots: loots});
-    }
+  Loot.find(options)
+  .populate('stadium', {'name':1})
+  .exec()
+  .then(function(loots) {
+    return res.status(200).send({loots: loots});
+  })
+  .then(null, function(err) {
+    console.log(err);
+    return res.status(500).send({msg: '查找失败'});
   })
 };
 

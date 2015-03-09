@@ -8,14 +8,17 @@ var Loot = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Statium'
   },
-  site: String,     //哪个场地，如：n号场/n号包厢
-  content: String,  //描述
-  group_type: String, //同小队group_type
+  site: String,               //哪个场地，如：n号场/n号包厢
+  content: String,            //描述
+  group_type: String,         //同小队group_type
   campaign_start_time: Date,  //这个场地的活动开始时间
   campaign_end_time: Date,    //这个场地的活动结束时间
   loot_start_time: Date,      //抢购开始时间
   loot_end_time: Date,        //抢购结束时间
-  term: Schema.Types.ObjectId,//属于哪一期
+  term: {                     //属于哪一期
+    type: Schema.Types.ObjectId,
+    ref: 'Term'
+  },
   loot_number: Number,        //几个人抢到算数
   status: {
     type: String,
