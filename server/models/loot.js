@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 var Loot = new Schema({
   stadium: {
     type: Schema.Types.ObjectId,
-    ref: 'Statium'
+    ref: 'Stadium'
   },
   site: String,               //哪个场地，如：n号场/n号包厢
   content: String,            //描述

@@ -299,93 +299,6 @@ var colorGenerator = function(){
   return COLOR;
 }
 
-
-// adminApp.directive('datatable', ['$timeout', '$compile',
-//   function($timeout, $compile) {
-
-//     // default options to be used on to all datatables
-//     var defaults = {};
-
-//     return {
-//       restrict: 'A',
-//       compile: function(element, attrs) {
-//         var repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]'),
-//           repeatAttr,
-//           watch,
-//           original = $(repeatOption).clone();
-
-//         // enable watching of the dataset if in use
-//         repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]');
-
-//         if (repeatOption.length) {
-//           repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
-//           watch = $.trim(repeatAttr.split('|')[0]).split(' ').pop();
-//         }
-
-//         // post-linking function
-//         return function(scope, element, attrs, controller) {
-
-//           // merge default options with table specific override options
-//           var options = angular.extend({}, defaults, scope.$eval(attrs.datatable)),
-//               table = null;
-
-//           // add default css style
-//           element.addClass('table table-striped');
-
-//           if (watch) {
-
-//             // deep watching of dataset to re-init on change
-//             scope.$watch(watch, function(newValue, oldValue) {
-//               if (newValue) {
-
-//                 // check for class, 'fnIsDataTable' doesn't work here
-//                 if (!element.hasClass('dataTable')) {
-
-//                   // init datatables after data load for first time
-//                   $timeout(function() {
-//                       table = element.dataTable(options);
-//                   });
-
-//                 } else if (newValue != oldValue) {
-
-//                   //destroy and re-init datatable with new data (fnDraw not working here)
-//                   // table.fnDestroy();
-
-//                   // //DataTables addes specifc 'width' property after destroy, have to manually remove
-//                   // element.removeAttr('style');
-
-//                   // //empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
-//                   // var body = element.find('tbody');
-//                   // body.empty();
-//                   // body.append($compile(original)(scope));
-
-//                   // //'timeout' to allow ng-repeat time to render
-//                   $timeout(function() {
-//                       table.dataTable(options);
-//                   });
-
-//                 }
-//               }
-//             }, true);
-//           } else {
-//             // no dataset present, init normally
-//             table = element.dataTable(options);
-//           }
-//         };
-//       }
-//     };
-//   }
-// ]);
-
-
-
-
-
-
-// adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
-//   function ($http, $scope, $rootScope)
-// ])
-
 adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $scope) {
   $scope.newStadium = {
     name:'',
@@ -443,24 +356,101 @@ adminApp.controller('StadiumsController', ['$http', '$scope', function ($http, $
 
 }]);
 
-adminApp.controller('LootsController', ['$http','$scope', function ($http, $scope) {
-  $http.get('/stadiums/list').success(function(data, status) {
-    $scope.stadiums = data.stadiums;
-  });
-  $http.get('/terms').success(function(data, status) {
-    $scope.terms = data.terms;
-  });
-  $http.get('/mold/moldList').success(function(data,status){
-    $scope.molds = data.molds;
-  });
+adminApp.controller('LootsController', ['$http','$scope', '$filter', function ($http, $scope, $filter) {
+  var getLoots = function() {
+    $http.get('/loots/list').success(function(data, status) {
+      $scope.loots = data.loots;
+    });
+  };
+  getLoots();
+
   $scope.addLoot = function() {
+
+    // console.log($scope.newLoot);
     $http.post('/loots', $scope.newLoot).success(function(data, status) {
       alert('保存成功!');
+      getLoots();
     })
     .error(function(data, status) {
       alert('保存失败!');
     })
+  };
+  var loaded = false;
+  var load = function() {
+    if(!loaded) {
+      $http.get('/stadiums/list').success(function(data, status) {
+        $scope.stadiums = data.stadiums;
+      });
+      $http.get('/terms').success(function(data, status) {
+        $scope.terms = data.terms;
+      });
+      $http.get('/mold/moldList').success(function(data,status){
+        $scope.molds = data.molds;
+      });
+      loaded = true;
+    }
   }
+  var addloaded = false;
+  var options = {
+    language: 'zh-CN',
+    startDate: new Date(),
+    pickerPosition:"bottom-left"
+  }
+  $('#addLootModal').on('show.bs.modal', function(e) {
+    if(!addloaded) {
+      load();
+      $('#campaignStart').datetimepicker(options);
+      $('#campaignEnd').datetimepicker(options);
+      $('#lootStart').datetimepicker(options);
+      $('#lootEnd').datetimepicker(options);
+      addloaded = true;
+    }
+  });
+  var editloaded = false;
+
+  $scope.edit = function(loot) {
+    $('#editLootModal').modal('show');
+    $scope.editingLoot = {
+      _id: loot._id,
+      stadium: loot.stadium._id,
+      term: loot.term._id,
+      site: loot.site,
+      content: loot.content,
+      groupType: loot.group_type,
+      lootNumber: loot.loot_number,
+      campaignStartTime: $filter('date')(loot.campaign_start_time, 'yyyy-MM-dd HH:mm'),
+      campaignEndTime: $filter('date')(loot.campaign_end_time, 'yyyy-MM-dd HH:mm'),
+      lootStartTime: $filter('date')(loot.loot_start_time, 'yyyy-MM-dd HH:mm'),
+      lootEndTime: $filter('date')(loot.loot_end_time, 'yyyy-MM-dd HH:mm')
+    };
+    if(!editloaded) {
+      load();
+      $('#editCampaignStart').datetimepicker(options);
+      $('#editCampaignEnd').datetimepicker(options);
+      $('#editLootStart').datetimepicker(options);
+      $('#editLootEnd').datetimepicker(options);
+      editloaded = true;
+    }
+  };
+  $scope.saveLoot = function() {
+    $http.put('/loots/'+$scope.editingLoot._id, $scope.editingLoot).success(function(data, status) {
+      alert('保存成功!');
+      getLoots();
+    })
+    .error(function(data, status) {
+      alert('保存失败!');
+    });
+  };
+  $scope.activate = function(loot, activateStatus) {
+    $http.put('/loots/'+loot._id, {'status': status}).success(function(data, status) {
+      loot.status = activateStatus;
+    })
+    .error(function(data, status) {
+      alert('操作失败请重试!');
+    });
+  };
+
+  
 }]);
 
 adminApp.controller('ComponentController',['$http','$scope',function ($http, $scope) {

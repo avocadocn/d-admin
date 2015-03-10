@@ -1,0 +1,71 @@
+.modal-dialog
+  .dl-modal
+    form.form-horizontal.clearfix(name="lootForm")
+      .dl-modal-header
+        button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+        h4.modal-title#myModalLabel 修改抢购
+      .dl-modal-body.clearfix
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 场馆名:
+          .info_detail_2
+            select.dl_form_control(ng-model="editingLoot.stadium" ng-options="stadium._id as stadium.name for stadium in stadiums" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 属于哪期:
+          .info_detail_2
+            select.dl_form_control(ng-model="editingLoot.term" ng-options="term._id as term.content for term in terms" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 场地信息：
+          .info_detail_2
+            input.dl_form_control(ng-model="editingLoot.site" placeholder="如：几号场地" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 抢购描述：
+          .info_detail_2
+            input.dl_form_control(ng-model="editingLoot.content")
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 场地类型:
+          .info_detail_2
+            select.dl_form_control(ng-model="editingLoot.groupType" ng-options="mold.name as mold.name for mold in molds" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 抢购最少人数
+          .info_detail_2
+            input.dl_form_control(ng-model="editingLoot.lootNumber" required)
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 场地活动开始时间
+          .dl_modal_half_container
+            .input-group.date.form_datetime#editCampaignStart(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="editingLoot.campaignStartTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 场地活动结束时间
+          .dl_modal_half_container
+            .input-group.date.form_datetime#editCampaignEnd(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="editingLoot.campaignEndTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 抢购活动开始时间
+          .dl_modal_half_container
+            .input-group.date.form_datetime#editLootStart(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="editingLoot.lootStartTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
+        .dl_modal_container.clearfix
+          .info_side
+            span.info_label 抢购活动结束时间
+          .dl_modal_half_container
+            .input-group.date.form_datetime#editLootEnd(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="editingLoot.lootEndTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
+      .dl-modal-footer
+        button.dl_btn.dl_btn_large(ng-disabled="lootForm.$invalid" ng-click="saveLoot()" data-dismiss="modal") 确定

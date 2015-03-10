@@ -1,7 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Stadium = mongoose.model('Stadium');
+    Loot = mongoose.model('Loot');
 
 exports.renderLoots = function (req, res) {
   res.render('system/loots');
@@ -14,6 +14,7 @@ exports.getLoots = function (req, res) {
   // if(req.query.stadium) options.stadium = new RegExp(req.query.stadium);
   Loot.find(options)
   .populate('stadium', {'name':1})
+  .populate('term', {'content':1})
   .exec()
   .then(function(loots) {
     return res.status(200).send({loots: loots});
@@ -60,20 +61,22 @@ exports.createLoot = function (req, res) {
 };
 
 exports.editLoot = function (req, res) {
-  Loot.findOne({'_id': req.params.lootId}, function(err, stadium) {
+  Loot.findOne({'_id': req.params.lootId}, function(err, loot) {
     if(err||!loot) {
+      console.log(err);
       return res.status(500).send({msg: '查找失败'});
     }
     else {
       if(req.body.stadium) loot.stadium = req.body.stadium;
-      if(req.body.site) loot.location = req.body.location;
-      if(req.body.content) loot.group_type = req.body.group_type;
-      if(req.body.group_type) loot.group_type = req.body.group_type;
-      if(req.body.campaign_start_time) loot.campaign_start_time = req.body.campaign_start_time;
-      if(req.body.campaign_end_time) loot.campaign_end_time = req.body.campaign_end_time;
-      if(req.body.loot_start_time) loot.loot_start_time = req.body.loot_start_time;
-      if(req.body.loot_end_time) loot.loot_end_time = req.body.loot_end_time;
-      if(req.body.loot_number) loot.loot_number = req.body.loot_number;
+      if(req.body.site) loot.site = req.body.site;
+      if(req.body.content) loot.content = req.body.content;
+      if(req.body.groupType) loot.group_type = req.body.groupType;
+      if(req.body.campaignStartTime) loot.campaign_start_time = req.body.campaignStartTime;
+      if(req.body.campaignEndTime) loot.campaign_end_time = req.body.campaignEndTime;
+      if(req.body.lootStartTime) loot.loot_start_time = req.body.lootStartTime;
+      if(req.body.lootEndTime) loot.loot_end_time = req.body.lootEndTime;
+      if(req.body.lootNumber) loot.loot_number = req.body.lootNumber;
+      if(req.body.term) loot.term = req.body.term;
       if(req.body.status) loot.status = req.body.status;
       loot.save(function(err) {
         if(err) {

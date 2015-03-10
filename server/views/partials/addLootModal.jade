@@ -29,31 +29,43 @@
           .info_side
             span.info_label 场地类型:
           .info_detail_2
-            select(ng-model="newLoot.groupType" ng-options="mold.name as mold.name for mold in molds" required)
+            select.dl_form_control(ng-model="newLoot.groupType" ng-options="mold.name as mold.name for mold in molds" required)
         .dl_modal_container.clearfix
           .info_side
             span.info_label 抢购最少人数
           .info_detail_2
-            input.dl_form_control(ng-model="newLoot.loot_number")
+            input.dl_form_control(ng-model="newLoot.lootNumber" required)
         .dl_modal_container.clearfix
           .info_side
             span.info_label 场地活动开始时间
-          .info_detail_2
-            input.dl_form_control(ng-model="newLoot.campaign_start_time" required)
+          .dl_modal_half_container
+            .input-group.date.form_datetime#campaignStart(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="newLoot.campaignStartTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
         .dl_modal_container.clearfix
           .info_side
             span.info_label 场地活动结束时间
-          .info_detail_2
-            input.dl_form_control(ng-model="newLoot.campaign_end_time" required)
+          .dl_modal_half_container
+            .input-group.date.form_datetime#campaignEnd(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="newLoot.campaignEndTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
         .dl_modal_container.clearfix
           .info_side
             span.info_label 抢购活动开始时间
-          .info_detail_2
-            input.dl_form_control(ng-model="newLoot.loot_start_time" required)
+          .dl_modal_half_container
+            .input-group.date.form_datetime#lootStart(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="newLoot.lootStartTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
         .dl_modal_container.clearfix
           .info_side
             span.info_label 抢购活动结束时间
-          .info_detail_2
-            input.dl_form_control(ng-model="newLoot.loot_end_time" required)
+          .dl_modal_half_container
+            .input-group.date.form_datetime#lootEnd(data-date-format="yyyy-mm-dd hh:ii" data-date-autoclose="true")
+              input.form-control(type="text" ng-model="newLoot.lootEndTime" readonly required)
+              span.input-group-addon
+                span.glyphicon.glyphicon-calendar
       .dl-modal-footer
         button.dl_btn.dl_btn_large(ng-disabled="lootForm.$invalid" ng-click="addLoot()" data-dismiss="modal") 确定

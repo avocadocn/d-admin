@@ -14,41 +14,42 @@
               table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
-                    th 场馆名称
-                    th 场地信息
-                    th 抢购类型
-                    th 抢购属期时间
-                    th 抢购最少人数
+                    th 场馆
+                    th 场地
+                    th 类型
+                    th 所属哪期
+                    th 最少人数
 
                     th 活动开始时间
-                    th 活动结束时间
+                    //- th 活动结束时间
                     th 抢购开始时间
-                    th 抢购结束时间
-                    th 抢购状态
+                    //- th 抢购结束时间
+                    //- th 抢购状态
 
-                    th 抢购描述
+                    //- th 抢购描述
                     th 操作
                 tbody
                   tr(ng-repeat="loot in loots")
                     td {{loot.stadium.name}}
                     td {{loot.site}}
                     td {{loot.group_type}}
-                    td {{loot.term.start_time}}
+                    td {{loot.term.content}}
                     td {{loot.loot_number}}
 
-                    td {{loot.campaign_start_time}}
-                    td {{loot.campaign_end_time}}
-                    td {{loot.loot_start_time}}
-                    td {{loot.loot_end_time}}
-                    td 
+                    td {{loot.campaign_start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    //- td {{loot.campaign_end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    td {{loot.loot_start_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    //- td {{loot.loot_end_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    //- td 
                       span(ng-if="loot.status==='active'") 正常
-                      span(ng-if=)
-
-                    td {{loot.content}}
+                      span(ng-if="loot.status==='looted'") 被抢
+                      span(ng-if="loot.status==='closed'") 关闭
+                      span(ng-if="loot.status==='unlooted'") 结束未被抢
+                    //- td {{loot.content}}
                     td 
-                      button.btn.btn-xs.btn-warning(ng-if="loot.status==='active'" ng-click="activate(stadium,'closed')") 关闭
-                      button.btn.btn-xs.btn-success(ng-if="loot.status==='closed'" ng-click="activate(stadium,'active')") 启用
-                      button.btn.btn-xs.btn-info(ng-if="loot.status==='active'||loot.active==='closed' " ng-click="edit(loot)") 编辑
+                      button.btn.btn-xs.btn-warning(ng-if="loot.status==='active'" ng-click="activate(loot,'closed')") 关闭
+                      button.btn.btn-xs.btn-success(ng-if="loot.status==='closed'" ng-click="activate(loot,'active')") 启用
+                      button.btn.btn-xs.btn-info(ng-show="loot.status==='active'||loot.status==='closed'" ng-click="edit(loot)") 编辑
 
 .modal.fade#addLootModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/addLootModal
