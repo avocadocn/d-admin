@@ -4,7 +4,14 @@ var jwt = require('jsonwebtoken');
 
 var tokenSecret = 'donler';
 var onlineUsers= {};//user的映射表，看某人在不在线
-
+var objectIndexOf = function (object,value) {
+  for (var index in object) {
+    if(object[index]==value) {
+      return index;
+    }
+  };
+  return -1;
+}
 var actions = function (io, action, data) {
   switch(action){
     //告诉相关user有newComments(首页红点)
@@ -46,7 +53,6 @@ var actions = function (io, action, data) {
       return;
   }
 };
-
 module.exports = function (io) {
   io.use(function(socket,next){
     var token = socket.request._query.token;
@@ -65,6 +71,9 @@ module.exports = function (io) {
         }
         //hr和token不对不连接
       });
+    }
+    else{
+      next();
     }
   });
 
@@ -124,16 +133,16 @@ module.exports = function (io) {
       actions(io,'updateCampaignComment',{'campaign':campaign, 'comment':comment});
     });
 
-    // socket.on('talk',function(conversation){
-    //   if(socket.rooms.length===2){
-    //     var whereIsUser = _.indexOf(onlineUsers, socket.id);
-    //     var text = 'user'+whereIsUser+':'+conversation;
-    //     var msg = {msg: text};
-    //     io.sockets.in(socket.rooms[1]).emit('message', msg);
-    //   }else{
-    //     var msg = {msg: 'Sorry, you must enter a room.'};
-    //     socket.emit('message',msg);
-    //   }
-    // });
+    socket.on('talk',function(conversation){
+      if(socket.rooms.length===2) {
+        var whereIsUser = objectIndexOf(onlineUsers, socket.id);
+        var text = 'user'+whereIsUser+':'+conversation;
+        var msg = {text: conversation.msg,from:conversation.user,time: Date.now()};
+        io.sockets.in(socket.rooms[1]).emit('message', msg);
+      }else {
+        var msg = {msg: 'Sorry, you must enter a room.'};
+        socket.emit('message',msg);
+      }
+    });
   });
 };
