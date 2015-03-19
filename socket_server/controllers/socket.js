@@ -58,12 +58,12 @@ var actions = function (io, action, data) {
       var uids = data.uids;
       for(var i=0; i<uids.length; i++) {
         var uid = uids[i];
-        io.sockets.in(uid).emit('newChat', data.chat);
+        io.sockets.in(uid).emit('newChatroomChat', data.chat);
       }
       return;
       break;
     case 'upadteChat':
-      var chatroomId = data.chat._id;
+      var chatroomId = data.chat.chatroom_id;
       io.sockets.in(chatroomId).emit('newChat', data.chat);
       return;
       break;
