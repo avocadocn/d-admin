@@ -72,6 +72,7 @@ var actions = function (io, action, data) {
       for(var i=0; i<uids.length; i++) {
         //除了自己都通知content有新内容，带头像。
         //其实发过来的数据应该是没有发的人的id的...以防万一而已。
+        var uid = uids[i];
         if(onlineUsers[uid] && uid!==data.poster._id.toString()) {
           var socketId = onlineUsers[uid];
           io.sockets.in(socketId).emit('getNewCircleContent', data.poster.photo);
@@ -82,6 +83,7 @@ var actions = function (io, action, data) {
     case 'updateCircleComment':
       var uids = data.userIds;
       for(var i=0; i<uids.length; i++) {
+        var uid = uids[i];
         if(onlineUsers[uid] && uid!==data.poster._id.toString()) {
           var socketId = onlineUsers[uid];
           io.sockets.in(socketId).emit('getNewCircleComment', data.poster.photo);
