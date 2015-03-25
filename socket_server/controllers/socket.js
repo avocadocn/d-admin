@@ -84,9 +84,17 @@ var actions = function (io, action, data) {
       for(var i=0; i<uids.length; i++) {
         if(onlineUsers[uid] && uid!==data.poster._id.toString()) {
           var socketId = onlineUsers[uid];
-          io.sockets.in(socketId).emit('getNewCircleComment', data.photo);
+          io.sockets.in(socketId).emit('getNewCircleComment', data.poster.photo);
         }
       }
+      break;
+    case 'updateDiscover':
+      var leaderId = data.leaderId;
+      if(onlineUsers[leaderId]) {
+        var socketId = onlineUsers[leaderId];
+        io.sockets.in(socketId).emit('newCompetitionMessage');
+      }
+      break;
     default:
       return;
   }
@@ -183,8 +191,12 @@ module.exports = function (io) {
       actions(io, 'updateCircleContent', {'userIds':userIds, 'poster':poster});
     });
     //同事圈带数字红点、公司页带数字红点or红点?
-    socket.on('circleComment', function(userIds, photo) {
-      actions(io, 'updateCircleComment', {'userIds':userIds, 'photo':photo});
+    socket.on('circleComment', function(userIds, poster) {
+      actions(io, 'updateCircleComment', {'userIds':userIds, 'poster':poster});
+    });
+    //有挑战信或挑战信评论的push
+    socket.on('competitionMessage', function(leaderId) {
+      actions(io, 'updateDiscover', {'leaderId': leaderId});
     });
 
     // socket.on('talk',function(conversation){
