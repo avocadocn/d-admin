@@ -1,0 +1,20 @@
+{
+  "name": "socket-benchmark",
+  "description": "yali-socket-benchmark",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.4.x"
+  },
+  "dependencies": {
+    "express": "~4.10.2",
+    "socket.io-client": "~1.2.1",
+    "moment": "~2.8.4",
+    "jsonwebtoken": "~1.2.0",
+    "async": "~0.7.0"
+  },
+  "scripts": {
+    "start": "node benchmark"
+  }
+}
