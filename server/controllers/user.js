@@ -15,11 +15,34 @@ var companySelect = function(condition,res){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      User.find({'cid':company._id},{'nickname':1,'cname':1,'role':1,'team':1,'disabled':1,'mail_active':1,'_id':1},function (err,users){
+      User.find({'cid':company._id},{'nickname':1,'cname':1,'role':1,'team':1,'disabled':1,'mail_active':1,'_id':1, 'invite_person': 1},function (err,users){
         if(err || !users){
           return res.send({'msg':'USER_FETCH_FAILED','result':0});
         }else{
-          return res.send({'msg':'USER_FETCH_SUCCESS','result':1,'users':users});
+          // 转换为简单对象，以解除mongoose文档的约束，便于修改属性写入响应
+          var docToObject = function(doc) {
+            return doc.toObject();
+          };
+
+          var usersDoc = users.map(docToObject);
+
+          var invitePersonToObj = function(obj) {
+            if(obj.invite_person == undefined || obj.invite_person == null) {
+              return;
+            }
+            for(var i = 0, usersLen = usersDoc.length; i < usersLen; i++) {
+              if(obj.invite_person.toString() == usersDoc[i]._id.toString()) {
+                obj.invite_person = usersDoc[i].nickname;
+                break;
+              }
+            }
+          }
+
+          usersDoc.forEach(function(user) {
+            invitePersonToObj(user);
+          });
+
+          return res.send({'msg':'USER_FETCH_SUCCESS','result':1,'users':usersDoc});
         }
       });
     }

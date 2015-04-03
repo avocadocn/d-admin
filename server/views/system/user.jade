@@ -20,6 +20,7 @@
               th 小队
               th 状态
               th 操作
+              th 邀请人
           tbody
             tr(ng-repeat="user in users")
               td {{user.cname}}
@@ -36,3 +37,4 @@
               td(ng-if="user.mail_active && user.disabled")
                 a(ng-click="active(user,false)") 解封
               td(ng-if="!user.mail_active")
+              td {{user.invite_person ? user.invite_person : '无'}}
