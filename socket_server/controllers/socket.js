@@ -47,9 +47,9 @@ var actions = function (io, action, data) {
       var uids = data.uids;
       for(var i=0; i<uids.length; i++){
         var uid = uids[i];
-        if(onlineUsers[uid] && uid!==data.chat.poster.toString()){//如果他在线，并且不是自己
+        if(onlineUsers[uid] && uid!==data.chat.poster._id.toString()){//如果他在线，并且不是自己
           var socketId = onlineUsers[uid];
-          io.sockets.in(socketId).emit('getNewChat');
+          io.sockets.in(socketId).emit('getNewChat', data.chat);
         }
       }
       return;
