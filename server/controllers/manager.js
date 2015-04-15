@@ -93,7 +93,7 @@ exports.disableAll = function(req,res){
       for(var i = 0; i < company.team.length; i ++){
         tids.push(company.team[i].id);
       }
-      CompanyGroup.update({'_id':{'$in':tids}},{'$set':{'active':status}},{'multi':true},function (err,company_group){
+      CompanyGroup.update({'_id':{'$in':tids}},{'$set':{'company_active':status}},{'multi':true},function (err,company_group){
         if(err || !company_group){
           return res.send({'msg':'TEAM_UPDATE_ERROR','result':0});
         }else{
