@@ -31,9 +31,9 @@
                         | :&nbsp;{{log.push_msg}}
                     td {{log.user}}
                     td.text-center
-                      p.text-success(ng-if="log.status === 'success'") 推送成功
+                      p.text-success(ng-if="log.status === 'success'") 已发出推送
                       p.text-danger(ng-if="log.status === 'fail'") 推送失败
-                      p: button.btn.btn-default(ng-click="repush(log._id)" ng-if="log.status === 'fail'") 重新推送
+                      p: button.btn.btn-default(ng-click="repush(log._id)") 重新推送
                     td
                       p(ng-repeat="(key, value) in log.device")
                         span.text-primary {{key}}
