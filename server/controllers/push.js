@@ -171,14 +171,13 @@ var pushToUsers = function (users, pushMsg, options) {
   users.forEach(function (user) {
     user.device.forEach(function(device){
       if(!device.platform){
-
       }
       else if (device.platform=='iOS' && device.ios_token) {
         iosTokens.push(device.ios_token);
         savePushLogs(user, device);
       }
-      else if(device.platform=='Android' && device.user_id) {
-        androidUserIds.push(device.user_id);
+      else if(device.platform=='Android' && device.channel_id) {
+        androidUserIds.push(device.channel_id);
         savePushLogs(user, device);
       }
     });
@@ -195,21 +194,31 @@ var pushToUsers = function (users, pushMsg, options) {
     }, iosTokens);
   }
   if (androidUserIds.length > 0) {
-    var opt = {
-      message_type:1,
-      push_type: 1,
-      messages: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
-      msg_keys: 'donler'
-    }
+    // var opt = {
+    //   message_type:1,
+    //   push_type: 1,
+    //   messages: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
+    //   msg_keys: 'donler'
+    // }
 
-    androidUserIds.forEach(function(androidUserId){
-      opt.user_id = androidUserId;
-      clientAndroid.pushMsg(opt, function(err, result) {
-        if (err) {
-          console.log(err);
-          setFailStatusWhenAndroidPushFail(androidUserId);
-        }
-      });
+    // androidUserIds.forEach(function(androidUserId){
+    //   opt.user_id = androidUserId;
+    //   clientAndroid.pushMsg(opt, function(err, result) {
+    //     if (err) {
+    //       console.log(err);
+    //     }
+    //   });
+    // });
+    var opt = {
+      msg: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
+      topic_id: 'donler',
+      channel_ids:JSON.stringify(androidUserIds)
+    }
+    clientAndroid.pushMsg(4,opt, function(err, result) {
+      if (err) {
+        console.log(err);
+        setFailStatusWhenAndroidPushFail(androidUserId);
+      }
     });
   }
 

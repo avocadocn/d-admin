@@ -11,8 +11,8 @@ var crypto = require('crypto');
 var http = require('http');
 var querystring = require('querystring');
 var PROTOCOL_SCHEMA = 'http://';
-var SERVER_HOST = 'channel.api.duapp.com';
-var COMMON_PATH = '/rest/2.0/channel/';
+var SERVER_HOST = 'api.tuisong.baidu.com';
+var COMMON_PATH = '/rest/3.0/push/';
 //var URL_HEADER = PROTOCOL_SCHEMA + SERVER_HOST;
 var debug = false;
 
@@ -25,6 +25,7 @@ var errMsg = {
   INVALID_START: 'Arguments error: invalid start, start must be equal or greater than 0 ',
   INVALID_LIMIT: 'Arguments error: invalid limit, limit must be greater than 0 ',
   INVALID_CHANNEL_ID: 'Arguments error: invalid channel_id, type of value must be String',
+  INVALID_CHANNEL_IDS: 'Arguments error: invalid channel_ids, type of value must be Json String Array',
   INVALID_MESSAGES: 'Arguments error: invalid messages type of messages must be String',
   INVALID_TAG: 'Arguments error: invalid tag, the length of tag must be less than 129B',
   INVALID_PUSH_TYPE: 'Arguments error: invalid push_type, type of push_type is 1, 2 or 3',
@@ -33,6 +34,65 @@ var errMsg = {
   INVALID_MSG_KEYS: 'Arguments error: invalid msg_keys, type of messages must be String',
   INVALID_MESSAGE_EXPIRES: 'Arguments error: invalid message_expires, message_expires must be equal or greater than 0 ',
 };
+
+
+function fullEncodeURIComponent (str) {
+  var rv = encodeURIComponent(str).replace(/[!'()*~]/g, function(c) {
+    return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+  });
+  return rv.replace(/\%20/g,'+');
+}
+
+/**
+ * 生成请求签名
+ * 
+ * @param {object} reqParams, 由url.parse解析出来的对象内容,描述请求的位置和url及参数等信息的对象
+ * @param {object} postParams post表单内容
+ * @param {string} secretKey 开发者中心的SK
+ * @return {string} 签名值
+ */
+var singKey = function (reqParam, postParmas, secretKey) {
+
+    var basekey = "";
+
+    var method = reqParam.method.toUpperCase();
+    var baseurl = reqParam.href;
+    var query = reqParam.query || false;
+    var param = {};
+    var paramStr = '';
+
+    if (query) {
+        query = querystring.parse(query);
+        for ( var key in query) {
+            param[key] = query[key];
+        }
+    }
+
+    if (postParmas) {
+        for ( var key in postParmas) {
+            param[key] = postParmas[key];
+        }
+    }
+
+    var keys = Object.keys(param).sort();
+
+    keys.forEach(function (key) {
+        paramStr += key + "=" + param[key];
+    })
+
+    basekey = method + baseurl + paramStr + secretKey;
+
+    console.log("basekey : ", basekey);
+
+    var md5 = crypto.createHash('md5');
+
+    basekey = fullEncodeURIComponent(basekey);
+
+    md5.update(basekey);
+
+    return md5.digest('hex');
+}
+
 
 
 /*
@@ -97,7 +157,8 @@ function getSign(method, url, params, sk) {
 
     baseStr += sk;
     //var encodeStr = encodeURIComponent(baseStr);
-    var encodeStr = urlencode(baseStr);
+    // var encodeStr = urlencode(baseStr);
+    var encodeStr = fullEncodeURIComponent(baseStr);
     if (debug) {
         console.log('getSign: base str = ' + baseStr + ', encode str = ' + encodeStr);
     }
@@ -117,23 +178,20 @@ function getSign(method, url, params, sk) {
  * @param {function} cb cb(err, result)
  */
 function request(bodyArgs, path, sk, id, host, cb) {
-    assert.ok(bodyArgs.method);
     assert.ok(path);
     assert.ok(sk);
 
     bodyArgs.sign = getSign('POST', PROTOCOL_SCHEMA + host + path, bodyArgs, sk);
-
+    // bodyArgs.sign = singKey(PROTOCOL_SCHEMA + host + path, bodyArgs, sk);
 
     var bodyArgsArray = [];
     for (var i in bodyArgs) {
       if (bodyArgs.hasOwnProperty(i)) {
-        bodyArgsArray.push(i + '=' + urlencode(bodyArgs[i]));
+        bodyArgsArray.push(i + '=' + fullEncodeURIComponent(bodyArgs[i]));
         }
     }
     var bodyStr = bodyArgsArray.join('&');
-
-
-    //var bodyStr = querystring.stringify(bodyArgs);
+    // var bodyStr = querystring.stringify(bodyArgs);
 
     if (debug) {
         console.log('body length = ' + bodyStr.length + ', body str = ' + bodyStr);
@@ -144,7 +202,7 @@ function request(bodyArgs, path, sk, id, host, cb) {
         method: 'POST',
         path: path,
         headers: {'Content-Length': bodyStr.length,
-                  'Content-Type':'application/x-www-form-urlencoded'
+                  'Content-Type':'application/x-www-form-urlencoded; charset=utf-8'
                  }
     };
 
@@ -247,19 +305,19 @@ function checkOptions(options, must){
   if (options['channel_id'] && !(typeof options['channel_id'] === 'string')) {
     throw new Error(errMsg.INVALID_CHANNEL_ID);
   }
-  if (options['push_type'] && !(typeof options['push_type'] === 'number' && checkType(options['push_type'], [1, 2, 3]))) {
+  if (options['channel_ids'] && !(JSON.parse(options['channel_ids']) instanceof(Array))) {
+    throw new Error(errMsg.INVALID_CHANNEL_IDS);
+  }
+  if (options['push_type'] && !(typeof options['push_type'] === 'number' && checkType(options['push_type'], [1, 2, 3,4]))) {
     throw new Error(errMsg.INVALID_PUSH_TYPE);
   }
   if (options['device_type'] && !(typeof options['device_type'] === 'number' && checkType(options['device_type'], [1, 2, 3, 4, 5]))) {
     throw new Error(errMsg.INVALID_DEVICE_TYPE);
   }
-  if (options['message_type'] && !(typeof options['message_type'] === 'number' && checkType(options['message_type'], [0, 1]))) {
-    throw new Error(errMsg.INVALID_MESSAGE_TYPE);
-  }
   if (options['tag'] && !(typeof options['tag'] === 'string' && options['tag'].length <= 128)) {
     throw new Error(errMsg.INVALID_TAG);
   }
-  if (options['messages'] && !(typeof options['messages'] === 'string')) {
+  if (options['msg'] && !(typeof options['msg'] === 'string')) {
     throw new Error(errMsg.INVALID_MESSAGES);
   }
   if (options['msg_keys'] && !(typeof options['msg_keys'] === 'string')) {
@@ -343,7 +401,8 @@ Push.prototype.queryBindList = function (options, cb) {
   opt['method'] = 'query_bindlist';
   opt['apikey'] = self.ak;
   opt['timestamp'] = getTimestamp();
-
+  opt['device_type'] = 3;
+  
   opt = sortObj(opt);
   var wrap_id = {request_id: null};
   request(opt, path, self.sk, wrap_id, self.host, function (err, result) {
@@ -373,7 +432,7 @@ Push.prototype.queryBindList = function (options, cb) {
  * @param {Number} [options.message_expires]
  * @param {function} cb(err, result)
  */
-Push.prototype.pushMsg = function (options, cb) {
+Push.prototype.pushMsg = function (push_type, options, cb) {
   var self = this;
   var opt = {};
   if (typeof options === 'function' && arguments.length === 1) {
@@ -390,24 +449,30 @@ Push.prototype.pushMsg = function (options, cb) {
       opt[i] = options[i];
     }
   }
-  var must = ['push_type', 'messages', 'msg_keys'];
-
-  if (opt['push_type'] === 1) {
-    must.push('user_id');
-  } else if (opt['push_type'] === 2) {
+  var must = ['msg'];
+  var pushType = '';
+  if (push_type === 1) {//单个
+    must.push('channel_id');
+    pushType ='single_device';
+  } else if (push_type === 2) {//所有
+    pushType ='all';
+  } else if (push_type === 3) {//组
     must.push('tag');
-  } else {
-
+    must.push('type');
+    pushType ='single_device';
+  } else {//批量单个
+    must.push('channel_ids');
+    must.push('topic_id');
+    pushType ='batch_device';
   }
 
   checkOptions(opt, must);
 
-  var path = COMMON_PATH + 'channel';
+  var path = COMMON_PATH + pushType;
 
-  opt['method'] = 'push_msg';
   opt['apikey'] = self.ak;
   opt['timestamp'] = getTimestamp();
-
+  opt['msg_type'] = 1;
   opt = sortObj(opt);
   var wrap_id = {request_id: null};
   request(opt, path, self.sk, wrap_id, self.host, function (err, result) {
