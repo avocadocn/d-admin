@@ -144,12 +144,22 @@ var pushToUsers = function (users, pushMsg, options) {
     var pushLog = new PushLog({
       user: user._id,
       device: device,
-      campaign: options.campaignId
+      campaign: options.campaignId,
+      push_msg: pushMsg.body
     });
     pushLog.save(function(err) {
       if (err) {
         console.log(err);
       }
+    });
+  };
+
+  var setFailStatusWhenAndroidPushFail = function(pushUserId) {
+    PushLog.update({
+      campaign: options.campaignId,
+      'device.user_id': pushUserId
+    }, {status: 'fail'}, function(err) {
+      if (err) { console.log(err); }
     });
   };
 
@@ -193,6 +203,7 @@ var pushToUsers = function (users, pushMsg, options) {
       clientAndroid.pushMsg(opt, function(err, result) {
         if (err) {
           console.log(err);
+          setFailStatusWhenAndroidPushFail(androidUserId);
         }
       });
     });

@@ -16,9 +16,15 @@ var PushLog = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Campaign'
   },
-  pushTime: {
+  push_msg: String,
+  push_time: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: String,
+    enum: ['success', 'fail'],
+    default: 'success'
   }
 });
 

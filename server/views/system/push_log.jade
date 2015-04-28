@@ -14,16 +14,23 @@
                   tr
                     th 日期
                     th 活动id
+                    th 推送内容
                     th 用户id
                     th 用户设备信息
+                    th 操作
                 tbody
                   tr(ng-repeat="log in pushLogs")
-                    td {{log.pushTime | date:'yyyy-MM-dd HH:mm' | dateView}}
+                    td {{log.push_time | date:'yyyy-MM-dd HH:mm' | dateView}}
                     td {{log.campaign}}
+                    td {{log.push_msg}}
                     td {{log.user}}
                     td
                       p(ng-repeat="(key, value) in log.device")
                         span.text-primary {{key}}
                         | :&nbsp;
                         span {{value}}
+                    td
+                      button.btn.btn-default(ng-click="repush(log._id)" ng-if="log.status === 'fail'") 重新推送
+
+
 
