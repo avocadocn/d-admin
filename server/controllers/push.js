@@ -139,12 +139,16 @@ var clientAndroid = new PushAndroid(optionsAndroid);
  * @param {Object} pushMsg 要推送的消息
  */
 var pushToUsers = function (users, pushMsg, options) {
-
+  if (options.savePushLogs === undefined) {
+    options.savePushLogs = true;
+  }
   var savePushLogs = function(user, device) {
+    if (!options.savePushLogs) { return; }
     var pushLog = new PushLog({
       user: user._id,
       device: device,
       campaign: options.campaignId,
+      push_title: pushMsg.title,
       push_msg: pushMsg.body
     });
     pushLog.save(function(err) {
@@ -259,4 +263,39 @@ exports.push = function (req, res) {
     });
 
 };
+
+
+exports.repush = function(req, res) {
+  PushLog.findById(req.body.pushLogId)
+    .populate('user', '_id device')
+    .exec()
+    .then(function(log) {
+      if (log) {
+        pushToUsers([log.user], {
+          title: log.push_title,
+          body: log.push_msg
+        }, {
+          campaignId: log.campaign,
+          savePushLogs: false
+        });
+        log.status = 'success';
+        log.save(function(err) {
+          if (err) {
+            console.log(err.stack);
+            res.send(500, {msg: err.message});
+          }
+          else {
+            res.send({msg: '已重新推送'});
+          }
+        });
+      }
+      else {
+        res.send(500, {msg: '找不到日志'});
+      }
+    }, function(err) {
+      console.log(err.stack);
+      res.send(500, {msg: err.message});
+    });
+};
+
 

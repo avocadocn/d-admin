@@ -16,6 +16,7 @@ var PushLog = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Campaign'
   },
+  push_title: String,
   push_msg: String,
   push_time: {
     type: Date,

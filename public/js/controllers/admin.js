@@ -1947,7 +1947,16 @@ adminApp.controller('PushLogController', ['$http', '$scope', function($http, $sc
     $scope.pushLogs = data.pushLogs;
   }).error(function(data) {
     alert(data.msg || '获取数据失败');
-  })
+  });
+
+  $scope.repush = function(id) {
+    $http.post('/push/repush', {pushLogId: id}).success(function(data) {
+      alert(data.msg || '已经重新推送');
+    }).error(function(data) {
+      alert(data.msg || '重新推送失败');
+    });
+  };
+
 }]);
 
 
