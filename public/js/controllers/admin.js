@@ -90,6 +90,10 @@ function($routeProvider, $locationProvider) {
       controller:'LogController',
       controllerAs:'log',
     })
+    .when('/push_log',{
+      templateUrl: '/push_logs/page',
+      controller:'PushLogController'
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -1938,7 +1942,13 @@ adminApp.controller('LogController', ['$http','$scope','$rootScope',
 }]);
 
 
-
+adminApp.controller('PushLogController', ['$http', '$scope', function($http, $scope) {
+  $http.get('/push_logs').success(function(data) {
+    $scope.pushLogs = data.pushLogs;
+  }).error(function(data) {
+    alert(data.msg || '获取数据失败');
+  })
+}]);
 
 
 // adminApp.controller('DashboardController', ['$http','$scope',

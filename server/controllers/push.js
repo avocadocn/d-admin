@@ -9,7 +9,8 @@ var mongoose = require('mongoose'),
     rootConfig = require('../config/config'),
     async = require('async'),
     User = mongoose.model('User'),
-    Config = mongoose.model('Config');
+    Config = mongoose.model('Config'),
+    PushLog = mongoose.model('PushLog');
 
 var meanConfig = require('../config/config');
 var pemPath = path.join(meanConfig.root, 'server/service/ios-push-pem/');
@@ -139,6 +140,19 @@ var clientAndroid = new PushAndroid(optionsAndroid);
  */
 var pushToUsers = function (users, pushMsg, options) {
 
+  var savePushLogs = function(user, device) {
+    var pushLog = new PushLog({
+      user: user._id,
+      device: device,
+      campaign: options.campaignId
+    });
+    pushLog.save(function(err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  };
+
   var iosTokens = [],androidUserIds =[];
   users.forEach(function (user) {
     user.device.forEach(function(device){
@@ -147,11 +161,14 @@ var pushToUsers = function (users, pushMsg, options) {
       }
       else if (device.platform=='iOS' && device.ios_token) {
         iosTokens.push(device.ios_token);
+        savePushLogs(user, device);
       }
       else if(device.platform=='Android' && device.user_id) {
         androidUserIds.push(device.user_id);
+        savePushLogs(user, device);
       }
     });
+
   });
   if (iosTokens.length > 0) {
     clientIOS.pushNotificationToMany({
