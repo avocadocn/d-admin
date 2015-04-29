@@ -280,7 +280,10 @@ exports.repush = function(req, res) {
     .exec()
     .then(function(log) {
       if (log) {
-        pushToUsers([log.user], {
+        var pushUser = [{
+          device: [log.device]
+        }];
+        pushToUsers(pushUser, {
           title: log.push_title,
           body: log.push_msg
         }, {
