@@ -118,7 +118,12 @@ exports.initIOS = function (req, res, next) {
     return;
   }
   if (!isTheSameApnConfig(currentApnConfig, config.push.apn)) {
-    initApn(config);
+    try{
+      initApn(config);
+    }
+    catch(e){
+      console.log(e);
+    }
   }
   next();
 };
