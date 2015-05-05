@@ -22,4 +22,6 @@ module.exports = function(app,passport) {
 
   app.get('/admin/smtp', authorization.requiresAdmin, admin.getSMTP);
   app.post('/admin/smtp', authorization.requiresAdmin, admin.setSMTP);
+  app.post('/admin/generateqrcode', authorization.requiresAdmin, admin.generateQrcode);
+  
 };

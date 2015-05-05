@@ -1275,6 +1275,18 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
       });
 
     };
+    $scope.genarateQrcode = function () {
+      $http.post('/admin/generateqrcode').success(function (data, status) {
+        if (data.result === 1) {
+          alert('生成成功');
+        } else {
+          alert(data.msg);
+        }
+      }).error(function (data, status) {
+        alert('数据发生错误!');
+      });
+
+    };
 
 }]);
 

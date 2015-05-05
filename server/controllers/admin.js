@@ -2,8 +2,13 @@
 
 var mongoose = require('mongoose'),
   Admin = mongoose.model('Admin'),
-  Config = mongoose.model('Config');
-
+  Config = mongoose.model('Config'),
+  Company = mongoose.model('Company'),
+  User = mongoose.model('User');;
+var qr = require('qr-image'),
+async = require('async'),
+fs = require('fs'),
+mkdirp = require('mkdirp');
 
 
 exports.getHost = function(req, res) {
@@ -166,5 +171,60 @@ exports.setSMTP = function (req, res) {
     res.send({ result: 0, msg: '设置失败' });
   });
 };
+
+exports.generateQrcode = function (req, res) {
+  Config.findOne({ name: 'admin' }).exec()
+  .then(function (config) {
+    if (!config) {
+      return res.send({ result: 0, msg: '生成失败' });
+    }
+    Company.find().exec().then(function (companies) {
+      var qrDir = '../yali/public/img/qrcode'
+      var createQr = function () {
+        async.each(companies, function(company, callback) {
+          var inviteUrl = config.host.product+'/users/invite?key='+company.invite_key+'&cid=' + company._id;
+          var qrImg = qr.image(inviteUrl, { type: 'png' });
+          
+          var stream = fs.createWriteStream('../yali/public/img/qrcode/'+company._id.toString()+'.png')
+          stream.on('error', function (error) {
+            // console.log("Caught", error);
+            callback(error);
+          });
+          qrImg.pipe(stream);
+          callback();
+        }, function(err){
+          if( err ) {
+            console.log(err);
+            res.send({ result: 0, msg: '生成失败' });
+          } else {
+            res.send({ result: 1, msg: '生成成功' });
+          }
+        });
+      }
+      fs.exists(qrDir, function (isExists) {
+        if (isExists) {
+          createQr();
+        }
+        else {
+          mkdirp(qrDir, createQr);
+        }
+      });
+      
+      
+    })
+    .then(null,function (err) {
+      console.log(err);
+      console.log(err.stack);
+      res.send({ result: 0, msg: '生成失败' });
+    })
+  })
+  .then(null, function (err) {
+    console.log(err);
+    res.send({ result: 0, msg: '生成失败' });
+  });
+  
+};
+
+
 
 
