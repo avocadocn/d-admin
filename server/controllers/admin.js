@@ -171,7 +171,10 @@ exports.setSMTP = function (req, res) {
     res.send({ result: 0, msg: '设置失败' });
   });
 };
-
+var formatTimeDir = function () {
+  var now = new Date()
+  return now.getFullYear()+'-'+now.getMonth()+'/';
+}
 exports.generateQrcode = function (req, res) {
   Config.findOne({ name: 'admin' }).exec()
   .then(function (config) {
@@ -179,13 +182,24 @@ exports.generateQrcode = function (req, res) {
       return res.send({ result: 0, msg: '生成失败' });
     }
     Company.find().exec().then(function (companies) {
-      var qrDir = '../yali/public/img/qrcode'
+      var relativeDir = '../yali/public';
+      var qrDir = '/img/qrcode/companyinvite/';
+      var _formatDir = formatTimeDir();
+      var finalRelativeDir =relativeDir + qrDir +_formatDir;
+      var finalSaveDir = qrDir +_formatDir;
       var createQr = function () {
         async.each(companies, function(company, callback) {
           var inviteUrl = config.host.product+'/users/invite?key='+company.invite_key+'&cid=' + company._id;
           var qrImg = qr.image(inviteUrl, { type: 'png' });
-          
-          var stream = fs.createWriteStream('../yali/public/img/qrcode/'+company._id.toString()+'.png')
+          var fileName = company._id.toString()+'.png';
+          var finalDir =finalRelativeDir+fileName;
+          var stream = fs.createWriteStream(finalDir)
+          company.invite_qrcode = finalSaveDir+fileName;
+          company.save(function (err) {
+            if(err){
+              console.log(err);
+            }
+          });
           stream.on('error', function (error) {
             // console.log("Caught", error);
             callback(error);
@@ -201,12 +215,12 @@ exports.generateQrcode = function (req, res) {
           }
         });
       }
-      fs.exists(qrDir, function (isExists) {
+      fs.exists(finalRelativeDir, function (isExists) {
         if (isExists) {
           createQr();
         }
         else {
-          mkdirp(qrDir, createQr);
+          mkdirp(finalRelativeDir, createQr);
         }
       });
       
@@ -214,7 +228,6 @@ exports.generateQrcode = function (req, res) {
     })
     .then(null,function (err) {
       console.log(err);
-      console.log(err.stack);
       res.send({ result: 0, msg: '生成失败' });
     })
   })

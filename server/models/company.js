@@ -6,7 +6,20 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     crypto = require('crypto');
-
+    
+var _device = new Schema({
+    platform:String,
+    version:String,
+    device_id:String,
+    device_type:String,            //同一platform设备的类型(比如ios系统有iPhone和iPad)
+    access_token:String,           //每次登录时生成
+    app_id: String,
+    api_key: String,
+    update_date:{
+        type: Date,
+        default: Date.now
+    }
+});
 
 //小队信息
 var _team = new Schema({
@@ -95,7 +108,9 @@ var CompanySchema = new Schema({
     salt: String,
     // 企业注册用的邀请码
     register_invite_code: [String],
-    invite_key: String
+    invite_key: String,
+    invite_qrcode: String,
+    device: [_device]
 });
 
 /**
