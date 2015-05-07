@@ -1291,11 +1291,14 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
 }]);
 
 
-adminApp.controller('ManagerController', ['$http','$scope','$rootScope',
-  function ($http, $scope, $rootScope) {
+adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOptionsBuilder',
+  function ($http, $scope, $rootScope, DTOptionsBuilder) {
     $scope.detail_show = false;
     $scope.nameEdit = false;
     $scope.domainEdit = false;
+
+    $scope.dtOptions = DTOptionsBuilder.newOptions()
+          .withOption('order', [1, 'desc']);
 
     $http.get('/manager/company').success(function(data, status) {
       $scope.companies = data;

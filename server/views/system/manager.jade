@@ -11,7 +11,7 @@
               h5 公司管理
               h5.pull-right 公司总数:{{company_num}}
             #collapse4.body.table_all
-              table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
+              table(datatable="ng" dt-options="dtOptions")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
                     th 公司名
@@ -31,8 +31,14 @@
                     td {{_content.team.length}}
                     td {{_content.info.membernumber}}
                     td
-                      .glyphicon.glyphicon-ok(ng-if="_content.status.active")
-                      .glyphicon.glyphicon-remove(ng-if="!_content.status.active")
+                      span.label.label-success(ng-if="_content.status.active") 正常
+                      span.label.label-danger(ng-if="!_content.status.active") 屏蔽
+                      | &nbsp;
+                      span.label.label-success(ng-if="_content.status.mail_active") 已激活
+                      span.label.label-danger(ng-if="!_content.status.mail_active") 未激活
+                      | &nbsp;
+                      span.label.label-success(ng-if="_content.status.verification === 0") 已审核
+                      span.label.label-warning(ng-if="_content.status.verification === 1") 未审核（快速注册）
                     td
                       a(ng-click="getDetail(_content._id)" href="") 查看资料
                       span |
