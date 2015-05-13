@@ -25,7 +25,7 @@ var MAIL_OPTION = {
 
 var transport = mailer.createTransport('SMTP', MAIL_OPTION);
 
-var SECRET = '18801912891';
+var SECRET = 'c011fd597b3e';
 
 var CONFIG_NAME = 'donler';
 

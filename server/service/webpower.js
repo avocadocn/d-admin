@@ -23,7 +23,7 @@ var global_config = {
   }
 };
 
-var secret = '18801912891';
+var secret = 'c011fd597b3e';
 
 /**
  * 发送邮件
