@@ -10,5 +10,5 @@ module.exports = function(app) {
     app.get('/system/getting', authorization.requiresAdmin,system.getCodeSwitch);
 
     app.post('/system/createCompanyRegisterInviteCode', authorization.requiresAdmin,system.createCompanyRegisterInviteCode);
-
+    app.post('/system/rankUpdate', authorization.requiresAdmin, system.rankUpdate);
 };

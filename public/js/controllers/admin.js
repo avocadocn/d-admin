@@ -1287,6 +1287,16 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
       });
 
     };
+    $scope.reGenerateRank = function () {
+      $scope.reGenerating = true;
+      $http.post('/system/rankUpdate').success(function (data, status) {
+        alert('重新生成成功');
+        $scope.reGenerating = false;
+      }).error(function (data, status) {
+        alert('重新生成失败');
+        $scope.reGenerating = false;
+      })
+    }
 
 }]);
 

@@ -27,5 +27,9 @@
           .dl_left_head.dl_vertical 生成公司邀请二维码图片：
           .dl_md_1.dl_vertical
             button.dl_btn.dl_btn_right(ng-click="genarateQrcode()") 生成
+        .dl_row.margin_top_5
+          .dl_left_head.dl_vertical 手动重排排行榜
+          .dl_md_1.dl_vertical
+            button.dl_btn.dl_btn_right(ng-click="reGenerateRank()" ng-disabled="reGenerating") 生成
     .inner
       include ../system/setting

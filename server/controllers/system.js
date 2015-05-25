@@ -4,7 +4,12 @@
 // mongoose models
 var mongoose = require('mongoose'),
   Config = mongoose.model('Config'),
-  CompanyRegisterInviteCode = mongoose.model('CompanyRegisterInviteCode');
+  async = require('async'),
+  CompanyRegisterInviteCode = mongoose.model('CompanyRegisterInviteCode'),
+  Region = mongoose.model('Region'),
+  Group = mongoose.model('Group'),
+  Rank = mongoose.model('Rank'),
+  CompanyGroup = mongoose.model('CompanyGroup');
 
 
 exports.getCode = function(req,res){
@@ -66,3 +71,89 @@ exports.createCompanyRegisterInviteCode = function(req, res) {
     }
   });
 };
+
+var rankLimit = 10;
+var rankUpdate = function(updateCallback) {
+  var now = new Date();
+  
+  var updateTeamRank = function(region, city, group) {
+    //虚拟组不计算
+    if(group._id=="0"){
+      //找出所有同类型的正常小队并进行排名
+      return;
+    }
+    CompanyGroup.find({'active':true,'company_active':{'$ne':false},'city.province':region.name,'city.city': city.name,gid:group._id})
+    .sort('-score_rank.score -score.total -score.win_percent -score.campaign -score.member')
+    .exec(function (err,teams) {
+      var rank = new Rank();
+      rank.group_type ={
+        _id:group._id,
+        name:group.group_type
+      }
+      rank.city = {
+        province: region.name,
+        city: city.name
+      }
+      //将前十个放入rank里
+      teams.forEach(function (team,index) {
+        team.score_rank.rank = index+1;
+        if(index<rankLimit){
+          var competitionCount = team.score_rank.win + team.score_rank.tie + team.score_rank.lose;
+          rank.team.push({
+            _id: team._id,
+            cid: team.cid,
+            name: team.name,
+            cname: team.cname,
+            logo: team.logo,
+            member_num: team.member.length,
+            activity_score: team.score.total,
+            score: team.score_rank.score,
+            rank: index+1,
+            win: team.score_rank.win,
+            tie: team.score_rank.tie,
+            lose: team.score_rank.lose
+          });
+        }
+        team.save(function (err) {
+          if(err){
+            console.log(err)
+          }
+        })
+      });
+
+      if(rank.team.length>0){
+        rank.save(function (err) {
+          if(err){
+            console.log(err)
+          }
+        })
+      }
+    });
+  }
+
+  async.waterfall([
+    function(callback) {
+      Group.find({active:true}).exec(callback);
+    },
+    function(groups, callback) {
+      Region.find().exec(function (err,regions) {
+        regions.forEach(function (region) {
+          region.city.forEach(function (city){
+            groups.forEach(function (group){
+              updateTeamRank(region, city, group);
+            });
+          });
+        })
+      })
+      callback(null, 'score');
+    }
+  ], function (err, result) {
+    updateCallback();
+  });
+}
+
+exports.rankUpdate = function(req, res) {
+  rankUpdate(function() {
+    return res.send({msg:'重新排行成功'});
+  })
+}
