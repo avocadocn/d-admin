@@ -94,6 +94,10 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/push_logs/page',
       controller:'PushLogController'
     })
+    .when('/easemob',{
+      templateUrl: '/easemob/home',
+      controller:'EasemobController'
+    })
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -1983,7 +1987,42 @@ adminApp.controller('PushLogController', ['$http', '$scope', function($http, $sc
   };
 
 }]);
+adminApp.controller('EasemobController', ['$http', '$scope', function($http, $scope) {
+  $http.get('/easemob/info').success(function(data) {
+    $scope.easemob = data;
+  }).error(function(data) {
+    alert(data.msg || '获取数据失败');
+  });
 
+  $scope.save = function() {
+    $http.post('/easemob/save', {easemob: $scope.easemob}).success(function(data) {
+      alert(data.msg);
+    }).error(function(data) {
+      alert(data.msg || '环信设置失败');
+    });
+  };
+  $scope.initHrUser = function() {
+    $http.post('/easemob/inithruser').success(function(data) {
+      alert(JSON.stringify(data));
+    }).error(function(data) {
+      alert(data.msg|| '初始化失败');
+    });
+  };
+  $scope.initUser = function() {
+    $http.post('/easemob/inituser').success(function(data) {
+      alert(JSON.stringify(data));
+    }).error(function(data) {
+      alert(data.msg|| '初始化失败');
+    });
+  };
+  $scope.initGroup = function() {
+    $http.post('/easemob/initgroup').success(function(data) {
+     alert(JSON.stringify(data));
+    }).error(function(data) {
+      alert(data.msg || '初始化失败');
+    });
+  };
+}]);
 
 // adminApp.controller('DashboardController', ['$http','$scope',
 //   function ($http, $scope) {

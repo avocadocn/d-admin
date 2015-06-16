@@ -1,0 +1,32 @@
+#content
+  .outer
+    .inner
+      .row
+        .col-lg-12
+          .dl_row
+            h2 环信设置
+          .row
+            form.form-horizontal(name="easemobForm")
+              .form-group
+                label.col-sm-2.control-label client_id:
+                .col-sm-4
+                  input.form-control(type='text' ng-model="easemob.client_id" required)
+              .form-group
+                label.col-sm-2.control-label client_secret:
+                .col-sm-4
+                  input.form-control(type='text' ng-model="easemob.client_secret" required)
+              .form-group
+                label.col-sm-2.control-label org_name:
+                .col-sm-4
+                  input.form-control(type='text' ng-model="easemob.org_name" required)
+              .form-group
+                label.col-sm-2.control-label app_name:
+                .col-sm-4
+                  input.form-control(type='text' ng-model="easemob.app_name" required)
+              .form-group
+                .col-sm-2.col-sm-offset-2
+                  button.dl_btn.dl_btn_right(ng-disabled="easemobForm.$invalid" ng-click="save()") 保存
+          .dl_row
+            button.dl_btn.dl_btn_right(ng-click="initHrUser()") 初始化公司用户
+            button.dl_btn.dl_btn_right(ng-click="initUser()") 初始化用户
+            button.dl_btn.dl_btn_right(ng-click="initGroup()") 初始化群组

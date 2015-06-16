@@ -211,7 +211,12 @@ var CompanyGroup = new Schema({
             type: Number,
             default: 0
         }
-    }
+    },
+    timeHash: {
+        type: Date,
+        default: Date.now
+    },
+    easemobId:String
 });
 
 // CompanyGroup.plugin(mongoosePaginate);
@@ -301,7 +306,7 @@ CompanyGroup.methods = {
             case 3:
             default:
                 return false;
-        }
+    }
     }
 };
 
