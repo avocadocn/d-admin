@@ -31,8 +31,8 @@ exports.save = function(req,res){
   Config.update(conditions, update, options, callback);
 
   function callback (err, numAffected) {
-    if(!err){
-      res.send({msg:"环信配置修改失败功"})
+    if(err){
+      res.send({msg:"环信配置修改失败"})
     }
     else{
       console.log(err);
