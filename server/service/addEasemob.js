@@ -16,7 +16,7 @@ var getGroup= function (group) {
   var groupMembers = group.member.map(getMemberId)
   return  {
             "groupname":group.id,
-            "desc":group.brief,
+            "desc":group.name,
             "public":true,
             "owner":group.cid,
             "members":groupMembers
