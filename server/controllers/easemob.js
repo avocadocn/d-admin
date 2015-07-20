@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
   Campaign = mongoose.model('Campaign'),
   Config = mongoose.model('Config'),
   User = mongoose.model('User');
+
 var easemobService = require('../service/addEasemob');
 exports.home = function(req,res){
   res.render('system/easemob');
@@ -36,6 +37,7 @@ exports.save = function(req,res){
     }
     else{
       console.log(err);
+      easemobService.resetToken();
       res.send({msg:"环信配置修改成功"})
     }
   }

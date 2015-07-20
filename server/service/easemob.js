@@ -144,15 +144,19 @@ var get_token = function (callback) {
   }); 
 };
 //模块初始化调用
-get_key(function(error){
-  if(!error){
-    get_token();
-  }
-  else{
-    console.error(error);
-  }
-});
-
+var resetToken = function () {
+  //模块初始化调用
+  get_key(function(error){
+    if(!error){
+      get_token();
+    }
+    else{
+      console.error(error);
+    }
+  });
+}
+resetToken();
+exports.resetToken = resetToken;
 
 var UserService = {};
 

@@ -22,6 +22,7 @@ var getGroup= function (group) {
             "members":groupMembers
           };
 }
+exports.resetToken = easemob.resetToken;
 exports.addUsers = function (callback) {
   var pageSize = 10;
   var nowResultLength = 0;
