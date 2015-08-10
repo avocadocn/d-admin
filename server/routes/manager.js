@@ -24,11 +24,11 @@ module.exports = function(app) {
     app.get('/manager/department', authorization.requiresAdmin,department.home);
     app.get('/manager/app', authorization.requiresAdmin,_app.home);
 
-    app.get('/manager/company', authorization.requiresAdmin,manager.getComapnyBasicInfo);
+    app.get('/manager/company', authorization.requiresAdmin,manager.getCompanyBasicInfo);
+    app.post('/manager/company', authorization.requiresAdmin, manager.createCompany);
     app.post('/manager/search', authorization.requiresAdmin,manager.searchCompany);
     app.post('/manager/company/detail', authorization.requiresAdmin,manager.getCompanyDetail);
     app.post('/manager/validate', authorization.requiresAdmin,manager.validate);
     app.post('/manager/active', authorization.requiresAdmin,manager.disableAll);
     app.post('/manager/edit/name', authorization.requiresAdmin,manager.editName);
-    app.post('/manager/edit/domain', authorization.requiresAdmin,manager.editDomain);
 };

@@ -52,6 +52,7 @@
     "ckeditor": "~4.3.4",
     "Chart.js": "1.0.1-beta.3",
     "smalot-bootstrap-datetimepicker": "latest",
-    "angular-datatables": "~0.2.1"
+    "angular-datatables": "~0.2.1",
+    "linkage-selector": "0.1.5"
   }
 }

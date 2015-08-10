@@ -23,19 +23,9 @@
             span.info_label {{info.official_name}}
         .dl_modal_container.clearfix
           .info_side
-            span.info_label 邮箱后缀:
-          .info_detail
-            .domain_container(ng-repeat="domain in emailDomains track by $index")
-              span.info_label(ng-if='!domainEdit') {{emailDomains[$index]}}
-              input.dl_form_control(ng-if='domainEdit' ng-model="emailDomains[$index]")
-              a(ng-click='removeDomain($index)') 删除
-            a(ng-click='addDomain()') 添加
-            a.pull-right(ng-if='domainEdit' ng-click = 'saveDomain()') 保存
-        .dl_modal_container.clearfix
-          .info_side
             span.info_label 地区:
           .info_detail
-            span.info_label {{info.city.province}}  {{info.city.city}}
+            span.info_label {{info.city.province}}  {{info.city.city}} {{info.city.district}}
         .dl_modal_container.clearfix
           .info_side
             span.info_label 详细地址:
@@ -46,26 +36,6 @@
             span.info_label 人数:
           .info_detail
             span.info_label {{info.membernumber}}
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 联系人电话:
-          .info_detail
-            span.info_label {{info.phone}}
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 公司座机:
-          .info_detail
-            span.info_label {{info.lindline.areacode}} - {{info.lindline.number}} - {{info.lindline.extension}}
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 联系人:
-          .info_detail
-            span.info_label {{info.linkman}}
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label Email:
-          .info_detail
-            span.info_label {{login_email}}
         .dl_modal_container.clearfix
           .info_side
             span.info_label 简介:

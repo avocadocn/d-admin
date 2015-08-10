@@ -21,5 +21,5 @@ module.exports = function(app) {
     app.post('/region/edit/city', authorization.requiresAdmin,region._edit);
     app.post('/region/edit/district', authorization.requiresAdmin,region._edit);
 
-    app.get('/region/json', authorization.requiresAdmin,region.regionAsJSON);
+    app.get('/region/json', region.regionAsJSON);
 };

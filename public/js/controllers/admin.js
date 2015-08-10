@@ -1353,45 +1353,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
           console.log(e);
       }
     }
-    $scope.addDomain = function () {
-      $scope.domainEdit = true;
-      $scope.emailDomains.push('');
-    }
-    $scope.removeDomain = function (index) {
-      $scope.domainEdit = true;
-      $scope.emailDomains.splice(index,1);
-    }
-    $scope.saveDomain = function () {
-      var tempDomain = {};
-      for(var i=0;i<$scope.emailDomains.length;i++){
-        if($scope.emailDomains[i].length>0){
-          tempDomain[$scope.emailDomains[i]] = $scope.emailDomains[i];
-        }
-      }
-      $scope.emailDomains = [];
-      for(var j in tempDomain){
-        $scope.emailDomains.push(j);
-      }
-      try{
-        $http({
-            method: 'post',
-            url: '/manager/edit/domain',
-            data:{
-                domain: $scope.emailDomains,
-                _id : $scope.cid
-            }
-        }).success(function(data, status) {
-          if(data.result === 1){
-            $scope.domainEdit = false;
-          }else{
-            alert(data.msg);
-          }
-        });
-      }
-      catch(e){
-          console.log(e);
-      }
-    }
+
 
     $scope.active = function(value,company_id){
       try{
@@ -1422,28 +1384,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
     $scope.detailBoxShow = function(status) {
       $scope.detail_show = status;
     };
-    $scope.sendActiveMail = function(who, name, company_id) {
-       try{
-          $http({
-              method: 'post',
-              url: '/manager/validate',
-              data:{
-                  who : who,
-                  name : name,
-                  _id : company_id
-              }
-          }).success(function(data, status) {
-            window.location.reload();
-            //$('#companyDetailModal').modal();
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-      }
-      catch(e){
-          console.log(e);
-      }
-    };
+
     $scope.getDetail = function(company_id) {
       try{
           $http({
@@ -1454,13 +1395,10 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
               }
           }).success(function(data, status) {
             $scope.info = data.info;
-            $scope.emailDomains = data.email.domain;
             $scope.cid = company_id;
             $scope.detail_show = true;
             $scope.register_date = data.register_date;
-            $scope.login_email = data.login_email;
             $scope.nameEdit = false;
-            $scope.domainEdit = false;
             $('#companyDetailModal').modal();
           }).error(function(data, status) {
               //TODO:更改对话框
@@ -1471,6 +1409,20 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
           console.log(e);
       }
     };
+
+    $scope.newCompany = {
+      province: '上海市',
+      city: '上海市',
+      district: '宝山区'
+    };
+    $scope.createCompany = function() {
+      $http.post('/manager/company', $scope.newCompany).success(function(data, status) {
+        alert('成功');
+        $scope.newCompany = {};
+      }).error(function(data, status) {
+        alert(data.msg);
+      });
+    }
 }]);
 
 

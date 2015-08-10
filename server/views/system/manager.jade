@@ -8,16 +8,14 @@
             header
               .icons
                 i.fa.fa-table
-              h5 公司管理
-              h5.pull-right 公司总数:{{company_num}}
+              h5 学校管理
+              a.pull-right(data-toggle="modal" data-target="#addCompanyModal") 添加学校
             #collapse4.body.table_all
               table(datatable="ng" dt-options="dtOptions")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
                 thead
                   tr
-                    th 公司名
-                    th 注册日期
-                    th 公司邮箱
-                    th 部门数
+                    th 学校
+                    th 创建时间
                     th 小组数
                     th 人数
                     th 状态
@@ -26,24 +24,25 @@
                   tr(ng-repeat="_content in companies")
                     td {{_content.info.name}}
                     td {{_content.register_date | date:'yyyy-MM-dd HH:mm'}}
-                    td {{_content.login_email}}
-                    td {{_content.department_num}}
                     td {{_content.team.length}}
                     td {{_content.info.membernumber}}
                     td
                       span.label.label-success(ng-if="_content.status.active") 正常
                       span.label.label-danger(ng-if="!_content.status.active") 屏蔽
                       | &nbsp;
-                      span.label.label-success(ng-if="_content.status.mail_active") 已激活
-                      span.label.label-danger(ng-if="!_content.status.mail_active") 未激活
-                      | &nbsp;
                       span.label.label-success(ng-if="_content.status.verification === 0") 已审核
                       span.label.label-warning(ng-if="_content.status.verification === 1") 未审核（快速注册）
                     td
                       a(ng-click="getDetail(_content._id)" href="") 查看资料
                       span |
-                      a(ng-if="!_content.status.mail_active" ng-click="sendActiveMail(_content.login_email,_content.info.name,_content._id)") 发送激活邮件
-                      a(ng-if="!_content.status.active && _content.status.mail_active" ng-click="active(true,_content._id)") 激活
-                      a(ng-if="_content.status.active && _content.status.mail_active" ng-click="active(false,_content._id)") 屏蔽
+                      a(ng-if="!_content.status.active" ng-click="active(true,_content._id)") 激活
+                      a(ng-if="_content.status.active" ng-click="active(false,_content._id)") 屏蔽
+                      span |
+                      a(ng-click="point()") 指定管理员
 .modal.fade#companyDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/company_detail
+.modal.fade#addCompanyModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/add_company
+
+//- append footExt
+//-   script(src="/public/lib/linkage-selector/linkage-selector.js")
