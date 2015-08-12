@@ -6,5 +6,6 @@ module.exports = function(app) {
   app.post('/user/search', authorization.requiresAdmin,user.searchCompanyForUser);
   app.post('/user/active', authorization.requiresAdmin,user.userModify);
   app.post('/user/team', authorization.requiresAdmin,user.userByTeam);
-  app.get('/user/tolower',authorization.requiresAdmin,user.tolower);
+  app.post('/user/:userId/superadmin', function(req,res,next){console.log(req.session);next();},authorization.requiresAdmin, user.pointAdmin); //指定/取消大使
+  app.get('/users/company/:companyId', authorization.requiresAdmin, user.getCompanyUser); //获取公司员工资料
 };

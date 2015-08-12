@@ -27,14 +27,14 @@ module.exports = function(grunt) {
                 }
             }
         },
-        jshint: {
-            all: {
-                src: ['gruntfile.js', 'admin.js', 'server/**/*.js', 'public/js/**', 'test/**/*.js', '!test/coverage/**/*.js'],
-                options: {
-                    jshintrc: true
-                }
-            }
-        },
+        // jshint: {
+        //     all: {
+        //         src: ['gruntfile.js', 'admin.js', 'server/**/*.js', 'public/js/**', 'test/**/*.js', '!test/coverage/**/*.js'],
+        //         options: {
+        //             jshintrc: true
+        //         }
+        //     }
+        // },
         uglify: {
             options: {
                 mangle: false

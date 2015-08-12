@@ -92,23 +92,66 @@ exports.userByTeam = function(req,res){
   })
 }
 
-exports.tolower = function(req,res) {
-  User.find(null,{'username':1,'email':1})
-  .exec()
-  .then(function(users){
-    users.forEach(function(user){
-        user.username = user.username.toLowerCase();
-        user.save(function(err){
-          if(err)
-            console.log(err);
-          // else
-          //   console.log(user);
-        })
-    });
-    return res.send({});
+var updateCompanyAdmin = function(user, role, callback) {
+  console.log(user);
+  var operation = {};
+  switch (role) {
+    case 'SuperAdmin':
+      operation = {'$addToSet': {'super_admin':user._id}};
+      break;
+    case 'Student':
+      operation = {'$pull': {'super_admin':user._id}};
+      break;
+    default:
+      return callback('参数错误');
+  }
+  Company.update({'_id':user.cid}, operation, function(err, company) {
+    if(err || !company) {
+      console.log(err);
+      callback('err');
+    }
+    else {
+      callback();
+    }
   })
-  .then(null,function(err){
-    console.log(err);
-    return res.send(500);
+};
+/**
+ * 指定/取消大使资格
+ * @param  {object} req:
+ *           {
+ *             role: string
+ *           }
+ */
+exports.pointAdmin = function(req, res) {
+  var role = req.body.role;
+  var userId = req.params.userId;
+  User.findOneAndUpdate({'_id': userId}, {'$set':{'role': role}}, function(err, user) {
+    if(err || !user) {
+      return res.status(500).send({'msg': '指定失败'})
+    }
+    else {
+      updateCompanyAdmin(user, role, function(err) {
+        if(err) {
+          return res.status(500).send({'msg': '指定失败'})
+        }
+        else {
+          return res.status(200).send({'msg': '指定成功'})
+        }
+      })
+    }
   })
-}
+};
+
+exports.getCompanyUser = function(req, res) {
+  User.find({'cid': req.params.companyId}, {'_id':1, 'photo':1, 'nickname':1, 'phone':1, 'realname':1, 'role':1},
+  function(err, users) {
+    if(err) {
+      console.log(err);
+      res.status(500).send({msg:'查询错误'});
+    }
+    else {
+      res.status(200).send(users);
+      console.log(req.session);
+    }
+  })
+};

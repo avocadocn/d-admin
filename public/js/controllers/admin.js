@@ -278,6 +278,7 @@ adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
       $('#dataTable').dataTable();
     });
   };
+  $rootScope.staticUrl = 'http://localhost:3000';
 }]);
 
 
@@ -1387,26 +1388,26 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
 
     $scope.getDetail = function(company_id) {
       try{
-          $http({
-              method: 'post',
-              url: '/manager/company/detail',
-              data:{
-                  _id : company_id
-              }
-          }).success(function(data, status) {
-            $scope.info = data.info;
-            $scope.cid = company_id;
-            $scope.detail_show = true;
-            $scope.register_date = data.register_date;
-            $scope.nameEdit = false;
-            $('#companyDetailModal').modal();
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
+        $http({
+          method: 'post',
+          url: '/manager/company/detail',
+          data:{
+              _id : company_id
+          }
+        }).success(function(data, status) {
+          $scope.info = data.info;
+          $scope.cid = company_id;
+          $scope.detail_show = true;
+          $scope.register_date = data.register_date;
+          $scope.nameEdit = false;
+          $('#companyDetailModal').modal();
+        }).error(function(data, status) {
+          //TODO:更改对话框
+          alert('数据发生错误！');
+        });
       }
       catch(e){
-          console.log(e);
+        console.log(e);
       }
     };
 
@@ -1422,7 +1423,30 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
       }).error(function(data, status) {
         alert(data.msg);
       });
-    }
+    };
+
+    $scope.showPoint = function(cid) {
+      $('#pointAdmin').modal();
+      $http.get('/users/company/' + cid).success(function(data, status) {
+        $scope.users = data;
+      }).error(function(data, status) {
+        alert('获取用户失败');
+      });
+    };
+
+    $scope.appointReady = function(index, type) {
+      var tip = type === 1 ? '确认要指定TA为校园大使吗？' : '确认要取消指定TA为校园大使吗？';
+      var role = type === 1 ? 'SuperAdmin' : 'Student';
+      if(confirm(tip)) {
+        $http.post('/user/'+$scope.users[index]._id + '/superadmin', {role:role}).success(function(data, status) {
+          $scope.users[index].role = role;
+          alert('操作成功');
+        }).error(function(data, status) {
+          alert('操作失败');
+        })
+      }
+    };
+
 }]);
 
 

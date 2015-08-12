@@ -1,0 +1,27 @@
+.modal-dialog
+  .dl-modal
+    .dl-modal-header
+      button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+      h4.modal-title#myModalLabel 任命管理员
+    .dl-modal-body.clearfix
+      .dl_modal_container
+        .dl_row.clearfix
+          .search_form.pull-right
+            form(name="manager_form" novalidate)
+              .search_input
+                input(placeholder="搜索成员" type="text" ng-model="keyword" required)
+              .search_icon(type='submit' ng-click="search()" ng-disabled="manager_form.$invalid")
+      .dl_modal_container
+        .groups(bs-popover)
+          p(ng-if="message" ng-cloak) {{message}}
+          .row
+            .group(ng-repeat="user in users")
+              a.col-sm-2(ng-if="user.role !== 'SuperAdmin'" ng-click="appointReady($index,1)")
+                img.img_user.size_48(ng-src="{{user.photo}}")
+                span.name {{user.nickname || user.realname}}
+              a.col-sm-2(ng-if="user.role === 'SuperAdmin'" ng-click="appointReady($index,2)")
+                img.size_48.dl_cover.img_user(ng-src="{{user.photo}}")
+                span.name {{user.nickname || user.realname}}
+    .dl-modal-footer
+      //- button.cancel_btn.dl_btn_large(data-dismiss="modal") 取消
+      //- button.dl_btn.dl_btn_large(data-dismiss="modal" ng-click="appointManager()") 确定
