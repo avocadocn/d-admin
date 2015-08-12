@@ -17,10 +17,10 @@
           .row
             .group(ng-repeat="user in users")
               a.col-sm-2(ng-if="user.role !== 'SuperAdmin'" ng-click="appointReady($index,1)")
-                img.img_user.size_48(ng-src="{{user.photo}}")
+                img.img_user.size_48(ng-src="{{staticUrl}}{{user.photo}}")
                 span.name {{user.nickname || user.realname}}
               a.col-sm-2(ng-if="user.role === 'SuperAdmin'" ng-click="appointReady($index,2)")
-                img.size_48.dl_cover.img_user(ng-src="{{user.photo}}")
+                img.size_48.dl_cover.img_user(ng-src="{{staticUrl}}{{user.photo}}")
                 span.name {{user.nickname || user.realname}}
     .dl-modal-footer
       //- button.cancel_btn.dl_btn_large(data-dismiss="modal") 取消
