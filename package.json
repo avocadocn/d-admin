@@ -69,7 +69,9 @@
     "redis-node": "latest",
     "qr-image": "^3.1.0",
     "mkdirp": "^0.5.0",
-    "request": "~2.51.0"
+    "request": "~2.51.0",
+    "connect-redis": "~2.3.0",
+    "express-session": "~1.11.1"
   },
   "devDependencies": {
     "assetmanager": "0.1.2",

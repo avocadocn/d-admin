@@ -151,7 +151,6 @@ exports.getCompanyUser = function(req, res) {
     }
     else {
       res.status(200).send(users);
-      console.log(req.session);
     }
   })
 };

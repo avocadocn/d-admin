@@ -14,7 +14,8 @@ var express = require('express'),
     appPath = process.cwd(),
     fs = require('fs'),
     assetmanager = require('assetmanager');
-
+var session = require('express-session'),
+  RedisStore = require('connect-redis')(session);
 module.exports = function(app, passport, db) {
     app.set('showStackError', true);
 
@@ -79,14 +80,24 @@ module.exports = function(app, passport, db) {
         });
 
         // Express/Mongo session storage
-        app.use(express.session({
-            secret: config.sessionSecret,
-            store: new mongoStore({
-                db: db.connection.db,
-                collection: config.sessionCollection
-            })
+        // app.use(express.session({
+        //     secret: config.sessionSecret,
+        //     store: new mongoStore({
+        //         db: db.connection.db,
+        //         collection: config.sessionCollection
+        //     })
+        // }));
+        var hour = 3600000;
+        // Express/Redis session storage
+        app.use(session({
+          secret: config.sessionSecret,
+          store: new RedisStore(),
+          resave: false,
+          saveUninitialized: true,
+          cookie: {
+            maxAge: hour * 24 * 7
+          }
         }));
-
         // Dynamic helpers
         app.use(helpers(config.app.name));
 
