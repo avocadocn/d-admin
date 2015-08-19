@@ -272,13 +272,13 @@ adminApp.filter('reportStatusMap', function() {
   }
 });
 
-adminApp.run(['$rootScope','$location', function ($rootScope,$location) {
+adminApp.run(['$rootScope','$location',function ($rootScope,$location) {
   $rootScope.run = function() {
     $(document).ready(function(){
       $('#dataTable').dataTable();
     });
   };
-  $rootScope.staticUrl = 'http://localhost:3000';
+  $rootScope.staticUrl = $location.protocol() +"://"+ $location.host() + ($location.host()==="localhost" ? ":3000/":"/");
 }]);
 
 
