@@ -98,6 +98,11 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/easemob/home',
       controller:'EasemobController'
     })
+    .when('/interactionTemplate',{
+      templateUrl: '/interaction/template',
+      controller:'interactionTemplateController'
+    })
+    
     .otherwise({
       redirectTo: '/parameter'
     });
@@ -278,7 +283,7 @@ adminApp.run(['$rootScope','$location',function ($rootScope,$location) {
       $('#dataTable').dataTable();
     });
   };
-  $rootScope.staticUrl = $location.protocol() +"://"+ $location.host() + ($location.host()==="localhost" ? ":3000/":"/");
+  $rootScope.staticUrl = $location.protocol() +"://"+ $location.host() + ($location.host()==="localhost" ? ":3000":"");
 }]);
 
 
@@ -1416,11 +1421,45 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
       city: '上海市',
       district: '宝山区'
     };
+    var cropper = $('#image_cropper').cropit({
+      onFileChange: function () {
+        $scope.isUploading = true;
+        $scope.$digest();
+      },
+      imageBackground: true
+    });
+
+    $scope.isUploading = false;
+    var cropitImageInput = $('#cropit_image_input');
+    $scope.selectLogo = function () {
+      cropitImageInput.click();
+    };
     $scope.createCompany = function() {
-      $http.post('/manager/company', $scope.newCompany).success(function(data, status) {
+      $http({
+        method: 'POST',
+        url: '/manager/company',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        data: $scope.newCompany,
+        transformRequest: function (data, headersGetter) {
+          var formData = new FormData();
+          angular.forEach(data, function (value, key) {
+              formData.append(key, value);
+          });
+          var dataURI = cropper.cropit('export');
+          var blob = imageService.dataURItoBlob(dataURI);
+          formData.append('photo', blob);
+          var headers = headersGetter();
+          delete headers['Content-Type'];
+          return formData;
+        }
+      })
+      .success(function (data) {
         alert('成功');
         $scope.newCompany = {};
-      }).error(function(data, status) {
+      })
+      .error(function (data, status) {
         alert(data.msg);
       });
     };
@@ -1575,6 +1614,8 @@ adminApp.controller('RegionController', ['$http','$scope',
       $scope.city_new = $scope.city_selected.name;
       $scope.district_selected=$scope.districts[0];
       $scope.district_new = $scope.district_selected.name;
+      pid = $scope.province_selected.id;
+      cid = $scope.city_selected.id;
     });
 
     var pid = '';
@@ -1587,47 +1628,56 @@ adminApp.controller('RegionController', ['$http','$scope',
     $scope.getCity = function(province) {
       pid = province.id;
       $scope.province_new = province.name;
-      try{
-          $http({
-              method: 'post',
-              url: '/region/city',
-              data:{
-                  province_id: pid
-              }
-          }).success(function(data, status) {
-              $scope.cities = data;
-              $scope.districts = [];
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-      }
-      catch(e){
-          console.log(e);
-      }
+      // try{
+      //     $http({
+      //         method: 'post',
+      //         url: '/region/city',
+      //         data:{
+      //             province_id: pid
+      //         }
+      //     }).success(function(data, status) {
+      //         $scope.cities = data;
+      //         $scope.districts = [];
+      //     }).error(function(data, status) {
+      //         //TODO:更改对话框
+      //         alert('数据发生错误！');
+      //     });
+      // }
+      // catch(e){
+      //     console.log(e);
+      // }
+      $scope.cities = province.city;
+      $scope.city_selected=$scope.cities[0];
+      $scope.city_new = $scope.city_selected.name;
+      $scope.districts = $scope.city_selected.district;
+      $scope.district_selected = $scope.districts[0];
+      $scope.district_new = $scope.district_selected.name;
     };
 
     $scope.getDistrict = function(city) {
       cid = city.id;
       $scope.city_new = city.name;
-      try{
-          $http({
-              method: 'post',
-              url: '/region/district',
-              data:{
-                  province_id: pid,
-                  city_id: cid
-              }
-          }).success(function(data, status) {
-              $scope.districts = data;
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-      }
-      catch(e){
-          console.log(e);
-      }
+      // try{
+      //     $http({
+      //         method: 'post',
+      //         url: '/region/district',
+      //         data:{
+      //             province_id: pid,
+      //             city_id: cid
+      //         }
+      //     }).success(function(data, status) {
+      //         $scope.districts = data;
+      //     }).error(function(data, status) {
+      //         //TODO:更改对话框
+      //         alert('数据发生错误！');
+      //     });
+      $scope.districts = city.district;
+      $scope.district_selected = $scope.districts[0];
+      $scope.district_new = $scope.district_selected.name;
+      // }
+      // catch(e){
+      //     console.log(e);
+      // }
     };
 
     $scope.getDistrictSelected = function(district){

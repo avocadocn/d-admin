@@ -43,5 +43,16 @@
             span.info_label 简介:
           .info_detail
             input.dl_form_control(ng-model="newCompany.brief")
+        .cropper#image_cropper
+          .cropit-image-preview-container(ng-show="newCompany.logo")
+            .cropit-image-preview
+          .operator_slider(ng-show="isUploading")
+            span.glyphicon.glyphicon-picture.icon_small
+            input.cropit-image-zoom-input(type="range")
+            span.glyphicon.glyphicon-picture.icon_large
+          .operator_button.text-center
+            .btn-group
+              button.btn.btn-default(ng-click="selectLogo()") 选择图片
+          input.cropit-image-input#cropit_image_input(type="file")
     .dl-modal-footer
       button.dl_btn.dl_btn_large(ng-click="createCompany()") 确定

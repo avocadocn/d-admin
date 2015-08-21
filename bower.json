@@ -53,6 +53,7 @@
     "Chart.js": "1.0.1-beta.3",
     "smalot-bootstrap-datetimepicker": "latest",
     "angular-datatables": "~0.2.1",
-    "linkage-selector": "0.1.5"
+    "linkage-selector": "0.1.5",
+    "cropit": "~0.4.1"
   }
 }
