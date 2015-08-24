@@ -44,7 +44,7 @@
           .info_detail
             input.dl_form_control(ng-model="newCompany.brief")
         .cropper#image_cropper
-          .cropit-image-preview-container(ng-show="newCompany.logo")
+          .cropit-image-preview-container(ng-show="isUploading")
             .cropit-image-preview
           .operator_slider(ng-show="isUploading")
             span.glyphicon.glyphicon-picture.icon_small

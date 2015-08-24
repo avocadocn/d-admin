@@ -1,8 +1,8 @@
 'use strict';
-
+var _app = require('../controllers/app');
+var authorization = require('../routes/middlewares/authorization.js');
 module.exports = function(app) {
-  var _app = require('../controllers/app');
-  var authorization = require('../routes/middlewares/authorization.js');
+
   app.get('/app/apn', authorization.requiresAdmin, _app.getApn);
   app.post('/app/apn', authorization.requiresAdmin, _app.setApn);
   app.post('/app/baidu', authorization.requiresAdmin,_app.baidu);

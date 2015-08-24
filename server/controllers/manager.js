@@ -14,7 +14,6 @@ var mongoose = require('mongoose'),
 
 
 
-
 exports.editName = function(req,res){
   Company.update({'_id':req.body._id},{'$set':{'info.name':req.body.name}},function (err,company){
     if(err || !company){
@@ -52,25 +51,30 @@ exports.getCompanyBasicInfo = function(req, res) {
  *           }
  */
 exports.createCompany = function(req, res) {
-  var company = Company.create({
-    info: {
-      name: req.body.name,
-      city: {
-        province: req.body.province,
-        city: req.body.city,
-        district: req.body.district
-      },
-      address: req.body.address,
-      brief: req.body.brief,
-      official_name: req.body.name
+  var info = {
+    name: req.body.name,
+    city: {
+      province: req.body.province,
+      city: req.body.city,
+      district: req.body.district
     },
+    address: req.body.address,
+    brief: req.body.brief,
+    official_name: req.body.name
+  }
+  if(req.file) {
+    info.logo = req.file.path.slice(req.file.path.indexOf('yali/public')+11)
+  }
+  var company = Company.create({
+    info: info,
     invite_key : tools.randomAlphaNumeric(8)
   }, function(err) {
     if(err) {
+      console.log(err)
       return res.status(500).send({msg: '保存失败'});
     }
     else {
-      return res.status(200).send();
+      return res.send();
     }
   });
 };

@@ -276,7 +276,34 @@ adminApp.filter('reportStatusMap', function() {
     return _outPut;
   }
 });
+adminApp.factory('imageService', function() {
+  return {
 
+      dataURItoBlob: function (dataURI) {
+        // convert base64/URLEncoded data component to raw binary data held in a string
+        var byteString;
+        if (dataURI.split(',')[0].indexOf('base64') >= 0)
+          byteString = atob(dataURI.split(',')[1]);
+        else
+          byteString = unescape(dataURI.split(',')[1]);
+
+        // separate out the mime component
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+        // write the bytes of the string to a typed array
+        // var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ia], {
+          type: mimeString
+        });
+      }
+
+    };
+});
 adminApp.run(['$rootScope','$location',function ($rootScope,$location) {
   $rootScope.run = function() {
     $(document).ready(function(){
@@ -1311,8 +1338,8 @@ adminApp.controller('ParameterController', ['$http','$scope','$rootScope',
 }]);
 
 
-adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOptionsBuilder',
-  function ($http, $scope, $rootScope, DTOptionsBuilder) {
+adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOptionsBuilder','imageService',
+  function ($http, $scope, $rootScope, DTOptionsBuilder,imageService) {
     $scope.detail_show = false;
     $scope.nameEdit = false;
     $scope.domainEdit = false;
@@ -1448,8 +1475,10 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
               formData.append(key, value);
           });
           var dataURI = cropper.cropit('export');
-          var blob = imageService.dataURItoBlob(dataURI);
-          formData.append('photo', blob);
+          if(dataURI) {
+            var blob = imageService.dataURItoBlob(dataURI);
+            formData.append('photo', blob);
+          }
           var headers = headersGetter();
           delete headers['Content-Type'];
           return formData;
@@ -1457,7 +1486,7 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
       })
       .success(function (data) {
         alert('成功');
-        $scope.newCompany = {};
+        window.location.reload();
       })
       .error(function (data, status) {
         alert(data.msg);
@@ -2049,7 +2078,9 @@ adminApp.controller('EasemobController', ['$http', '$scope', function($http, $sc
     });
   };
 }]);
-
+adminApp.controller('interactionTemplateController', ['$http', '$scope', function($http, $scope) {
+  
+}]);
 // adminApp.controller('DashboardController', ['$http','$scope',
 //   function ($http, $scope) {
 //     $scope.dashboard = function() {

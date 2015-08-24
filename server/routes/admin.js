@@ -1,9 +1,10 @@
 'use strict';
-
+var admin = require('../controllers/admin');
+var authorization = require('../routes/middlewares/authorization.js');
+  
 module.exports = function(app,passport) {
 
-  var admin = require('../controllers/admin');
-  var authorization = require('../routes/middlewares/authorization.js');
+
 
   app.get('/admin/host/get',authorization.requiresAdmin, admin.getHost);
   app.get('/admin/logout', admin.logout);

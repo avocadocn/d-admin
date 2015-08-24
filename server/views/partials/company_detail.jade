@@ -23,6 +23,11 @@
             span.info_label {{info.official_name}}
         .dl_modal_container.clearfix
           .info_side
+            span.info_label logo:
+          .info_detail
+            img.size_48(ng-src="{{staticUrl}}{{info.logo}}")
+        .dl_modal_container.clearfix
+          .info_side
             span.info_label 地区:
           .info_detail
             span.info_label {{info.city.province}}  {{info.city.city}} {{info.city.district}}
