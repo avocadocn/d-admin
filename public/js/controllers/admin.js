@@ -2078,8 +2078,72 @@ adminApp.controller('EasemobController', ['$http', '$scope', function($http, $sc
     });
   };
 }]);
-adminApp.controller('interactionTemplateController', ['$http', '$scope', function($http, $scope) {
-  
+adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageService', function($http, $scope, imageService) {
+  $scope.templateType = 1;
+  $scope.template = {
+    templateType: 1
+  }
+  $("#start_time").datetimepicker().on("changeDate",function (ev) {
+      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+      $scope.template.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+      $('#end_time').datetimepicker('setStartDate', dateUTC);
+  });
+  $("#end_time").datetimepicker().on("changeDate",function (ev) {
+      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+      $scope.template.endTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+      $('#start_time').datetimepicker('setEndDate', dateUTC);
+      $('#deadline').datetimepicker('setEndDate', dateUTC);
+  });
+  $("#deadline").datetimepicker().on("changeDate",function (ev) {
+      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+      $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+  });
+  var cropper = $('#image_cropper').cropit({
+    onFileChange: function () {
+      console.log(111)
+      $scope.isUploading = true;
+      $scope.$digest();
+    },
+    imageBackground: true
+  });
+
+  $scope.isUploading = false;
+  var cropitImageInput = $('#cropit_image_input');
+  $scope.selectLogo = function () {
+    cropitImageInput.click();
+  };
+  $scope.save = function() {
+    console.log($scope.template)
+    // $http({
+    //   method: 'POST',
+    //   url: '/manager/company',
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   },
+    //   data: $scope.newCompany,
+    //   transformRequest: function (data, headersGetter) {
+    //     var formData = new FormData();
+    //     angular.forEach(data, function (value, key) {
+    //         formData.append(key, value);
+    //     });
+    //     var dataURI = cropper.cropit('export');
+    //     if(dataURI) {
+    //       var blob = imageService.dataURItoBlob(dataURI);
+    //       formData.append('photo', blob);
+    //     }
+    //     var headers = headersGetter();
+    //     delete headers['Content-Type'];
+    //     return formData;
+    //   }
+    // })
+    // .success(function (data) {
+    //   alert('成功');
+    //   window.location.reload();
+    // })
+    // .error(function (data, status) {
+    //   alert(data.msg);
+    // });
+  }
 }]);
 // adminApp.controller('DashboardController', ['$http','$scope',
 //   function ($http, $scope) {

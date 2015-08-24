@@ -1976,7 +1976,6 @@ Timeline UI Base
   background-color: #fff;
 }
 .cropper {
-  float:  left;
   width: 400px;
   height: 400px;
   padding: 20px 0;

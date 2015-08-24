@@ -2,31 +2,19 @@
   .outer
     .inner
       .form-group.dl_row.margin_top_10
+        .icons
+          i.fa.fa-table
+        h5 模板管理
+        a.pull-right(data-toggle="modal" data-target="#addTemplateModal") 添加模板
+      .form-group.dl_row.margin_top_10
         .col-lg-3
-          select(data-placeholder="Choose a Country..." class="form-control chzn-select" tabindex="2" ng-model="company_selected" ng-options="c.name for c in companies" ng-change="getCampaign(company_selected)")
-        //- .col-lg-1
-        //-   input.dl_form-control(type="text" ng-model="company_regx.value")
-        //- .col-lg-2
-        //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
-        .col-lg-6.pull-right
-          .time_picker_area
-            .time_span
-              .input-group.date.form_datetime#start_time
-                span.input-group-addon.no_radius
-                  span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="$parent.start_time" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
-            .time_block
-              span >>>
-            .time_span
-              .input-group.date.form_datetime#end_time
-                span.input-group-addon.no_radius
-                  span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="$parent.end_time" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
-            .time_block
-              a.dl_btn.dl_btn_small(ng-click="campaignByDate()") 获取
+          select.form-control.chzn-select(tabindex="2" ng-model="templateType" ng-change="getCampaign(company_selected)")
+            option 1
+            option 2
+            option 3
     .inner
       .dl_row.dl_code.table_all
-        table(datatable="ng")#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
+        table(datatable="ng")#dt_interaction.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
               th 主题
@@ -80,5 +68,7 @@
               canvas#pieType
             .col_md_6
               canvas#barType
-.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-  include ../partials/team_detail
+.modal.fade#addTemplateModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/add_template
+append footExt
+  script(src="/public/lib/cropit/dist/jquery.cropit.js")

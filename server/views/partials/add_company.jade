@@ -5,44 +5,29 @@
       h4.modal-title#myModalLabel 新建学校
     .dl-modal-body
       form.form-horizontal.clearfix(name="infoForm")
-        .dl_modal_container.clearfix
+        .form-group
           h4.pull-left 基本信息
         hr
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 学校名:
-          .info_detail
-            input.dl_form_control(ng-model="newCompany.name")
-        //- .dl_modal_container.clearfix
-        //-   .info_side
-        //-     span.info_label 地区:
-        //-   .info_detail
-        //-     input.dl_form_control(ng-model="newCompany.province")
-        //-     input.dl_form_control(ng-model="newCompany.city")
-        //-     input.dl_form_control(ng-model="newCompany.district")
-        .dl_modal_container.clearfix#cities(data-src="/region/json" data-select="province city district")
-          .info_side
-            span.control-label(for="province") *城市:
-          .info_detail.select_right
-            .select_box
-              //- select#province.dl_form_control(type="text" name="province" ng-model= "province")
-              input.dl_form_control(ng-model="newCompany.province")
-            .select_box
-              //- select#city.dl_form_control(type="text" name="city" ng-model="city")
-              input.dl_form_control(ng-model="newCompany.city")
-            .select_box(last_child)
-              //- select#region.dl_form_control(type="text" name="district" ng-model="district" )
-              input.dl_form_control(ng-model="newCompany.district")
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 详细地址:
-          .info_detail
-            input.dl_form_control(ng-model="newCompany.address")
-        .dl_modal_container.clearfix
-          .info_side
-            span.info_label 简介:
-          .info_detail
-            input.dl_form_control(ng-model="newCompany.brief")
+        .form-group
+          label.col-sm-2.control-label 学校名:
+          .col-sm-10
+            input.form-control(ng-model="newCompany.name")
+        .form-group#cities(data-src="/region/json" data-select="province city district")
+          label.col-sm-2.control-label(for="province") *城市:
+          .col-sm-3
+            input.form-control(ng-model="newCompany.province")
+          .col-sm-3
+              input.form-control(ng-model="newCompany.city")
+          .col-sm-3(last_child)
+            input.form-control(ng-model="newCompany.district")
+        .form-group
+          label.col-sm-2.control-label 详细地址:
+          .col-sm-10
+            input.form-control(ng-model="newCompany.address")
+        .form-group
+          label.col-sm-2.control-label 简介:
+          .col-sm-10
+            input.form-control(ng-model="newCompany.brief")
         .cropper#image_cropper
           .cropit-image-preview-container(ng-show="isUploading")
             .cropit-image-preview

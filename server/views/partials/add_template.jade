@@ -1,0 +1,80 @@
+.modal-dialog
+  .dl-modal
+    .dl-modal-header
+      button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+      h4.modal-title#myModalLabel 互动模板
+    .dl-modal-body
+      form.form-horizontal(name="infoForm")
+        .form-group
+          label.col-sm-2.control-label 互动类型:
+          .col-sm-6
+            select.form-control(ng-model="template.templateType" required)
+              option(selected value=1) 活动
+              option(value=2) 投票
+              option(value=3) 互助
+        .form-group
+          label.col-sm-2.control-label 主题:
+          .col-sm-6
+            input.form-control(ng-model="template.theme" required)
+        .form-group
+          label.col-sm-2.control-label 内容:
+          .col-sm-6
+            input.form-control(ng-model="template.content" required)
+        .form-group
+          label.col-sm-2.control-label 结束时间:
+          .col-sm-6
+            .input-group.date.form_datetime#end_time
+              span.input-group-addon.no_radius
+                span.glyphicon.glyphicon-th
+              input.dl-form-control(type="text" ng-model="template.endTime" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 开始时间:
+          .col-sm-6
+            .input-group.date.form_datetime#start_time
+              span.input-group-addon.no_radius
+                span.glyphicon.glyphicon-th
+              input.dl-form-control(type="text" ng-model="template.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 截止时间:
+          .col-sm-6
+            .input-group.date.form_datetime#deadline
+              span.input-group-addon.no_radius
+                span.glyphicon.glyphicon-th
+              input.dl-form-control(type="text" ng-model="template.deadline" name="deadline" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly)
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 活动类型:
+          .col-sm-6
+            input.form-control(ng-model="template.activityMold")
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 地点:
+          .col-sm-6
+            input.form-control(ng-model="template.location" required)
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 最大人数:
+          .col-sm-6
+            input.form-control(ng-model="template.memberMax")
+        .form-group(ng-if="template.templateType==1")
+          label.col-sm-2.control-label 最小人数:
+          .col-sm-6
+            input.form-control(ng-model="template.memberMin")
+        .form-group(ng-if="template.templateType==2")
+          label.col-sm-2.control-label 选项:
+          .col-sm-6
+            input.form-control(ng-model="template.option")
+        .form-group
+          label.col-sm-2.control-label 标签:
+          .col-sm-6
+            input.form-control(ng-model="template.tags")
+        .cropper#image_cropper
+          .cropit-image-preview-container(ng-show="isUploading")
+            .cropit-image-preview
+          .operator_slider(ng-show="isUploading")
+            span.glyphicon.glyphicon-picture.icon_small
+            input.cropit-image-zoom-input(type="range")
+            span.glyphicon.glyphicon-picture.icon_large
+          .operator_button.text-center
+            .btn-group
+              button.btn.btn-default(ng-click="selectLogo()") 选择图片
+          input.cropit-image-input#cropit_image_input(type="file")
+    .dl-modal-footer
+      button.dl_btn.dl_btn_large(ng-click="save()" ng-disabled="infoForm.$invalid") 确定

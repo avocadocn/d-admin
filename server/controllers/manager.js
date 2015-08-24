@@ -74,7 +74,7 @@ exports.createCompany = function(req, res) {
       return res.status(500).send({msg: '保存失败'});
     }
     else {
-      return res.send();
+      return res.send(company);
     }
   });
 };
