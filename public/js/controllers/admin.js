@@ -99,7 +99,7 @@ function($routeProvider, $locationProvider) {
       controller:'EasemobController'
     })
     .when('/interactionTemplate',{
-      templateUrl: '/interaction/template',
+      templateUrl: '/interaction/template/home',
       controller:'interactionTemplateController'
     })
     

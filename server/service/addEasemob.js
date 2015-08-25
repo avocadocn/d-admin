@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose'),
     Company = mongoose.model('Company'),
-    CompanyGroup = mongoose.model('CompanyGroup'),
+    Team = mongoose.model('Team'),
     User = mongoose.model('User'),
     easemob = require('./easemob.js'),
     async = require('async');
@@ -42,7 +42,7 @@ exports.addUsers = function (callback) {
     });
   };
   async.doWhilst(function (doWhilstCallback) {
-    var query = {mail_active:true};
+    var query = {active:true};
     if (nextQueryId) {
       query._id = {
         $gt: nextQueryId
@@ -94,7 +94,7 @@ exports.addHrUsers = function (callback) {
     });
   };
   async.doWhilst(function (doWhilstCallback) {
-    var query = {"status.mail_active":true};
+    var query = {"status.active":true};
     if (nextQueryId) {
       query._id = {
         $gt: nextQueryId
@@ -135,16 +135,23 @@ exports.addGroups = function (callback) {
   var registerGroups = function (groups, doWhilstCallback) {
     async.each(groups, function(group, cb) {
       var _group = getGroup(group);
+      console.log(_group)
       easemob.group.add(_group,function (error,data) {
         if(error){
-          console.log(error);
+          console.log(1,error,data);
           failedCount ++;
         }
         else{
-          successCount ++;
+          
           group.easemobId = data.data.groupid;
           group.save(function (error) {
-            if(error) log(error);
+            if(error) {
+              console.log(2,error);
+              failedCount ++;
+            }
+            else {
+              successCount ++;
+            }
           });
         }
         cb(error);
@@ -161,7 +168,7 @@ exports.addGroups = function (callback) {
         $gt: nextQueryId
       };
     }
-    CompanyGroup.find(query)
+    Team.find(query)
       .sort('_id')
       .limit(pageSize)
       .exec()
