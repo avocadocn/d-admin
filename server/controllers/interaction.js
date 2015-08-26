@@ -2,15 +2,19 @@
 
 // mongoose models
 var mongoose = require('mongoose'),
-  Config = mongoose.model('Config');
+    ActivityTemplate= mongoose.model('ActivityTemplate'),
+    PollTemplate= mongoose.model('PollTemplate'),
+    QuestionTemplate= mongoose.model('QuestionTemplate');
 var donlerValidator = require('../service/donler_validator.js'),
-  multerService = require('../service/multerService.js')
+  multerService = require('../service/multerService.js'),
+  tools = require('../service/tools.js');
+var perPageNum = 10;
 exports.interactionTemplateHome = function(req, res) {
   res.render('system/interaction_template');
 };
 exports.templateFormFormat = function(req, res, next) {
   req.body.templateType = parseInt(req.body.templateType);
-  if(fields.location) {
+  if(req.body.location) {
     req.body.location = {
       "name": req.body.location,
       "loc" : {
@@ -87,11 +91,11 @@ exports.createTemplateValidate = function (req, res, next) {
       value: req.body.deadline,
       validators: ['date',donlerValidator.before(req.body.endTime),donlerValidator.after(new Date())]
     },
-    activityMold: {
-      name: '活动类型',
-      value: req.body.activityMold,
-      validators: templateType=== 1 ? ['required'] :[]
-    },
+    // activityMold: {
+    //   name: '活动类型',
+    //   value: req.body.activityMold,
+    //   validators: templateType=== 1 ? ['required'] :[]
+    // },
     option: {
       name: '选项',
       value: req.body.option,
@@ -104,27 +108,21 @@ exports.createTemplateValidate = function (req, res, next) {
     },
   }, 'fast', function (pass, msg) {
     if (pass) {
-      if(req.body.photos) {
-        //目前只能传一张图片，所以只取第一张
-        uploader.uploadImage(req.body.photos[0], {
-          targetDir: '/public/img/interaction',
-          subDir: req.user.getCid().toString(),
-          saveOrigin: true,
-          getSize: true,
-          success: function(imgInfo, oriCallback) {
-            req.body.photos = [{
-              uri: imgInfo.url,
-              width: imgInfo.size.width,
-              height: imgInfo.size.height
-            }];
-            next();
-          },
-          error: function(err) {
-            log(err);
-            return res.status(500).send({
-              msg: '服务器错误'
+      if(req.files) {
+        multerService.formatPhotos(req.files, {getSize:true}, function(err, files) {
+          var photos = [];
+          if(files && files.length) {
+            files.forEach(function(img) {
+              var photo = {
+                uri: img.path.slice(img.path.indexOf('yali/public')+11),
+                width: img.size.width,
+                height: img.size.height
+              };
+              photos.push(photo);
             });
+            req.body.photos = photos;
           }
+          next();
         });
       }
       else {

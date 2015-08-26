@@ -8,7 +8,7 @@
         .form-group
           label.col-sm-2.control-label 互动类型:
           .col-sm-6
-            select.form-control(ng-model="template.templateType" required)
+            select.form-control(ng-model="template.templateType" type="number" required)
               option(selected value=1) 活动
               option(value=2) 投票
               option(value=3) 互助
@@ -27,14 +27,14 @@
               span.input-group-addon.no_radius
                 span.glyphicon.glyphicon-th
               input.dl-form-control(type="text" ng-model="template.endTime" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
-        .form-group(ng-if="template.templateType==1")
+        .form-group(ng-show="template.templateType==1")
           label.col-sm-2.control-label 开始时间:
           .col-sm-6
             .input-group.date.form_datetime#start_time
               span.input-group-addon.no_radius
                 span.glyphicon.glyphicon-th
               input.dl-form-control(type="text" ng-model="template.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
-        .form-group(ng-if="template.templateType==1")
+        .form-group(ng-show="template.templateType==1")
           label.col-sm-2.control-label 截止时间:
           .col-sm-6
             .input-group.date.form_datetime#deadline
@@ -48,21 +48,26 @@
         .form-group(ng-if="template.templateType==1")
           label.col-sm-2.control-label 地点:
           .col-sm-6
-            input.form-control(ng-model="template.location" required)
-        .form-group(ng-if="template.templateType==1")
+            .input-group
+              input.form-control(ng-model="template.location" required)
+              span.input-group-addon(title="设置地图标记" ng-click="search()")
+                span.glyphicon.glyphicon-map-marker
+        .form-group(ng-if="template.templateType==1" ng-show="hasSearch")
+          map-search(ctrl="mapCtrl")
+        .form-group(ng-if="template.templateType==1" type="number")
           label.col-sm-2.control-label 最大人数:
           .col-sm-6
             input.form-control(ng-model="template.memberMax")
-        .form-group(ng-if="template.templateType==1")
+        .form-group(ng-if="template.templateType==1" type="number")
           label.col-sm-2.control-label 最小人数:
           .col-sm-6
             input.form-control(ng-model="template.memberMin")
         .form-group(ng-if="template.templateType==2")
-          label.col-sm-2.control-label 选项:
+          label.col-sm-2.control-label 选项(,分割):
           .col-sm-6
-            input.form-control(ng-model="template.option")
+            input.form-control(ng-model="template.option" required)
         .form-group
-          label.col-sm-2.control-label 标签:
+          label.col-sm-2.control-label 标签(,分割):
           .col-sm-6
             input.form-control(ng-model="template.tags")
         .cropper#image_cropper

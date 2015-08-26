@@ -100,7 +100,17 @@ function($routeProvider, $locationProvider) {
     })
     .when('/interactionTemplate',{
       templateUrl: '/interaction/template/home',
-      controller:'interactionTemplateController'
+      controller:'interactionTemplateController',
+      resolve:{
+        templates:function($http) {
+          return $http({
+            method: 'get',
+            url: '/interaction/template?limit=0&templateType=1'
+          }).then(function(data, status) {
+            return data.data
+          });
+        }
+      }
     })
     
     .otherwise({
@@ -304,6 +314,215 @@ adminApp.factory('imageService', function() {
 
     };
 });
+adminApp.service('mapSevice', ['$q', function($q) {
+  var hasInit = false;
+  var loading = false;
+  var _AMap;
+  var maxRetryTime = 5;
+  var hasGetLocalCity = false;
+  var searchRes;
+  var initCity = function(AMap) {
+    var deferred = $q.defer();
+
+    //加载城市查询插件
+    AMap.service(["AMap.CitySearch"], function() {
+      //实例化城市查询类
+      var citysearch = new AMap.CitySearch();
+      //自动获取用户IP，返回当前城市
+      citysearch.getLocalCity(function(status, result) {
+        if (status === 'complete' && result.info === 'OK') {
+          if (result && result.city && result.bounds) {
+            hasGetLocalCity = true;
+            searchRes = result;
+            deferred.resolve(searchRes);
+          }
+        }
+        else {
+          deferred.reject(result);
+        }
+      });
+    });
+
+    return deferred.promise;
+  };
+
+  return {
+    /**
+     * 使用地图进行工作
+     * @param  {Function} callback function(err, AMap)
+     */
+    work: function() {
+      var deferred = $q.defer();
+      if (!hasInit) {
+        hasInit = true;
+        loading = true;
+
+        var initialize = function() {
+          // 这其实并不是好的做法，无中生有一个全局变量
+          // 如果这个初始化的回调函数提供一个AMap参数就好多了
+          _AMap = AMap;
+          loading = false;
+          deferred.resolve(AMap);
+        };
+
+        window.initialize = initialize;
+        var script = document.createElement('script');
+        script.src = 'http://webapi.amap.com/maps?v=1.3&key=077eff0a89079f77e2893d6735c2f044&callback=initialize';
+        document.body.appendChild(script);
+      }
+      else {
+        if (loading) {
+          var retryCount = 0;
+
+          function retry() {
+            if (loading) {
+              if (retryCount < maxRetryTime) {
+                setTimeout(function() {
+                  retry();
+                  retryCount++;
+                }, 500);
+              }
+              else {
+                deferred.reject(new Error('加载地图超时'));
+              }
+            }
+            else {
+              deferred.resolve(_AMap);
+            }
+          }
+          retry();
+        }
+        else {
+          deferred.resolve(_AMap);
+        }
+      }
+
+      return deferred.promise;
+    },
+
+    /**
+     * 获取当前城市信息
+     */
+    getLocalCity: function() {
+      return $q.when(function(resolve, reject) {
+        if (hasGetLocalCity) {
+          resolve(searchRes);
+        }
+        else {
+          initCity(_AMap).then(resolve, reject);
+        }
+      });
+    }
+
+  };
+}]);
+adminApp.directive('mapSearch', ['mapSevice', '$q', function(mapSevice, $q) {
+
+  var link = function(scope, ele, attrs, ctrl) {
+    var controller = {};
+    var map;
+    var marker;
+    var remarkCallback;
+
+    /**
+     * 搜索城市，在页面元素中显示，并且在回调中返回搜索结果
+     * @param  {String}   locationName 位置名称
+     * @return {Promise}
+     */
+    controller.search = function(locationName) {
+      var deferred = $q.defer();
+
+      mapSevice.work().then(function(AMap) {
+        if (!map) {
+          var mapEle = ele[0];
+          map = new AMap.Map(mapEle, {
+            resizeEnable: true
+          });
+          map.setFitView();
+        }
+
+        map.plugin(["AMap.ToolBar"],function(){
+          var toolBar = new AMap.ToolBar();
+          map.addControl(toolBar);
+        });
+
+        AMap.service(["AMap.PlaceSearch"], function() {
+          var placeSearch;
+          mapSevice.getLocalCity().then(function(res) {
+            // 搜索城市成功
+            placeSearch = new AMap.PlaceSearch({city: res.city});
+            doSearch(placeSearch);
+          }, function(err) {
+            placeSearch = new AMap.PlaceSearch();
+            doSearch(placeSearch);
+          });
+        });
+
+        function doSearch(placeSearch) {
+          placeSearch.search(locationName, function(status, result) {
+            switch(status) {
+            case 'complete':
+              var point = result.poiList.pois[0].location;
+              var lnglat = new AMap.LngLat(point.getLng(), point.getLat());
+              map.setCenter(lnglat);
+
+              if (!marker) {
+                marker = new AMap.Marker({
+                  map: map,
+                  position: lnglat,
+                  draggable: true
+                });
+                AMap.event.addListener(marker, 'dragend', remarkCallback);
+              }
+              else {
+                marker.setPosition(lnglat);
+              }
+
+              map.setFitView();
+              deferred.resolve(result.poiList.pois[0]);
+              break;
+            case 'error':
+              deferred.reject(result);
+              break;
+            case 'no_data':
+              deferred.resolve(null);
+              break;
+            default:
+              deferred.resolve(null);
+            }
+          });
+        }
+      }, deferred.reject);
+
+      return deferred.promise;
+    };
+
+    controller.onRemark = function(callback) {
+      remarkCallback = callback;
+    };
+
+    scope.$watch('ctrl', function(ctrl,oldCtrl) {
+      if (ctrl) {
+        for (var key in controller) {
+          ctrl[key] = controller[key];
+        }
+      }
+    });
+
+
+
+  };
+
+  return {
+    restrict: 'E',
+    replace: true,
+    template: '<div class="dl_map"></div>',
+    scope: {
+      ctrl: '='
+    },
+    link: link
+  };
+}]);
 adminApp.run(['$rootScope','$location',function ($rootScope,$location) {
   $rootScope.run = function() {
     $(document).ready(function(){
@@ -322,93 +541,6 @@ var colorGenerator = function(){
   }
   return COLOR;
 }
-
-
-// adminApp.directive('datatable', ['$timeout', '$compile',
-//   function($timeout, $compile) {
-
-//     // default options to be used on to all datatables
-//     var defaults = {};
-
-//     return {
-//       restrict: 'A',
-//       compile: function(element, attrs) {
-//         var repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]'),
-//           repeatAttr,
-//           watch,
-//           original = $(repeatOption).clone();
-
-//         // enable watching of the dataset if in use
-//         repeatOption = element.find('tr[ng-repeat], tr[data-ng-repeat]');
-
-//         if (repeatOption.length) {
-//           repeatAttr = repeatOption.attr('ng-repeat') || repeatOption.attr('data-ng-repeat');
-//           watch = $.trim(repeatAttr.split('|')[0]).split(' ').pop();
-//         }
-
-//         // post-linking function
-//         return function(scope, element, attrs, controller) {
-
-//           // merge default options with table specific override options
-//           var options = angular.extend({}, defaults, scope.$eval(attrs.datatable)),
-//               table = null;
-
-//           // add default css style
-//           element.addClass('table table-striped');
-
-//           if (watch) {
-
-//             // deep watching of dataset to re-init on change
-//             scope.$watch(watch, function(newValue, oldValue) {
-//               if (newValue) {
-
-//                 // check for class, 'fnIsDataTable' doesn't work here
-//                 if (!element.hasClass('dataTable')) {
-
-//                   // init datatables after data load for first time
-//                   $timeout(function() {
-//                       table = element.dataTable(options);
-//                   });
-
-//                 } else if (newValue != oldValue) {
-
-//                   //destroy and re-init datatable with new data (fnDraw not working here)
-//                   // table.fnDestroy();
-
-//                   // //DataTables addes specifc 'width' property after destroy, have to manually remove
-//                   // element.removeAttr('style');
-
-//                   // //empty the <tbody> to remove old ng-repeat rows and re-compile with new dataset
-//                   // var body = element.find('tbody');
-//                   // body.empty();
-//                   // body.append($compile(original)(scope));
-
-//                   // //'timeout' to allow ng-repeat time to render
-//                   $timeout(function() {
-//                       table.dataTable(options);
-//                   });
-
-//                 }
-//               }
-//             }, true);
-//           } else {
-//             // no dataset present, init normally
-//             table = element.dataTable(options);
-//           }
-//         };
-//       }
-//     };
-//   }
-// ]);
-
-
-
-
-
-
-// adminApp.controller('DepartmentController', ['$http','$scope','$rootScope',
-//   function ($http, $scope, $rootScope)
-// ])
 
 adminApp.controller('ComponentController',['$http','$scope',function ($http, $scope) {
   $http.get('/component/componentlist').success(function(data, status) {
@@ -1518,116 +1650,6 @@ adminApp.controller('ManagerController', ['$http','$scope','$rootScope', 'DTOpti
 }]);
 
 
-// adminApp.controller('ChartController', ['$http','$scope',
-//   function ($http, $scope) {
-//     $scope.metisChart = function() {
-//       var d2 = [
-//         [0, 3],
-//         [1, 8],
-//         [2, 5],
-//         [3, 13],
-//         [4, 1]
-//       ];
-
-//       // a null signifies separate line segments
-//       var d3 = [
-//         [0, 12],
-//         [2, 2],
-//         [3, 9],
-//         [4, 4]
-//       ];
-
-//       $.plot($("#trigo"), [
-//         {data: d2, label: 'MAN'},
-//         {data: d3, label: 'WOMAN'}
-//       ], {
-//         clickable: true,
-//         hoverable: true,
-//         series: {
-//             lines: {show: true, fill: true, fillColor: {colors: [
-//                 {opacity: 0.5},
-//                 {opacity: 0.15}
-//             ]}},
-//             points: {show: true}
-//         }
-//       });
-
-//       $.plot($("#trigo2"), [
-//         {data: d2, label: 'BAR'}
-//       ], {
-//         clickable: true,
-//         hoverable: true,
-//         series: {
-//             bars: {show: true, barWidth: 0.6},
-//             points: {show: true}
-//         }
-//       });
-
-//       var parabola = [],
-//         parabola2 = [];
-//       for (var i = -5; i <= 5; i += 0.5) {
-//         parabola.push([i, Math.pow(i, 2) - 25]);
-//         parabola2.push([i, -Math.pow(i, 2) + 25]);
-//       }
-
-//       var circle = [];
-
-//       for (var c = -2; c <= 2.1; c += 0.1) {
-//         circle.push([c, Math.sqrt(400 - c * c * 100)]);
-//         circle.push([c, -Math.sqrt(400 - c * c * 100)]);
-//       }
-//       var daire = [3];
-//       $.plot($("#eye"), [
-//         {data: parabola2, lines: {show: true, fill: true}},
-//         {data: parabola, lines: {show: true, fill: true}},
-//         {data: circle, lines: {show: true}}
-//       ]);
-
-//       var heart = [];
-//       for (i = -2; i <= 5; i += 0.01) {
-//         heart.push([16 * Math.pow(Math.sin(i), 3), 13 * Math.cos(i) - 5 * Math.cos(2 * i) - 2 * Math.cos(3 * i) - Math.cos(4 * i)]);
-//       }
-//       $.plot($("#heart"), [
-//         {data: heart, label: '<i class="fa fa-heart"></i>', color: '#9A004D'}
-//       ], {
-//         series: {
-//             lines: {show: true, fill: true},
-//             points: {show: false}
-
-//         },
-//         yaxis: {
-//             show: true
-//         },
-//         xaxis: {
-//             show: true
-//         }
-//       });
-//       $('#heart .legendLabel').addClass('animated pulse');
-//       setInterval(function () {
-//         $('#heart .legendLabel .fa.fa-heart').toggleClass('fa-2x');
-//       }, 400);
-
-
-//       var bernoulli = [];
-
-//       function lemniscatex(i) {
-//         return Math.sqrt(2) * Math.cos(i) / (Math.pow(Math.sin(i), 2) + 1);
-//       }
-
-//       function lemniscatey(i) {
-//         return Math.sqrt(2) * Math.cos(i) * Math.sin(i) / (Math.pow(Math.sin(i), 2) + 1);
-//       }
-
-//       for (var k = 0; k <= 2 * Math.PI; k += 0.01) {
-//         bernoulli.push([lemniscatex(k), lemniscatey(k)]);
-//       }
-//       $.plot($("#bernoilli"), [
-//         {data: bernoulli, label: 'Lemniscate of Bernoulli', lines: {show: true, fill: true}}
-//       ]);
-//     };
-//     $scope.metisChart();
-// }]);
-
 
 adminApp.controller('RegionController', ['$http','$scope',
   function ($http, $scope) {
@@ -2078,27 +2100,94 @@ adminApp.controller('EasemobController', ['$http', '$scope', function($http, $sc
     });
   };
 }]);
-adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageService', function($http, $scope, imageService) {
+adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageService', 'templates', function($http, $scope, imageService,templates) {
   $scope.templateType = 1;
   $scope.template = {
     templateType: 1
   }
-  $("#start_time").datetimepicker().on("changeDate",function (ev) {
+  $scope.templates = templates;
+  $scope.getTemplate = function(templateType){
+    $http({
+      method: 'get',
+      url: '/interaction/template?limit=0&templateType='+templateType
+    }).then(function(data, status) {
+      $scope.templates = data.data;
+    }).then(null,function(data, status) {
+      alert(data.msg)
+    });
+  }
+  $scope.$watch("templateType",function(newVal,oldVal) {
+    if(newVal==1&&oldVal) {
+      $("#start_time").datetimepicker({
+        autoclose: true,
+        language: 'zh-CN',
+        startDate: new Date()
+      }).on("changeDate",function (ev) {
+        var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+        $scope.template.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+        $('#end_time').datetimepicker('setStartDate', dateUTC);
+        $('#deadline').datetimepicker('setStartDate', dateUTC);
+      });
+      $("#deadline").datetimepicker({
+          autoclose: true,
+          language: 'zh-CN',
+          startDate: new Date()
+      }).on("changeDate",function (ev) {
+        var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+        $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+      });
+    }
+  })
+  $('#addTemplateModal').on('shown.bs.modal', function () {
+    $("#start_time").datetimepicker({
+      autoclose: true,
+      language: 'zh-CN',
+      startDate: new Date()
+    }).on("changeDate",function (ev) {
       var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
       $scope.template.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
       $('#end_time').datetimepicker('setStartDate', dateUTC);
-  });
-  $("#end_time").datetimepicker().on("changeDate",function (ev) {
+      $('#deadline').datetimepicker('setStartDate', dateUTC);
+    });
+    $("#deadline").datetimepicker({
+        autoclose: true,
+        language: 'zh-CN',
+        startDate: new Date()
+    }).on("changeDate",function (ev) {
+      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+      $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+    });
+    $("#end_time").datetimepicker({
+      autoclose: true,
+      language: 'zh-CN',
+      startDate: new Date()
+    }).on("changeDate",function (ev) {
       var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
       $scope.template.endTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
       $('#start_time').datetimepicker('setEndDate', dateUTC);
       $('#deadline').datetimepicker('setEndDate', dateUTC);
-  });
-  $("#deadline").datetimepicker().on("changeDate",function (ev) {
-      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-      $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
-  });
-  var cropper = $('#image_cropper').cropit({
+    });
+
+    // 地图
+  $scope.mapCtrl = {};
+  $scope.hasSearch = false;
+  $scope.search = function() {
+    $scope.mapCtrl.search($scope.template.location).then(function(res) {
+      $scope.hasSearch = true;
+      var lnglat = res.location;
+      $scope.template.latitude = lnglat.getLat();
+      $scope.template.longitude = lnglat.getLng();
+    }, function(err) {
+      console.log(err);
+    });
+    $scope.mapCtrl.onRemark(function(e) {
+      var lnglat = e.lnglat;
+      $scope.template.latitude = lnglat.getLat();
+      $scope.template.longitude = lnglat.getLng();
+    });
+  };
+
+    var cropper = $('#image_cropper').cropit({
     onFileChange: function () {
       console.log(111)
       $scope.isUploading = true;
@@ -2113,37 +2202,40 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
     cropitImageInput.click();
   };
   $scope.save = function() {
-    console.log($scope.template)
-    // $http({
-    //   method: 'POST',
-    //   url: '/manager/company',
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
-    //   },
-    //   data: $scope.newCompany,
-    //   transformRequest: function (data, headersGetter) {
-    //     var formData = new FormData();
-    //     angular.forEach(data, function (value, key) {
-    //         formData.append(key, value);
-    //     });
-    //     var dataURI = cropper.cropit('export');
-    //     if(dataURI) {
-    //       var blob = imageService.dataURItoBlob(dataURI);
-    //       formData.append('photo', blob);
-    //     }
-    //     var headers = headersGetter();
-    //     delete headers['Content-Type'];
-    //     return formData;
-    //   }
-    // })
-    // .success(function (data) {
-    //   alert('成功');
-    //   window.location.reload();
-    // })
-    // .error(function (data, status) {
-    //   alert(data.msg);
-    // });
+    var opt = {
+      method: 'POST',
+      url: '/interaction/template',
+      data: $scope.template
+    }
+    var dataURI = cropper.cropit('export');
+    if(dataURI) {
+      opt.headers ={
+        'Content-Type': 'multipart/form-data'
+      }
+      opt.transformRequest =function (data, headersGetter) {
+        var formData = new FormData();
+        angular.forEach(data, function (value, key) {
+            formData.append(key, value);
+        });
+        var blob = imageService.dataURItoBlob(dataURI);
+        formData.append('photo', blob);
+        var headers = headersGetter();
+        delete headers['Content-Type'];
+        return formData;
+      }
+    }
+    $http(opt)
+    .success(function (data) {
+      alert('成功');
+      // window.location.reload();
+    })
+    .error(function (data, status) {
+      alert(data.msg);
+    });
   }
+  })
+  
+  
 }]);
 // adminApp.controller('DashboardController', ['$http','$scope',
 //   function ($http, $scope) {

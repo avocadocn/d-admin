@@ -2023,3 +2023,14 @@ Timeline UI Base
 .cropper .cropit-image-input {
   visibility: hidden;
 }
+.dl_map{
+  width: 100%;
+  height:300px;
+}
+.option_span {
+  display: inline-block;
+  border: 1px solid #ccc;
+  background-color: #ececec; 
+  margin-right: 5px;
+  padding: 0 5px;
+}
