@@ -1184,6 +1184,10 @@ adminApp.controller('InteractionController', ['$http','$scope','$rootScope','$ti
     $scope.clearCompany = function() {
       $scope.companySelected =null;
     }
+    $scope.detail = function(index) {
+      $scope.interactionDetail = $scope.interactions[index];
+      $('#interactionDetailModal').modal();
+    }
     $scope.searchCompany = function(all,callback){
       try{
         $http.post('/manager/search',
@@ -2087,7 +2091,7 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
       url: '/interaction/template/'+$scope.templateType+'/'+id
     }).then(function(data, status) {
       $scope.templateDetail = data.data;
-      $('#interactionDetailModal').modal();
+      $('#templateDetailModal').modal();
     }).then(null,function(data, status) {
       alert(data.msg)
     });

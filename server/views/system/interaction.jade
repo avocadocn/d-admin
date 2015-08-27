@@ -15,7 +15,6 @@
         .col-lg-3
           span 选择类型
           select.form-control.chzn-select(ng-model="interactionType" ng-change="getInteraction()")
-            option(value=0) 全部
             option(selected value=1) 活动
             option(value=2) 投票
             option(value=3) 互助
@@ -49,12 +48,13 @@
               th 主题
               th 内容
               th 标签
-              th 参加人数
               th(ng-if="interactionType==1") 开始时间
               th 结束时间
               th(ng-if="interactionType==1") 截止时间
               th(ng-if="interactionType==1") 地点
               th(ng-if="interactionType==2") 选项
+              th 参加人数
+              th 详情
           tbody()
             tr(ng-repeat="interaction in interactions")
               td {{formatCompany(interaction.cid)}}
@@ -63,12 +63,15 @@
                 .campaign_content {{interaction.content}}
               td
                 span.option_span(ng-repeat="tag in template.tags") {{tags}}
-              td {{interaction.members.length}}
+              
               td(ng-if="interactionType==1") {{interaction.activity.startTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{interaction.endTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="interactionType==1") {{interaction.activity.deadline | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="interactionType==1") {{interaction.activity.location.name}}
               td(ng-if="templateType==2")
                 span.option_span(ng-repeat="_option in interaction.poll.option") {{_option.value}}
-.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-  include ../partials/team_detail
+              td {{interaction.members.length}}
+              td
+                a.btn.btn-xs.btn-info(ng-click="detail($index)") 详情
+.modal.fade#interactionDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/interaction_detail
