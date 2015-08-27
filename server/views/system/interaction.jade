@@ -1,0 +1,74 @@
+#content
+  .outer
+    .inner
+      header
+        .icons
+          i.fa.fa-table
+        h5 互动管理
+      .form-group.dl_row.margin_top_10
+        .col-lg-3
+          span 选择学校
+          span(ng-click="clearCompany()")
+            span.glyphicon.glyphicon-remove
+          select.form-control.chzn-select(ng-model="companySelected" ng-options="c.name for c in companies" ng-change="getInteraction()")
+            
+        .col-lg-3
+          span 选择类型
+          select.form-control.chzn-select(ng-model="interactionType" ng-change="getInteraction()")
+            option(value=0) 全部
+            option(selected value=1) 活动
+            option(value=2) 投票
+            option(value=3) 互助
+        .col-lg-6
+          .lable 选择时间
+          .time_picker_area
+            .time_span
+              .input-group.date.form_datetime#start_time
+                span.input-group-addon.no_radius
+                  span.glyphicon.glyphicon-th
+                input.dl-form-control(type="text" ng-model="$parent.start_time" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+                span.input-group-addon(ng-click="clearStartTime()")
+                  span.glyphicon.glyphicon-remove
+            .time_block
+              span >>>
+            .time_span
+              .input-group.date.form_datetime#end_time
+                span.input-group-addon.no_radius
+                  span.glyphicon.glyphicon-th
+                input.dl-form-control(type="text" ng-model="$parent.end_time" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+                span.input-group-addon(ng-click="clearEndTime()")
+                  span.glyphicon.glyphicon-remove
+            .time_block
+              a.dl_btn.dl_btn_small(ng-click="getInteraction()") 获取
+    .inner
+      .dl_row.dl_code.table_all
+        table(datatable="ng")#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
+          thead
+            tr
+              th 学校
+              th 主题
+              th 内容
+              th 标签
+              th 参加人数
+              th(ng-if="interactionType==1") 开始时间
+              th 结束时间
+              th(ng-if="interactionType==1") 截止时间
+              th(ng-if="interactionType==1") 地点
+              th(ng-if="interactionType==2") 选项
+          tbody()
+            tr(ng-repeat="interaction in interactions")
+              td {{formatCompany(interaction.cid)}}
+              td {{interaction.theme}}
+              td
+                .campaign_content {{interaction.content}}
+              td
+                span.option_span(ng-repeat="tag in template.tags") {{tags}}
+              td {{interaction.members.length}}
+              td(ng-if="interactionType==1") {{interaction.activity.startTime | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{interaction.endTime | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td(ng-if="interactionType==1") {{interaction.activity.deadline | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td(ng-if="interactionType==1") {{interaction.activity.location.name}}
+              td(ng-if="templateType==2")
+                span.option_span(ng-repeat="_option in interaction.poll.option") {{_option.value}}
+.modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/team_detail

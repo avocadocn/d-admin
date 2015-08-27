@@ -14,8 +14,3 @@ exports.getLogs = function(req, res){
     res.status(500).send({msg: err});
   });
 }
-
-
-exports.page = function(req ,res){
-  res.render('system/push_log');
-}

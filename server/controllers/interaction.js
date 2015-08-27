@@ -2,6 +2,7 @@
 
 // mongoose models
 var mongoose = require('mongoose'),
+    Interaction= mongoose.model('Interaction'),
     ActivityTemplate= mongoose.model('ActivityTemplate'),
     PollTemplate= mongoose.model('PollTemplate'),
     QuestionTemplate= mongoose.model('QuestionTemplate');
@@ -9,9 +10,7 @@ var donlerValidator = require('../service/donler_validator.js'),
   multerService = require('../service/multerService.js'),
   tools = require('../service/tools.js');
 var perPageNum = 10;
-exports.interactionTemplateHome = function(req, res) {
-  res.render('system/interaction_template');
-};
+var interactionTypes = ['activity','poll','question'];
 exports.templateFormFormat = function(req, res, next) {
   req.body.templateType = parseInt(req.body.templateType);
   if(req.body.location) {
@@ -231,4 +230,85 @@ exports.createTemplate = function (req, res) {
       return res.send(template);
     }
   })
+}
+/**
+  * 获取模板详情，根据templateId
+  * @param  {[type]} req [description]
+  * @param  {[type]} res [description]
+  * @return {[type]}     [description]
+  */
+exports.getTemplateDetail = function (req, res) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.templateId)) {
+    return res.status(400).send({msg:"数据格式错误"});
+  }
+  var option,templateModel;
+  switch(req.params.templateType) {
+    case '1':
+      templateModel = "ActivityTemplate";
+      break;
+    case '2':
+      templateModel = "PollTemplate";
+      break;
+    case '3':
+      templateModel = "QuestionTemplate";
+      break;
+    default:
+      return res.status(400).send({msg:"互动类型错误"});
+  }
+  mongoose.model(templateModel).findById(req.params.templateId)
+    .exec()
+    .then(function (template) {
+      return res.send(template);
+    })
+    .then(null,function (error) {
+      log(error);
+      return res.status(500).send({msg:"服务器发生错误"});
+    });
+}
+exports.getInteractionList = function(req, res) {
+  var option={},populateType;
+  if(req.query.cid) {
+    option.cid =req.query.cid
+  }
+  if(req.query.startTime) {
+    option.startTime ={"$gte":req.query.startTime}
+  }
+  if(req.query.endTime) {
+    option.endTime ={"$lt":req.query.endTime}
+  }
+  if(req.query.createTime) {
+    option.createTime ={"$lt":req.query.createTime}
+  }
+  var _perPageNum = req.query.limit || perPageNum;
+  switch(req.query.type) {
+    //活动
+    case '1':
+      option.type =1;
+      populateType = interactionTypes[0];
+      break;
+    //投票
+    case '2':
+      option.type =2;
+      populateType = interactionTypes[1];
+      break;
+    //求助
+    case '3':
+      option.type =3;
+      populateType = interactionTypes[2];
+      break;
+    default:
+      populateType = 'activity poll question';
+  }
+  Interaction.find(option)
+  .populate(populateType)
+  .sort({ createTime: -1 })
+  .limit(_perPageNum)
+  .exec()
+  .then(function (interactions) {
+    res.send(interactions);
+  })
+  .then(null,function (error) {
+    console.log(error);
+    res.status(500).send({msg:"服务器错误"});
+  });
 }

@@ -40,11 +40,6 @@ function getDistricts(req,res,pid,cid) {
   });
 }
 
-
-exports.home = function (req ,res){
-  res.render('system/region');
-}
-
 //获取所有省名字
 exports.getProvinceList = function (req, res) {
   getProvinces(req,res);

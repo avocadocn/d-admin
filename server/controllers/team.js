@@ -7,11 +7,6 @@ var mongoose = require('mongoose'),
   User = mongoose.model('User'),
   async = require('async');
 
-
-exports.home = function (req ,res){
-  res.render('system/team');
-}
-
 var companySelect = function(condition,res,callback){
   Company.findOne(condition).exec(function (err,company){
     if(err || !company){

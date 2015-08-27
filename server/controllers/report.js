@@ -4,10 +4,6 @@
 
 var mongoose = require('mongoose'),
     Report = mongoose.model('Report');
-
-exports.home = function  (req, res) {
-  res.render('system/report');
-}
 exports.pullReport = function  (req, res) {
   Report.aggregate()
   .match({'status': req.params.report_status,'host_type':req.params.report_type})

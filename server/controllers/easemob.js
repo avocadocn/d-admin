@@ -7,9 +7,6 @@ var mongoose = require('mongoose'),
   User = mongoose.model('User');
 
 var easemobService = require('../service/addEasemob');
-exports.home = function(req,res){
-  res.render('system/easemob');
-}
 exports.info = function(req,res){
   Config.findOne({
     name: 'admin'

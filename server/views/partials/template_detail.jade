@@ -1,0 +1,74 @@
+.modal-dialog
+  .dl-modal
+    .dl-modal-header
+      button(type="button" class="close" data-dismiss="modal" aria-hidden="true") X
+      h4.modal-title 模板详细信息
+    .dl-modal-body
+      .row
+        .col-xs-2
+          span 模板类型:
+        .col-xs-6
+          span {{templateType | templateFilter}}
+      .row
+        .col-xs-2
+          span 主题:
+        .col-xs-6
+          span {{templateDetail.theme}}
+      .row
+        .col-xs-2
+          span 内容:
+        .col-xs-6
+          span {{templateDetail.content}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 开始时间:
+        .col-xs-6
+          span {{templateDetail.startTime | date:'yyyy-MM-dd HH:mm'}}
+      .row
+        .col-xs-2
+          span 结束时间:
+        .col-xs-6
+          span {{templateDetail.endTime | date:'yyyy-MM-dd HH:mm'}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 截止时间:
+        .col-xs-6
+          span {{templateDetail.deadline | date:'yyyy-MM-dd HH:mm'}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 活动类型:
+        .col-xs-6
+          span {{templateDetail.activityMold}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 最大人数:
+        .col-xs-6
+          span {{templateDetail.memberMax}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 最小人数:
+        .col-xs-6
+          span {{templateDetail.memberMin}}
+      .row(ng-if="templateType==1")
+        .col-xs-2
+          span 地点:
+        .col-xs-6
+          span {{templateDetail.location.name}}
+      .row(ng-if="templateType==2")
+        .col-xs-2
+          span 选项:
+        .col-xs-6
+          span.option_span(ng-repeat="_option in templateDetail.option") {{_option.value}}
+      .row
+        .col-xs-2
+          span 标签:
+        .col-xs-6
+          span.option_span(ng-repeat="tag in templateDetail.tags") {{tag}}
+      .row
+        .col-xs-2
+          span 图片:
+        .col-xs-6
+          .row
+            img.col-xs-3(ng-repeat="photo in templateDetail.photos" ng-src="{{staticUrl+photo.uri}}/40/40")
+    .dl-modal-footer
+      button.btn.btn-info(data-dismiss="modal") 确定

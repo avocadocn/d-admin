@@ -15,8 +15,3 @@ exports.getLogs = function(req,res){
     }
   });
 }
-
-
-exports.home = function(req ,res){
-  res.render('system/log');
-}

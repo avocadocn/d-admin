@@ -207,8 +207,3 @@ exports.adminSendToAll = function(req,res){
   };
   _add(_param);
 }
-
-
-exports.home = function (req ,res){
-  res.render('system/message');
-}

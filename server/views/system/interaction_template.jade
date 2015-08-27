@@ -23,6 +23,7 @@
               th 结束时间
               th(ng-if="templateType==1") 地点
               th(ng-if="templateType==2") 选项
+              th 详情
           tbody()
             tr(ng-repeat="template in templates")
               td {{template.theme}}
@@ -33,8 +34,12 @@
               td(ng-if="templateType==1") {{template.location.name}}
               td(ng-if="templateType==2")
                 span.option_span(ng-repeat="_option in template.option") {{_option.value}}
+              td
+                a.btn.btn-xs.btn-info(ng-click="detail(template._id)") 详情
 .modal.fade#addTemplateModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/add_template
+.modal.fade#interactionDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+  include ../partials/template_detail
 append footExt
   script(src="/public/lib/cropit/dist/jquery.cropit.js")
 

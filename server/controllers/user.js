@@ -5,11 +5,6 @@ var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
   User = mongoose.model('User');
 
-
-exports.home = function (req ,res){
-  res.render('system/user');
-}
-
 var companySelect = function(condition,res){
   Company.findOne(condition).exec(function (err,company){
     if(err || !company){

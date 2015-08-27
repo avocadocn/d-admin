@@ -16,39 +16,34 @@ function($routeProvider, $locationProvider) {
     //   controllerAs: 'dashboard'
     // })
     .when('/manager', {
-      templateUrl: '/manager/home',
+      templateUrl: '/manager/template/manager',
       controller: 'ManagerController',
       controllerAs: 'manager'
     })
     .when('/user', {
-      templateUrl: '/manager/user',
+      templateUrl: '/manager/template/user',
       controller: 'UserController',
       controllerAs: 'user'
     })
-    .when('/campaign', {
-      templateUrl: '/manager/campaign',
-      controller: 'CampaignController',
-      controllerAs: 'campaign'
+    .when('/interaction', {
+      templateUrl: '/manager/template/interaction',
+      controller: 'InteractionController',
+      controllerAs: 'interaction'
     })
     .when('/team', {
-      templateUrl: '/manager/team',
+      templateUrl: '/manager/template/team',
       controller: 'TeamController',
       controllerAs: 'team'
     })
     // .when('/department', {
-    //   templateUrl: '/manager/department',
+    //   templateUrl: '/manager/template/department',
     //   controller: 'DepartmentController',
     //   controllerAs: 'department'
     // })
     .when('/region', {
-      templateUrl: '/manager/region',
+      templateUrl: '/manager/template/region',
       controller: 'RegionController',
       controllerAs: 'region'
-    })
-    .when('/album', {
-      templateUrl: '/manager/album',
-      controller: 'AlbumController',
-      controllerAs: 'album'
     })
     // .when('/chart', {
     //   templateUrl: '/public/views/chart.html',
@@ -56,50 +51,50 @@ function($routeProvider, $locationProvider) {
     //   controllerAs: 'chart',
     // })
     .when('/message', {
-      templateUrl: '/manager/message',
+      templateUrl: '/manager/template/message',
       controller: 'MessageController',
       controllerAs: 'message',
     })
     .when('/error', {
-      templateUrl: '/manager/error',
+      templateUrl: '/manager/template/error',
       controller: 'ErrorController',
       controllerAs: 'error',
     })
     .when('/app', {
-      templateUrl: '/manager/app',
+      templateUrl: '/manager/template/app',
       controller: 'AppController',
       controllerAs: 'app',
     })
     .when('/report', {
-      templateUrl: '/report/home',
+      templateUrl: '/manager/template/report',
       controller: 'ReportController',
       controllerAs: 'report',
     })
     .when('/component',{
-      templateUrl: '/component/home',
+      templateUrl: '/manager/template/component',
       controller:'ComponentController',
       controllerAs: 'component',
     })
     .when('/mold',{
-      templateUrl: '/mold/home',
+      templateUrl: '/manager/template/mold',
       controller:'MoldController',
       controllerAs:'mold',
     })
     .when('/log',{
-      templateUrl: '/log/home',
+      templateUrl: '/manager/template/log',
       controller:'LogController',
       controllerAs:'log',
     })
     .when('/push_log',{
-      templateUrl: '/push_logs/page',
+      templateUrl: '/manager/template/push_log',
       controller:'PushLogController'
     })
     .when('/easemob',{
-      templateUrl: '/easemob/home',
+      templateUrl: '/manager/template/easemob',
       controller:'EasemobController'
     })
     .when('/interactionTemplate',{
-      templateUrl: '/interaction/template/home',
+      templateUrl: '/manager/template/interaction_template',
       controller:'interactionTemplateController',
       resolve:{
         templates:function($http) {
@@ -118,6 +113,23 @@ function($routeProvider, $locationProvider) {
     });
 }]);
 
+adminApp.filter('templateFilter', function() {
+  return function(input) {
+    switch(input){
+      case '1':
+        return '活动';
+        break;
+      case '2':
+        return '投票';
+        break;
+      case '3':
+        return '求助';
+        break;
+      default:
+        return input;
+    }
+  }
+});
 adminApp.filter('logType', function() {
   return function(input) {
     switch(input){
@@ -1123,88 +1135,66 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
 }]);
 
 
-adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeout',
+adminApp.controller('InteractionController', ['$http','$scope','$rootScope','$timeout',
   function ($http, $scope, $rootScope, $timeout) {
-    var s = new Date();
-    //$scope.start_time = moment(s).format("YYYY-MM-DD HH:mm");
-    // $('#start_time').datetimepicker();
-    // $('#end_time').datetimepicker();
-    $("#start_time").datetimepicker().on("changeDate",function (ev) {
+    $("#start_time").datetimepicker({
+      autoclose: true,
+      language: 'zh-CN'
+    }).on("changeDate",function (ev) {
+      if(ev.date) {
         var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-        $scope.start_time = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+        $scope.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
         $('#end_time').datetimepicker('setStartDate', dateUTC);
+      }
+
     });
-    $("#end_time").datetimepicker().on("changeDate",function (ev) {
+    $("#end_time").datetimepicker({
+      autoclose: true,
+      language: 'zh-CN'
+    }).on("changeDate",function (ev) {
+      if(ev.date) {
         var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-        $scope.end_time = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+        $scope.endTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
         $('#start_time').datetimepicker('setEndDate', dateUTC);
+      }
     });
-    //返回第一个公司的所有活动
-    $scope.first = true;
-    $scope.company_selected = null;
-    $scope.company_regx = {
+    $scope.interactionType =1;
+    $scope.companySelected;
+    $scope.companyRegx = {
       'value':''
     };
-
-    $scope.show_group_caption = '所有公司的活动类型分布';
-
-    $scope.group_selecteds = [{
-      'name':'所有公司',
-      'id':0
-    },{
-      'name':'单个公司',
-      'id':1
-    }];
-    $scope.group_selected = $scope.group_selecteds[0];
-
-    $scope.campaignByDate = function(){
-      $scope.getCampaign($scope.company_selected,$scope.start_time,$scope.end_time);
+    $scope.companyName ={};
+    $scope.formatCompany  = function(cid) {
+      if($scope.companyName[cid])
+        return $scope.companyName[cid];
+      for (var i = $scope.companies.length - 1; i >= 0; i--) {
+        if($scope.companies[i]._id===cid) {
+          $scope.companyName[cid] = $scope.companies[i].name
+          return $scope.companies[i].name;
+        }
+      };
+      return cid;
     }
-
-    // chartGenerator(data,length_property,label_property,ctxPie,ctxBar)
-    $scope.campaignByRule = function(cid){
-      try{
-        $http({
-          method: 'post',
-          url: '/campaign/rule',
-          data:{
-            cid : cid
-          }
-        }).success(function(data, status) {
-          if(data.result === 1){
-            var ctxPieGroup = $("#pieGroup").get(0).getContext("2d");
-            var ctxBarGroup = $("#barGroup").get(0).getContext("2d");
-            chartGenerator(data.campaign_by_group,'campaigns','group_type',ctxPieGroup,ctxBarGroup);
-
-            var ctxPieType = $("#pieType").get(0).getContext("2d");
-            var ctxBarType = $("#barType").get(0).getContext("2d");
-            chartGenerator(data.campaign_by_type,'campaigns','type',ctxPieType,ctxBarType);
-          }
-        }).error(function(data, status) {
-            //TODO:更改对话框
-            alert('数据发生错误！');
-        });
-      }
-      catch(e){
-        console.log(e);
-      }
+    $scope.clearStartTime = function() {
+      $scope.startTime = null;
     }
-    $scope.searchCompany = function(all){
+    $scope.clearEndTime = function() {
+      $scope.endTime =null;
+    }
+    $scope.clearCompany = function() {
+      $scope.companySelected =null;
+    }
+    $scope.searchCompany = function(all,callback){
       try{
-        $http({
-          method: 'post',
-          url: '/manager/search',
-          data:{
-            regx : $scope.company_regx.value,
+        $http.post('/manager/search',
+          {
+            regx : $scope.companyRegx.value,
             all : all
           }
-        }).success(function(data, status) {
+        ).success(function(data, status) {
           if(data.result === 1){
             $scope.companies = data.companies;
-            $scope.company_selected = data.companies[0];
-            if($scope.first){
-              $scope.getCampaign($scope.company_selected,$scope.start_time,$scope.end_time);
-            }
+            callback()
           }
         }).error(function(data, status) {
           //TODO:更改对话框
@@ -1215,55 +1205,30 @@ adminApp.controller('CampaignController', ['$http','$scope','$rootScope','$timeo
         console.log(e);
       }
     }
-
-    $scope.statisticsSelect = function(option){
-      if(option.id == 0){
-        $scope.show_group_caption = '所有公司的活动类型分布';
-        $scope.campaignByRule(undefined);
-      }
-      if(option.id == 1){
-        $scope.show_group_caption = $scope.company_selected.name + '的活动类型分布';
-        $scope.campaignByRule($scope.company_selected._id);
-      }
-    }
-
     //根据公司找到活动
-    $scope.getCampaign = function(company,start,end) {
+    $scope.getInteraction = function() {
       try{
-          $http({
-              method: 'post',
-              url: '/campaign/search',
-              data:{
-                  _id : company._id,
-                  start_time:start,
-                  end_time:end
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.campaigns = data.campaigns;
-              $scope.host = data.host;
-              //if($scope.first){
-                // setTimeout(function(){$(document).ready(function(){
-                //         $('#dt_campaign').dataTable();
-                //       });},500);
-                $scope.first = false;
-              //}
-
-              if($scope.group_selected.id == 1){
-                $scope.campaignByRule(company._id);
-              }
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
+        $http.get('/interaction', {
+          params:{
+            type: $scope.interactionType,
+            cid : $scope.companySelected ? $scope.companySelected._id :null,
+            startTime: $scope.startTime,
+            endTime: $scope.endTime
+          }
+        }).success(function(data, status) {
+          $scope.interactions = data;
+        }).error(function(data, status) {
+            //TODO:更改对话框
+            alert(data.msg);
+        });
       }
       catch(e){
           console.log(e);
       }
     };
-    $scope.searchCompany(true);
-    $scope.campaignByRule(undefined);
+    $scope.searchCompany(true,function(){
+      $scope.getInteraction();
+    });
 }]);
 
 
@@ -2116,6 +2081,17 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
       alert(data.msg)
     });
   }
+  $scope.detail = function(id) {
+    $http({
+      method: 'get',
+      url: '/interaction/template/'+$scope.templateType+'/'+id
+    }).then(function(data, status) {
+      $scope.templateDetail = data.data;
+      $('#interactionDetailModal').modal();
+    }).then(null,function(data, status) {
+      alert(data.msg)
+    });
+  }
   $scope.$watch("templateType",function(newVal,oldVal) {
     if(newVal==1&&oldVal) {
       $("#start_time").datetimepicker({
@@ -2187,7 +2163,7 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
     });
   };
 
-    var cropper = $('#image_cropper').cropit({
+  var cropper = $('#image_cropper').cropit({
     onFileChange: function () {
       console.log(111)
       $scope.isUploading = true;

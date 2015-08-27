@@ -14,6 +14,14 @@ var mongoose = require('mongoose'),
 
 
 
+exports.template = function(req,res){
+  res.render('system/'+req.params.name);
+}
+
+exports.home = function(req,res){
+  res.render('system/manager');
+}
+
 exports.editName = function(req,res){
   Company.update({'_id':req.body._id},{'$set':{'info.name':req.body.name}},function (err,company){
     if(err || !company){
@@ -142,9 +150,6 @@ exports.disableAll = function(req,res){
   });
 }
 
-exports.home = function(req,res){
-  res.render('system/manager');
-}
 
 
 //发邮件激活公司

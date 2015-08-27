@@ -3,10 +3,6 @@
 var mongoose = require('mongoose'),
   CampaignModule = mongoose.model('CampaignModule');
 
-exports.home = function (req, res){
-  res.render('system/component');
-};
-
 exports.componentList = function (req, res) {
   CampaignModule.find(null,function(err,modules){
     if(err||!modules){

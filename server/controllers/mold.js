@@ -12,10 +12,6 @@ var arrayObjectIndexOf = function(myArray, searchTerm, property) {
   return -1;
 };
 
-exports.home = function (req, res){
-  res.render('system/mold');
-};
-
 exports.moldList = function(req, res){
   CampaignMold.find(function(err,molds){
     if(err){
