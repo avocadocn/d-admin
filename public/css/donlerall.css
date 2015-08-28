@@ -1977,7 +1977,7 @@ Timeline UI Base
 }
 .cropper {
   width: 400px;
-  height: 400px;
+  /*height: 400px;*/
   padding: 20px 0;
   margin: 0 auto;
   overflow: hidden;

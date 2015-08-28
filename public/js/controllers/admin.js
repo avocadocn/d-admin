@@ -2169,7 +2169,6 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
 
   var cropper = $('#image_cropper').cropit({
     onFileChange: function () {
-      console.log(111)
       $scope.isUploading = true;
       $scope.$digest();
     },
@@ -2207,7 +2206,7 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
     $http(opt)
     .success(function (data) {
       alert('成功');
-      // window.location.reload();
+      window.location.reload();
     })
     .error(function (data, status) {
       alert(data.msg);

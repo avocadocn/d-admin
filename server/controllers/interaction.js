@@ -55,11 +55,11 @@ exports.createTemplateValidate = function (req, res, next) {
       value: req.body.theme,
       validators: ['required']
     },
-    content: {
-      name: '内容',
-      value: req.body.content,
-      validators: ['required']
-    },
+    // content: {
+    //   name: '内容',
+    //   value: req.body.content,
+    //   validators: ['required']
+    // },
     endTime: {
       name: '结束时间',
       value: req.body.endTime,
