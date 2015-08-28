@@ -1,6 +1,6 @@
 'use strict';
 
-var adminApp = angular.module('admin', ['ngRoute','datatables']);
+var adminApp = angular.module('admin', ['ngRoute','datatables','simditor']);
 
 adminApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
@@ -107,12 +107,20 @@ function($routeProvider, $locationProvider) {
         }
       }
     })
+    .when('/add_template',{
+      templateUrl: '/manager/template/add_template',
+      controller:'AddTemplateController'
+    })
     
     .otherwise({
       redirectTo: '/parameter'
     });
 }]);
-
+adminApp.filter('unsafe', ['$sce', function ($sce) {
+    return function (val) {
+        return $sce.trustAsHtml(val);
+    };
+}]);
 adminApp.filter('templateFilter', function() {
   return function(input) {
     switch(input){
@@ -474,24 +482,30 @@ adminApp.directive('mapSearch', ['mapSevice', '$q', function(mapSevice, $q) {
           placeSearch.search(locationName, function(status, result) {
             switch(status) {
             case 'complete':
-              var point = result.poiList.pois[0].location;
-              var lnglat = new AMap.LngLat(point.getLng(), point.getLat());
-              map.setCenter(lnglat);
+              if(result.poiList.pois.length>0) {
+                var point = result.poiList.pois[0].location;
+                var lnglat = new AMap.LngLat(point.getLng(), point.getLat());
+                map.setCenter(lnglat);
 
-              if (!marker) {
-                marker = new AMap.Marker({
-                  map: map,
-                  position: lnglat,
-                  draggable: true
-                });
-                AMap.event.addListener(marker, 'dragend', remarkCallback);
+                if (!marker) {
+                  marker = new AMap.Marker({
+                    map: map,
+                    position: lnglat,
+                    draggable: true
+                  });
+                  AMap.event.addListener(marker, 'dragend', remarkCallback);
+                }
+                else {
+                  marker.setPosition(lnglat);
+                }
+
+                map.setFitView();
+                deferred.resolve(result.poiList.pois[0]);
               }
               else {
-                marker.setPosition(lnglat);
+                map.setFitView();
+                deferred.resolve(null);
               }
-
-              map.setFitView();
-              deferred.resolve(result.poiList.pois[0]);
               break;
             case 'error':
               deferred.reject(result);
@@ -2069,11 +2083,8 @@ adminApp.controller('EasemobController', ['$http', '$scope', function($http, $sc
     });
   };
 }]);
-adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageService', 'templates', function($http, $scope, imageService,templates) {
+adminApp.controller('interactionTemplateController', ['$http', '$scope', 'templates', function($http, $scope,templates) {
   $scope.templateType = 1;
-  $scope.template = {
-    templateType: 1
-  }
   $scope.templates = templates;
   $scope.getTemplate = function(templateType){
     $http({
@@ -2096,8 +2107,25 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
       alert(data.msg)
     });
   }
-  $scope.$watch("templateType",function(newVal,oldVal) {
-    if(newVal==1&&oldVal) {
+}]);
+adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService', function($http, $scope, imageService) {
+  $scope.template = {
+    templateType: 1
+  }
+  $scope.isUploading = false;
+  $scope.$watch("template.templateType",function(newVal,oldVal) {
+    console.count()
+    $("#end_time").datetimepicker({
+      autoclose: true,
+      language: 'zh-CN',
+      startDate: new Date()
+    }).on("changeDate",function (ev) {
+      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
+      $scope.template.endTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
+      $('#start_time').datetimepicker('setEndDate', dateUTC);
+      $('#deadline').datetimepicker('setEndDate', dateUTC);
+    });
+    if(newVal==1) {
       $("#start_time").datetimepicker({
         autoclose: true,
         language: 'zh-CN',
@@ -2118,45 +2146,17 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
       });
     }
   })
-  $('#addTemplateModal').on('shown.bs.modal', function () {
-    $("#start_time").datetimepicker({
-      autoclose: true,
-      language: 'zh-CN',
-      startDate: new Date()
-    }).on("changeDate",function (ev) {
-      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-      $scope.template.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
-      $('#end_time').datetimepicker('setStartDate', dateUTC);
-      $('#deadline').datetimepicker('setStartDate', dateUTC);
-    });
-    $("#deadline").datetimepicker({
-        autoclose: true,
-        language: 'zh-CN',
-        startDate: new Date()
-    }).on("changeDate",function (ev) {
-      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-      $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
-    });
-    $("#end_time").datetimepicker({
-      autoclose: true,
-      language: 'zh-CN',
-      startDate: new Date()
-    }).on("changeDate",function (ev) {
-      var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
-      $scope.template.endTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
-      $('#start_time').datetimepicker('setEndDate', dateUTC);
-      $('#deadline').datetimepicker('setEndDate', dateUTC);
-    });
-
-    // 地图
+  // 地图
   $scope.mapCtrl = {};
   $scope.hasSearch = false;
   $scope.search = function() {
     $scope.mapCtrl.search($scope.template.location).then(function(res) {
+      if(res) {
+        var lnglat = res.location;
+        $scope.template.latitude = lnglat.getLat();
+        $scope.template.longitude = lnglat.getLng();
+      }
       $scope.hasSearch = true;
-      var lnglat = res.location;
-      $scope.template.latitude = lnglat.getLat();
-      $scope.template.longitude = lnglat.getLng();
     }, function(err) {
       console.log(err);
     });
@@ -2174,10 +2174,9 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
     },
     imageBackground: true
   });
-
-  $scope.isUploading = false;
   var cropitImageInput = $('#cropit_image_input');
   $scope.selectLogo = function () {
+    
     cropitImageInput.click();
   };
   $scope.save = function() {
@@ -2206,16 +2205,14 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'imageS
     $http(opt)
     .success(function (data) {
       alert('成功');
-      window.location.reload();
+      // window.location.reload();
     })
     .error(function (data, status) {
       alert(data.msg);
     });
   }
-  })
-  
-  
 }]);
+
 // adminApp.controller('DashboardController', ['$http','$scope',
 //   function ($http, $scope) {
 //     $scope.dashboard = function() {

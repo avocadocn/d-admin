@@ -5,7 +5,8 @@
         .icons
           i.fa.fa-table
         h5 模板管理
-        a.pull-right(data-toggle="modal" data-target="#addTemplateModal") 添加模板
+        a.pull-right(href="#/add_template") 添加模板
+        //- a.pull-right(data-toggle="modal" data-target="#addTemplateModal") 添加模板
       .form-group.dl_row.margin_top_10
         .col-lg-3
           select.form-control.chzn-select(tabindex="2" ng-model="templateType" ng-change="getTemplate(templateType)")
@@ -28,7 +29,7 @@
             tr(ng-repeat="template in templates")
               td {{template.theme}}
               td
-                .campaign_content {{template.content}}
+                .campaign_content(ng-bind-html="template.content | unsafe")
               td(ng-if="templateType==1") {{template.startTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{template.endTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="templateType==1") {{template.location.name}}
@@ -36,12 +37,10 @@
                 span.option_span(ng-repeat="_option in template.option") {{_option.value}}
               td
                 a.btn.btn-xs.btn-info(ng-click="detail(template._id)") 详情
-.modal.fade#addTemplateModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-  include ../partials/add_template
+//- .modal.fade#addTemplateModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+//-   include ../partials/add_template
 .modal.fade#templateDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/template_detail
-append footExt
-  script(src="/public/lib/cropit/dist/jquery.cropit.js")
 
 
 

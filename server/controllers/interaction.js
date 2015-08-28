@@ -7,16 +7,18 @@ var mongoose = require('mongoose'),
     PollTemplate= mongoose.model('PollTemplate'),
     QuestionTemplate= mongoose.model('QuestionTemplate');
 var donlerValidator = require('../service/donler_validator.js'),
-  multerService = require('../service/multerService.js'),
-  tools = require('../service/tools.js');
+    multerService = require('../service/multerService.js'),
+    tools = require('../service/tools.js');
 var perPageNum = 10;
 var interactionTypes = ['activity','poll','question'];
 exports.templateFormFormat = function(req, res, next) {
   req.body.templateType = parseInt(req.body.templateType);
   if(req.body.location) {
     req.body.location = {
-      "name": req.body.location,
-      "loc" : {
+      "name": req.body.location
+    }
+    if(req.body.longitude){
+      req.body.location.loc = {
         "coordinates" : [parseFloat(req.body.longitude),parseFloat(req.body.latitude)],
       }
     }
@@ -40,7 +42,7 @@ exports.createTemplateValidate = function (req, res, next) {
   var locationValidator = function(name, value, callback) {
     if(!value) return callback(true);
     if(!value.name) return callback(false,"没有地址")
-    if(value.loc.coordinates && (!value.loc.coordinates instanceof Array || value.loc.coordinates.length !=2 || typeof value.loc.coordinates[0] !=="number" || typeof value.loc.coordinates[1] !=="number")) return callback(false,"坐标格式错误");
+    if(value.loc && value.loc.coordinates && (!value.loc.coordinates instanceof Array || value.loc.coordinates.length !=2 || typeof value.loc.coordinates[0] !=="number" || typeof value.loc.coordinates[1] !=="number")) return callback(false,"坐标格式错误");
     return callback(true);
   };
   var templateType = req.body.templateType;
@@ -63,7 +65,7 @@ exports.createTemplateValidate = function (req, res, next) {
     endTime: {
       name: '结束时间',
       value: req.body.endTime,
-      validators: ['required','date',donlerValidator.after(req.body.startTime)]
+      validators: [templateType=== 1 ?'required':undefined,'date',donlerValidator.after(req.body.startTime)]
     },
     startTime: {
       name: '开始时间',
@@ -113,7 +115,7 @@ exports.createTemplateValidate = function (req, res, next) {
           if(files && files.length) {
             files.forEach(function(img) {
               var photo = {
-                uri: img.path.slice(img.path.indexOf('yali/public')+11),
+                uri: multerService.getRelPath(img.path),
                 width: img.size.width,
                 height: img.size.height
               };

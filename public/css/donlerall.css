@@ -2024,8 +2024,7 @@ Timeline UI Base
   visibility: hidden;
 }
 .dl_map{
-  width: 100%;
-  height:300px;
+  height: 300px;
 }
 .option_span {
   display: inline-block;
@@ -2033,4 +2032,7 @@ Timeline UI Base
   background-color: #ececec; 
   margin-right: 5px;
   padding: 0 5px;
+}
+.simditor .simditor-toolbar > ul > li > .toolbar-item {
+  width: 30px
 }

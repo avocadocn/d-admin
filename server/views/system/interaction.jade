@@ -60,7 +60,7 @@
               td {{formatCompany(interaction.cid)}}
               td {{interaction.theme}}
               td
-                .campaign_content {{interaction.content}}
+                .campaign_content(ng-bind-html="template.content | unsafe")
               td
                 span.option_span(ng-repeat="tag in template.tags") {{tags}}
               
