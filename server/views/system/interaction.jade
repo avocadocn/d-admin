@@ -25,7 +25,7 @@
               .input-group.date.form_datetime#start_time
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="$parent.start_time" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+                input.dl-form-control(type="text" ng-model="$parent.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
                 span.input-group-addon(ng-click="clearStartTime()")
                   span.glyphicon.glyphicon-remove
             .time_block
@@ -34,14 +34,14 @@
               .input-group.date.form_datetime#end_time
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="$parent.end_time" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+                input.dl-form-control(type="text" ng-model="$parent.endTime" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
                 span.input-group-addon(ng-click="clearEndTime()")
                   span.glyphicon.glyphicon-remove
             .time_block
               a.dl_btn.dl_btn_small(ng-click="getInteraction()") 获取
     .inner
       .dl_row.dl_code.table_all
-        table(datatable="ng")#dt_campaign.table.table-bordered.table-condensed.table-hover.table-striped
+        table(datatable="ng")#dt_interaction.table.table-bordered.table-condensed.table-hover.table-striped
           thead
             tr
               th 学校
@@ -56,19 +56,19 @@
               th 参加人数
               th 详情
           tbody()
-            tr(ng-repeat="interaction in interactions")
+            tr(ng-repeat="interaction in interactions track by $index")
               td {{formatCompany(interaction.cid)}}
               td {{interaction.theme}}
               td
-                .campaign_content(ng-bind-html="template.content | unsafe")
+                .campaign_content(ng-bind-html="interaction.content | unsafe")
               td
-                span.option_span(ng-repeat="tag in template.tags") {{tags}}
+                span.option_span(ng-repeat="tag in interaction.tags") {{tags}}
               
               td(ng-if="interactionType==1") {{interaction.activity.startTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{interaction.endTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="interactionType==1") {{interaction.activity.deadline | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="interactionType==1") {{interaction.activity.location.name}}
-              td(ng-if="templateType==2")
+              td(ng-if="interactionType==2")
                 span.option_span(ng-repeat="_option in interaction.poll.option") {{_option.value}}
               td {{interaction.members.length}}
               td

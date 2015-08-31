@@ -162,7 +162,7 @@ exports.getTemplateList = function (req, res) {
   var _perPageNum = req.query.limit || perPageNum;
   mongoose.model(templateModel).find(option)
   .sort({ createTime: -1 })
-  .limit(_perPageNum)
+  // .limit(_perPageNum)
   .exec()
   .then(function (templates) {
     return res.send(templates);
