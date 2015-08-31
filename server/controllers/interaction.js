@@ -304,7 +304,7 @@ exports.getInteractionList = function(req, res) {
   Interaction.find(option)
   .populate(populateType)
   .sort({ createTime: -1 })
-  .limit(_perPageNum)
+  // .limit(_perPageNum)
   .exec()
   .then(function (interactions) {
     res.send(interactions);

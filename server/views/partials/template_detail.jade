@@ -18,7 +18,7 @@
         .col-xs-2
           span 内容:
         .col-xs-6
-          span {{templateDetail.content}}
+          div(ng-bind-html="templateDetail.content | unsafe")
       .row(ng-if="templateType==1")
         .col-xs-2
           span 开始时间:

@@ -83,7 +83,6 @@
                 button.btn.btn-default(ng-click="selectLogo()") 选择图片
             input.cropit-image-input#cropit_image_input(type="file")
           .form-group.text-center
-            p {{infoForm.$error}}
             button.btn.btn-lg.btn-primary(ng-click="save()" ng-disabled="infoForm.$invalid") 确定
 append footExt
   script(src="/public/lib/cropit/dist/jquery.cropit.js")
