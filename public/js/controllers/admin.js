@@ -2097,15 +2097,31 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'templa
     });
   }
   $scope.detail = function(id) {
-    $http({
-      method: 'get',
-      url: '/interaction/template/'+$scope.templateType+'/'+id
-    }).then(function(data, status) {
-      $scope.templateDetail = data.data;
-      $('#templateDetailModal').modal();
-    }).then(null,function(data, status) {
-      alert(data.msg)
-    });
+    $http.get('/interaction/template/'+$scope.templateType+'/'+id)
+      .success(function(data, status) {
+        $scope.templateDetail = data;
+        $('#templateDetailModal').modal();
+      }).error(null,function(data, status) {
+        alert(data.msg)
+      });
+  }
+  $scope.close = function(index) {
+    $http.delete('/interaction/template/'+$scope.templateType+'/'+$scope.templates[index]._id)
+      .success(function(data, status) {
+        alert(data.msg)
+        $scope.templates[index].active = false;
+      }).error(function(data, status) {
+        alert(data.msg)
+      });
+  }
+  $scope.open = function(index) {
+    $http.put('/interaction/template/'+$scope.templateType+'/'+$scope.templates[index]._id)
+      .success(function(data, status) {
+        alert(data.msg)
+        $scope.templates[index].active = true;
+      }).error(function(data, status) {
+        alert(data.msg)
+      });
   }
 }]);
 adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService', function($http, $scope, imageService) {

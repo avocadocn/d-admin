@@ -142,7 +142,10 @@ exports.createTemplateValidate = function (req, res, next) {
  * @return {[type]}     [description]
  */
 exports.getTemplateList = function (req, res) {
-  var option,templateModel;
+  var option ={
+    // active:{"$ne":false}
+  };
+  var templateModel;
   switch(req.query.templateType) {
     case '1':
       templateModel = "ActivityTemplate";
@@ -314,3 +317,74 @@ exports.getInteractionList = function(req, res) {
     res.status(500).send({msg:"服务器错误"});
   });
 }
+exports.colseTemplate = function(req, res) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.templateId)) {
+    return res.status(400).send({msg:"数据格式错误"});
+  }
+  var option,templateModel;
+  switch(req.params.templateType) {
+    case '1':
+      templateModel = "ActivityTemplate";
+      break;
+    case '2':
+      templateModel = "PollTemplate";
+      break;
+    case '3':
+      templateModel = "QuestionTemplate";
+      break;
+    default:
+      return res.status(400).send({msg:"互动类型错误"});
+  }
+  mongoose.model(templateModel).update({_id:req.params.templateId,active:{"$ne":false}},{$set:{active:false}},{ multi: false })
+    .exec()
+    .then(function (count) {
+      if(count>0) {
+        return res.send({msg:"关闭成功"});
+      }
+      else {
+        return res.status(400).send({msg:"该模板不存在，或者已经被关闭"});
+      }
+    })
+    .then(null,function (error) {
+      log(error);
+      return res.status(500).send({msg:"服务器发生错误"});
+    });
+}
+exports.openTemplate = function(req, res) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.templateId)) {
+    return res.status(400).send({msg:"数据格式错误"});
+  }
+  var option,templateModel;
+  switch(req.params.templateType) {
+    case '1':
+      templateModel = "ActivityTemplate";
+      break;
+    case '2':
+      templateModel = "PollTemplate";
+      break;
+    case '3':
+      templateModel = "QuestionTemplate";
+      break;
+    default:
+      return res.status(400).send({msg:"互动类型错误"});
+  }
+  mongoose.model(templateModel).update({_id:req.params.templateId,active:false},{$set:{active:true}},{ multi: false })
+    .exec()
+    .then(function (count) {
+      if(count>0) {
+        return res.send({msg:"打开成功"});
+      }
+      else {
+        return res.status(400).send({msg:"该模板不存在，或者未被关闭"});
+      }
+    })
+    .then(null,function (error) {
+      log(error);
+      return res.status(500).send({msg:"服务器发生错误"});
+    });
+}
+
+
+
+
+

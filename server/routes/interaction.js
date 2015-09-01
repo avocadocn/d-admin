@@ -7,4 +7,6 @@ module.exports = function(app) {
   app.get('/interaction/template', authorization.requiresAdmin, interaction.getTemplateList);
   app.get('/interaction', authorization.requiresAdmin, interaction.getInteractionList);
   app.get('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.getTemplateDetail);
+  app.delete('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.colseTemplate);
+  app.put('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.openTemplate);
 }
