@@ -8,8 +8,8 @@
         //-   input.dl_form-control(type="text" ng-model="company_regx.value")
         //- .col-lg-2
         //-   button.dl_btn.dl_btn_small(ng-click="searchCompany(false)") 搜索公司
-        .dl_md_1.pull-right
-          button.dl_btn.dl_btn_right(ng-click="teamAddCity()") 增加城市属性
+        //- .dl_md_1.pull-right
+        //-   button.dl_btn.dl_btn_right(ng-click="teamAddCity()") 增加城市属性
     .inner
       .dl_row.dl_code.table_all
         table(datatable="ng")#dataTable.table.table-bordered.table-condensed.table-hover.table-striped
@@ -18,6 +18,7 @@
               th
               th 公司名
               th 队名
+              th 级别
               th 类型
               th 队员数
               th 创建时间
@@ -30,29 +31,30 @@
               td {{team.cname}}
               td
                 a(ng-click="getDetail(team._id)") {{team.name}}
-              td {{team.group_type}}
+              td {{team.level===1 ? "社团":"普通"}}
+              td {{team.open ? "公开":"私密"}}
               td {{team.member.length}}
-              td {{team.create_time | date:'yyyy-MM-dd HH:mm' | dateView}}
+              td {{team.createTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{team.score.total}}
               td {{team.active ? '正常' : '关闭'}}
-    .inner
-      .dl_row
-        .dl_row
-          hr
-        .dl_row
-          span.pull-left
-            h5 小队类型分布
-          span
-            .col-lg-2
-              select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
-        .dl_row
-          hr
-        .dl_row
-          p {{show_group_caption}}
-        .dl_row.margin_top_10
-          .col_md_6
-            canvas#pie
-          .col_md_6
-            canvas#bar
+    //- .inner
+    //-   .dl_row
+    //-     .dl_row
+    //-       hr
+    //-     .dl_row
+    //-       span.pull-left
+    //-         h5 小队类型分布
+    //-       span
+    //-         .col-lg-2
+    //-           select(class="form-control chzn-select" tabindex="2" ng-model="group_selected" ng-options="g.name for g in group_selecteds" ng-change="statisticsSelect(group_selected)")
+    //-     .dl_row
+    //-       hr
+    //-     .dl_row
+    //-       p {{show_group_caption}}
+    //-     .dl_row.margin_top_10
+    //-       .col_md_6
+    //-         canvas#pie
+    //-       .col_md_6
+    //-         canvas#bar
 .modal.fade#teamDetailModal(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
   include ../partials/team_detail

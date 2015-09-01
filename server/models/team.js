@@ -13,8 +13,6 @@ var _member = new Schema({ // 群组成员组件
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  nickname: String, // 成员昵称
-  photo: String, // 成员头像
   time: { //加入时间、申请时间
     type: Date,
     default: Date.now
@@ -50,16 +48,17 @@ var TeamModel = new Schema({
     enum: [0,1],
     default: 0
   },
-
+  //0:未申请, 1:等待验证, 2:通过, 3:拒绝
+  applyStatus:{
+    type: Number,
+    enum: [0,1,2,3],
+    default: 0
+  },
   member: [_member], // 群组成员
 
   leader: { // 群组管理人员（队长）
-    _id: {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    nickname: String,
-    photo: String
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   administrators: [{
     type: Schema.Types.ObjectId,
@@ -107,7 +106,13 @@ var TeamModel = new Schema({
     default: Date.now
   },
   // 环信id
-  easemobId: String
+  easemobId: String,
+  score: {
+    total: {
+      type: Number,
+      default: 0
+    }
+  }
 });
 
 /**
@@ -117,6 +122,31 @@ TeamModel.methods = {
   // 群组所有成员id
   memberIds: function() {
     return this.member.map(function(obj) { return obj._id});
+  },
+  isMember: function(userId) {
+    for (var i = this.member.length - 1; i >= 0; i--) {
+      if(this.member[i]._id.toString()===userId.toString())
+        return true;
+    }
+    return false;
+  },
+  isAdmin: function(userId) {
+    userId = userId.toString();
+    for (var i = this.administrators.length - 1; i >= 0; i--) {
+      if(this.administrators[i].toString()===userId)
+        return true;
+    }
+    return false;
+  },
+  isAdminOrLeader:function(userId) {
+    userId = userId.toString();
+    if(this.leader.toString()===userId)
+      return true;
+    for (var i = this.administrators.length - 1; i >= 0; i--) {
+      if(this.administrators[i].toString()===userId)
+        return true;
+    }
+    return false;
   }
 };
 

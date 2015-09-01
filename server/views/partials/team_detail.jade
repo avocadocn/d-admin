@@ -18,16 +18,18 @@
                     table(datatable="ng")#dt_team_user.table.table-bordered.table-condensed.table-hover.table-striped
                       thead
                         tr
-                          th 公司
+                          th 真实姓名
                           th 昵称
                           th 加入时间
                           th 是否为队长
+                          th 是否为管理员
                       tbody
                         tr(ng-repeat="member in members")
-                          td {{member.cname}}
-                          td {{member.nickname}}
-                          td {{member.join_time | date:'yyyy-MM-dd HH:mm' | dateView}}
-                          td {{member.leader ? '是' : '否'}}
+                          td {{member._id.realname}}
+                          td {{member._id.nickname}}
+                          td {{member.time | date:'yyyy-MM-dd HH:mm' | dateView}}
+                          td {{member._id.leader ? '是' : '否'}}
+                          td {{member._id.admin ? '是' : '否'}}
           .inner
             .row
               .col-lg-12

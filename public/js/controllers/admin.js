@@ -991,40 +991,33 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
 
     $scope.getDetail = function(teamId) {
       try{
-          $http({
-              method: 'post',
-              url: '/user/team',
-              data:{
-                teamId : teamId
-              }
-          }).success(function(data, status) {
-            if(data.result == 1){
-              $scope.members = data.team.member;
-              try{
-                  $http({
-                      method: 'post',
-                      url: '/campaign/team',
-                      data:{
-                        teamId : teamId
-                      }
-                  }).success(function(data, status) {
-                    if(data.result == 1){
-                      $scope.campaigns = data.campaigns;
-                      $('#teamDetailModal').modal();
-                    }
-                  }).error(function(data, status) {
-                      //TODO:更改对话框
-                      alert('数据发生错误！');
-                  });
-              }
-              catch(e){
-                  console.log(e);
-              }
-            }
-            $('#companyDetailModal').modal();
+          $http.get('/team/'+teamId)
+          .success(function(data, status) {
+              $scope.members = data.member;
+              // try{
+              //     $http({
+              //         method: 'post',
+              //         url: '/campaign/team',
+              //         data:{
+              //           teamId : teamId
+              //         }
+              //     }).success(function(data, status) {
+              //       if(data.result == 1){
+              //         $scope.campaigns = data.campaigns;
+              //         $('#teamDetailModal').modal();
+              //       }
+              //     }).error(function(data, status) {
+              //         //TODO:更改对话框
+              //         alert('数据发生错误！');
+              //     });
+              // }
+              // catch(e){
+              //     console.log(e);
+              // }
+            $('#teamDetailModal').modal();
           }).error(function(data, status) {
               //TODO:更改对话框
-              alert('数据发生错误！');
+              alert(data.msg ||'数据发生错误！');
           });
       }
       catch(e){
@@ -1059,66 +1052,58 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
       }
     }
 
-    $scope.statisticsSelect = function(option){
-      if(option.id == 0){
-        $scope.show_group_caption = '所有公司的小队类型分布';
-        $scope.teamByGroup(true);
-      }
-      if(option.id == 1){
-        $scope.show_group_caption = $scope.company_selected.name + '的小队类型分布';
-        $scope.teamByGroup(false);
-      }
-    }
-    $scope.teamByGroup = function(all) {
-      var ctxPie = $("#pie").get(0).getContext("2d");
-      var ctxBar = $("#bar").get(0).getContext("2d");
-      if(!$scope.show_group){
-        try{
-          $http({
-              method: 'post',
-              url: '/team/group',
-              data:{
-                cid : $scope.company_selected ? $scope.company_selected._id : null,
-                all : all
-              }
-          }).success(function(data, status) {
-            if(data.result === 1){
-              $scope.team_by_group = data.team_by_group;
-              chartGenerator($scope.team_by_group,'teams','group_type',ctxPie,ctxBar);
-            }
-          }).error(function(data, status) {
-              //TODO:更改对话框
-              alert('数据发生错误！');
-          });
-        }
-        catch(e){
-            console.log(e);
-        }
-      }else{
-        $scope.show_group = false;
-      }
-    }
+    // $scope.statisticsSelect = function(option){
+    //   if(option.id == 0){
+    //     $scope.show_group_caption = '所有公司的小队类型分布';
+    //     $scope.teamByGroup(true);
+    //   }
+    //   if(option.id == 1){
+    //     $scope.show_group_caption = $scope.company_selected.name + '的小队类型分布';
+    //     $scope.teamByGroup(false);
+    //   }
+    // }
+    // $scope.teamByGroup = function(all) {
+    //   var ctxPie = $("#pie").get(0).getContext("2d");
+    //   var ctxBar = $("#bar").get(0).getContext("2d");
+    //   if(!$scope.show_group){
+    //     try{
+    //       $http({
+    //           method: 'post',
+    //           url: '/team/group',
+    //           data:{
+    //             cid : $scope.company_selected ? $scope.company_selected._id : null,
+    //             all : all
+    //           }
+    //       }).success(function(data, status) {
+    //         if(data.result === 1){
+    //           $scope.team_by_group = data.team_by_group;
+    //           chartGenerator($scope.team_by_group,'teams','group_type',ctxPie,ctxBar);
+    //         }
+    //       }).error(function(data, status) {
+    //           //TODO:更改对话框
+    //           alert('数据发生错误！');
+    //       });
+    //     }
+    //     catch(e){
+    //         console.log(e);
+    //     }
+    //   }else{
+    //     $scope.show_group = false;
+    //   }
+    // }
     //根据公司找到小队
     $scope.getTeam = function(company) {
       try{
-        $http({
-            method: 'post',
-            url: '/team/search',
-            data:{
-                _id : company._id
-            }
-        }).success(function(data, status) {
-          if(data.result === 1){
+        $http.get('/team/list/'+company._id)
+        .success(function(data, status) {
             $scope.teams = data.teams;
             $scope.host = data.host;
             if($scope.first){
               $scope.first = false;
             }
-
             if($scope.group_selected.id == 1){
               $scope.teamByGroup(false);
             }
-          }
         }).error(function(data, status) {
             //TODO:更改对话框
             alert('数据发生错误！');
@@ -1129,23 +1114,23 @@ adminApp.controller('TeamController', ['$http','$scope','$rootScope',
       }
     };
     $scope.searchCompany(true);
-    $scope.teamByGroup(true);
-    $scope.teamAddCity =function(){
-      try{
-        $http.post('/team/addCity').success(function(data,status){
-          if(data.result===1){
-            alert('成功');
-          }else{
-            alert('失败');
-          }
-        }).error(function(data,status){
-          alert('失败');
-        });
-      }
-      catch(e){
-        console.log(e);
-      }
-    };
+    // $scope.teamByGroup(true);
+    // $scope.teamAddCity =function(){
+    //   try{
+    //     $http.post('/team/addCity').success(function(data,status){
+    //       if(data.result===1){
+    //         alert('成功');
+    //       }else{
+    //         alert('失败');
+    //       }
+    //     }).error(function(data,status){
+    //       alert('失败');
+    //     });
+    //   }
+    //   catch(e){
+    //     console.log(e);
+    //   }
+    // };
 }]);
 
 

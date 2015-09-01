@@ -2,17 +2,15 @@
 
 var mongoose = require('mongoose'),
   Company = mongoose.model('Company'),
-  CompanyGroup = mongoose.model('CompanyGroup'),
-  Config = mongoose.model('Config'),
-  User = mongoose.model('User'),
-  async = require('async');
+  Team = mongoose.model('Team'),
+  Config = mongoose.model('Config');
 
 var companySelect = function(condition,res,callback){
   Company.findOne(condition).exec(function (err,company){
     if(err || !company){
       return res.send({'msg':'COMPANY_FETCH_FAILED','result':0});
     }else{
-      CompanyGroup.find({'cid':company._id,'gid':{'$ne':'0'}},{'name':1,'gid':1,'group_type':1,'_id':1,'member':1,'leader':1,'create_time':1,'home_court':1,'logo':1,'cname':1,'score':1,'active':1},function (err,teams){
+      Team.find({'cid':company._id},{'name':1,'member':1,'leader':1,'createTime':1,'logo':1,'cname':1,'score':1,'active':1},function (err,teams){
         if(err || !teams){
           return res.send({'msg':'TEAM_FETCH_FAILED','result':0});
         }else{
@@ -20,7 +18,7 @@ var companySelect = function(condition,res,callback){
             if(err || !config){
               return res.send({'msg':'TEAM_FETCH_SUCCESS','result':0,'teams':teams});
             }else{
-              if(callback != null){
+              if(callback){
                 return res.send({'msg':'TEAM_GROUPBY_SUCCESS','result':1,'team_by_group':callback(teams)});
               }else{
                 return res.send({'msg':'TEAM_FETCH_SUCCESS','result':1,'teams':teams,'host':config.host.product});
@@ -58,14 +56,8 @@ var teamHandle = function(teams){
   return team_by_group;
 }
 exports.searchCompanyForTeam = function (req ,res){
-  //第一次默认取第一个公司的所有小队
-  if(req.body._id == undefined || req.body._id == null){
-    var condition = {'team':{'$ne':[]}};
-    companySelect(condition,res,null);
-  }else{
-    var condition = {'_id':req.body._id};
-    companySelect(condition,res,null);
-  }
+  var condition = {'_id':req.params.companyId};
+  companySelect(condition,res);
 }
 
 //按类型取小组
@@ -116,4 +108,38 @@ exports.teamAddCity = function(req,res){
     console.log(err);
     return res.send({result:0,msg:'查询错误'});
   });
+}
+exports.getTeam = function(req,res){
+  Team.findOne({'_id':req.params.teamId},{'member':1,'leader':1,'cname':1,'group_type':1})
+  .populate({
+    path: "member._id",
+    select: 'nickname realname'
+  })
+  .exec()
+  .then(function (team){
+    if(!team){
+      return res.status(400).send({'msg':'该小队不存在'});
+    }else{
+      team = team.toObject();
+      team.member.forEach(function(value){
+        for(var i = 0; team.leader && i < team.leader.length; i ++){
+          if(value._id._id.toString() === team.leader[i].toString()){
+            value._id.leader = true;
+            return;
+          }
+        }
+        for(var i = 0; team.administrators && i < team.administrators.length; i ++){
+          if(value._id._id.toString() === team.administrators[i].toString()){
+            value._id.admin = true;
+            break;
+          }
+        }
+      });
+      return res.send(team);
+    }
+  })
+  .then(null,function(err) {
+    console.log(err)
+    return res.status(500).send({'msg':'获取小队错误'});
+  })
 }
