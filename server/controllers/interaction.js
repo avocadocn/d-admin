@@ -383,8 +383,12 @@ exports.openTemplate = function(req, res) {
       return res.status(500).send({msg:"服务器发生错误"});
     });
 }
-
-
-
-
-
+exports.upload = function(req, res) {
+  var host = req.headers.host.split(":")[0];
+  var prefix = "http://"+host + (host==="localhost"||host==="127.0.0.1"?":3000":"");
+  res.send({
+    attach: req.file.filename,
+    file_path: prefix + multerService.getRelPath(req.file.path),
+    success: true
+  })
+}

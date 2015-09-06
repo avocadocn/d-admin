@@ -1,6 +1,6 @@
 'use strict';
 
-var adminApp = angular.module('admin', ['ngRoute','datatables','simditor']);
+var adminApp = angular.module('admin', ['ngRoute','datatables']);
 
 adminApp.config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
@@ -116,6 +116,46 @@ function($routeProvider, $locationProvider) {
       redirectTo: '/parameter'
     });
 }]);
+var Simditor = window.Simditor;
+
+adminApp.directive('simditor', function () {
+  return {
+    require: "?^ngModel",
+    link: function (scope, element, attrs, ngModel) {
+      element.append("<div style='height:300px;'></div>");
+
+      scope.simditor = new Simditor({
+        textarea: element.children()[0],
+        pasteImage: true,
+        toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent'],
+        defaultImage: 'assets/images/image.png',
+        upload:  {
+          url: '/interaction/upload'
+        }
+      });
+
+      function readViewText() {
+        var html = element.find('.simditor-body').html();
+        if (attrs.stripBr && html === '<br>') {
+          html = '';
+        }
+
+        ngModel.$setViewValue(html);
+      }
+
+      var $target = element.find('.simditor-body');
+
+      ngModel.$render = function () {
+        scope.simditor.focus();
+        $target.prepend(ngModel.$viewValue);
+      };
+
+      scope.simditor.on('valuechanged', function(){
+         scope.$apply(readViewText);
+      });
+    }
+  };
+});
 adminApp.filter('unsafe', ['$sce', function ($sce) {
     return function (val) {
         return $sce.trustAsHtml(val);

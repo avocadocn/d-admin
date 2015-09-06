@@ -31,7 +31,7 @@
               td {{team.cname}}
               td
                 a(ng-click="getDetail(team._id)") {{team.name}}
-              td {{team.level===1 ? "社团":"普通"}}
+              td {{team.level===0 ? "普通":"社团"}}
               td {{team.open ? "公开":"私密"}}
               td {{team.member.length}}
               td {{team.createTime | date:'yyyy-MM-dd HH:mm' | dateView}}

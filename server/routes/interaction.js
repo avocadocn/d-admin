@@ -9,4 +9,5 @@ module.exports = function(app) {
   app.get('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.getTemplateDetail);
   app.delete('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.colseTemplate);
   app.put('/interaction/template/:templateType/:templateId', authorization.requiresAdmin, interaction.openTemplate);
+  app.post('/interaction/upload', authorization.requiresAdmin,multerService.upload('interaction').single('upload_file'), interaction.upload);
 }
