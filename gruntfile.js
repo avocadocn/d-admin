@@ -1,5 +1,5 @@
 'use strict';
-
+var lrPort = 35730;
 module.exports = function(grunt) {
     // Project Configuration
     grunt.initConfig({
@@ -10,20 +10,20 @@ module.exports = function(grunt) {
                 files: ['gruntfile.js', 'admin.js', 'server/**/*.js', 'public/js/**', 'test/**/*.js'],
                 tasks: ['jshint'],
                 options: {
-                    livereload: true
+                    livereload: lrPort
                 }
             },
             html: {
                 files: ['public/views/**'],
                 options: {
-                    livereload: true
+                    livereload: lrPort
                 }
             },
             css: {
                 files: ['public/css/**'],
                 tasks: ['csslint'],
                 options: {
-                    livereload: true
+                    livereload: lrPort
                 }
             }
         },

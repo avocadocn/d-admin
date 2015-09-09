@@ -2155,7 +2155,6 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService',
   }
   $scope.isUploading = false;
   $scope.$watch("template.templateType",function(newVal,oldVal) {
-    console.count()
     $("#end_time").datetimepicker({
       autoclose: true,
       language: 'zh-CN',
