@@ -135,10 +135,9 @@ exports.addGroups = function (callback) {
   var registerGroups = function (groups, doWhilstCallback) {
     async.each(groups, function(group, cb) {
       var _group = getGroup(group);
-      console.log(_group)
       easemob.group.add(_group,function (error,data) {
         if(error){
-          console.log(1,error,data);
+          console.log(error);
           failedCount ++;
         }
         else{
@@ -146,7 +145,7 @@ exports.addGroups = function (callback) {
           group.easemobId = data.data.groupid;
           group.save(function (error) {
             if(error) {
-              console.log(2,error);
+              console.log(error);
               failedCount ++;
             }
             else {
