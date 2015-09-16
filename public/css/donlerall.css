@@ -2036,3 +2036,9 @@ Timeline UI Base
 .simditor .simditor-toolbar > ul > li > .toolbar-item {
   width: 30px
 }
+.more_content {
+  overflow: hidden;
+}
+.more_content p {
+  white-space: initial;
+}

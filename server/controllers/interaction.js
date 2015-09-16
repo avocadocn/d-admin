@@ -23,9 +23,6 @@ exports.templateFormFormat = function(req, res, next) {
       }
     }
   }
-  if(req.body.option) {
-    req.body.option = req.body.option.split(",")
-  }
   if(req.body.tags) {
     req.body.tags = tools.unique(req.body.tags.split(","));
   }
@@ -45,7 +42,7 @@ exports.createTemplateValidate = function (req, res, next) {
     if(value.loc && value.loc.coordinates && (!value.loc.coordinates instanceof Array || value.loc.coordinates.length !=2 || typeof value.loc.coordinates[0] !=="number" || typeof value.loc.coordinates[1] !=="number")) return callback(false,"坐标格式错误");
     return callback(true);
   };
-  var templateType = req.body.templateType;
+  var templateType = parseInt(req.body.templateType);
   donlerValidator({
     templateType: {
       name: '模板类型',
@@ -65,7 +62,7 @@ exports.createTemplateValidate = function (req, res, next) {
     endTime: {
       name: '结束时间',
       value: req.body.endTime,
-      validators: [templateType=== 1 ?'required':undefined,'date',donlerValidator.after(req.body.startTime)]
+      validators: templateType=== 1 ? ['required','date',donlerValidator.after(req.body.startTime)]:['date']
     },
     startTime: {
       name: '开始时间',

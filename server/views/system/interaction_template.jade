@@ -19,7 +19,7 @@
           thead
             tr
               th 主题
-              th 内容
+              th 转发次数
               th(ng-if="templateType==1") 开始时间
               th 结束时间
               th(ng-if="templateType==1") 地点
@@ -28,8 +28,7 @@
           tbody()
             tr(ng-repeat="template in templates")
               td {{template.theme}}
-              td
-                .campaign_content(ng-bind-html="template.content | unsafe")
+              td {{template.forwarding}}
               td(ng-if="templateType==1") {{template.startTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td {{template.endTime | date:'yyyy-MM-dd HH:mm' | dateView}}
               td(ng-if="templateType==1") {{template.location.name}}

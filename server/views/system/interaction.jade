@@ -46,7 +46,7 @@
             tr
               th 学校
               th 主题
-              th 内容
+              //- th 内容
               th 标签
               th(ng-if="interactionType==1") 开始时间
               th 结束时间
@@ -59,8 +59,8 @@
             tr(ng-repeat="interaction in interactions track by $index")
               td {{formatCompany(interaction.cid)}}
               td {{interaction.theme}}
-              td
-                .campaign_content(ng-bind-html="interaction.content | unsafe")
+              //- td
+              //-   .campaign_content(ng-bind-html="interaction.content | unsafe")
               td
                 span.option_span(ng-repeat="tag in interaction.tags") {{tags}}
               

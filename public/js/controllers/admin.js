@@ -93,14 +93,14 @@ function($routeProvider, $locationProvider) {
       templateUrl: '/manager/template/easemob',
       controller:'EasemobController'
     })
-    .when('/interactionTemplate',{
+    .when('/interactionTemplate/:templateType',{
       templateUrl: '/manager/template/interaction_template',
       controller:'interactionTemplateController',
       resolve:{
-        templates:function($http) {
+        templates:function($http,$route) {
           return $http({
             method: 'get',
-            url: '/interaction/template?limit=0&templateType=1'
+            url: '/interaction/template?limit=0&templateType='+$route.current.params.templateType
           }).then(function(data, status) {
             return data.data
           });
@@ -2108,8 +2108,8 @@ adminApp.controller('EasemobController', ['$http', '$scope', function($http, $sc
     });
   };
 }]);
-adminApp.controller('interactionTemplateController', ['$http', '$scope', 'templates', function($http, $scope,templates) {
-  $scope.templateType = 1;
+adminApp.controller('interactionTemplateController', ['$http', '$scope', '$routeParams','templates', function($http, $scope,$routeParams, templates) {
+  $scope.templateType = $routeParams.templateType;
   $scope.templates = templates;
   $scope.getTemplate = function(templateType){
     $http({
@@ -2149,7 +2149,7 @@ adminApp.controller('interactionTemplateController', ['$http', '$scope', 'templa
       });
   }
 }]);
-adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService', function($http, $scope, imageService) {
+adminApp.controller('AddTemplateController', ['$http', '$scope', '$window', 'imageService', function($http, $scope, $window, imageService) {
   $scope.template = {
     templateType: 1
   }
@@ -2184,6 +2184,9 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService',
         var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
         $scope.template.deadline = moment(dateUTC).format("YYYY-MM-DD HH:mm");
       });
+    }
+    else if(newVal==2) {
+      $scope.template.option = new Array(6);
     }
   })
   // 地图
@@ -2220,6 +2223,12 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService',
     cropitImageInput.click();
   };
   $scope.save = function() {
+    if($scope.template.templateType==2){
+      console.log($scope.template.option)
+      $scope.template.option = $scope.template.option.filter(function(_option){
+        return _option;
+      });
+    }
     var opt = {
       method: 'POST',
       url: '/interaction/template',
@@ -2245,10 +2254,11 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', 'imageService',
     $http(opt)
     .success(function (data) {
       alert('成功');
-      // window.location.reload();
+      $window.location.hash ='/interactionTemplate/'+$scope.template.templateType;
     })
     .error(function (data, status) {
       alert(data.msg);
+      $scope.template.option.length =6;
     });
   }
 }]);

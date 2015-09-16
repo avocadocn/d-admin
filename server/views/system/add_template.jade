@@ -24,7 +24,7 @@
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
                 input.dl-form-control(type="text" ng-model="template.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
-          .form-group
+          .form-group(ng-show="template.templateType!=3")
             label.col-sm-3.control-label 结束时间:
             .col-sm-6
               .input-group.date.form_datetime#end_time
@@ -60,9 +60,9 @@
             .col-sm-6
               input.form-control(ng-model="template.memberMin")
           .form-group(ng-if="template.templateType==2")
-            label.col-sm-3.control-label 选项(,分割):
+            label.col-sm-3.control-label 选项(最少两个选项):
             .col-sm-6
-              input.form-control(ng-model="template.option" required)
+              input.form-control(ng-model="template.option[$index]" placeholder="第{{$index+1}}项" ng-repeat="option in template.option track by $index")
           .form-group
             label.col-sm-3.control-label 标签(,分割):
             .col-sm-6
