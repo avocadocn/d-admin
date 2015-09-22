@@ -17,7 +17,7 @@
             label.col-sm-3.control-label 主题:
             .col-sm-6
               input.form-control(ng-model="template.theme" required)
-          .form-group(ng-if="template.templateType==1")
+          .form-group(ng-show="template.templateType==1")
             label.col-sm-3.control-label 开始时间:
             .col-sm-6
               .input-group.date.form_datetime#start_time
@@ -31,7 +31,7 @@
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
                 input.dl-form-control(type="text" ng-model="template.endTime" name="endTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly ng-required="template.templateType==1")
-          .form-group(ng-if="template.templateType==1")
+          .form-group(ng-show="template.templateType==1")
             label.col-sm-3.control-label 截止时间:
             .col-sm-6
               .input-group.date.form_datetime#deadline

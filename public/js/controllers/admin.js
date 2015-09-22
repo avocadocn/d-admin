@@ -2174,7 +2174,6 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', '$window', 'ima
         var dateUTC = new Date(ev.date.getTime() + (ev.date.getTimezoneOffset() * 60000));
         $scope.template.startTime = moment(dateUTC).format("YYYY-MM-DD HH:mm");
         $('#end_time').datetimepicker('setStartDate', dateUTC);
-        $('#deadline').datetimepicker('setStartDate', dateUTC);
       });
       $("#deadline").datetimepicker({
           autoclose: true,
