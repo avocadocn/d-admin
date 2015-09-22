@@ -2223,7 +2223,6 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', '$window', 'ima
   };
   $scope.save = function() {
     if($scope.template.templateType==2){
-      console.log($scope.template.option)
       $scope.template.option = $scope.template.option.filter(function(_option){
         return _option;
       });
@@ -2257,7 +2256,9 @@ adminApp.controller('AddTemplateController', ['$http', '$scope', '$window', 'ima
     })
     .error(function (data, status) {
       alert(data.msg);
-      $scope.template.option.length =6;
+      if($scope.template.templateType==2){
+        $scope.template.option.length=6;
+      }
     });
   }
 }]);

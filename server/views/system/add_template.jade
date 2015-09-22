@@ -23,7 +23,7 @@
               .input-group.date.form_datetime#start_time
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="template.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly required)
+                input.dl-form-control(type="text" ng-model="template.startTime" name="startTime" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly ng-required="template.templateType==1")
           .form-group(ng-show="template.templateType!=3")
             label.col-sm-3.control-label 结束时间:
             .col-sm-6
@@ -37,7 +37,7 @@
               .input-group.date.form_datetime#deadline
                 span.input-group-addon.no_radius
                   span.glyphicon.glyphicon-th
-                input.dl-form-control(type="text" ng-model="template.deadline" name="deadline" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm" readonly)
+                input.dl-form-control(type="text" ng-model="template.deadline" name="deadline" placeholder="Date" data-data-format="YYYY-MM-DD HH:mm")
           .form-group(ng-if="template.templateType==1")
             label.col-sm-3.control-label 活动类型:
             .col-sm-6
