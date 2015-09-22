@@ -10,7 +10,8 @@ var mongoose = require('mongoose'),
   sendcloud = require('../service/sendcloud'),
   sync = require('../service/synchronization'),
   UUID = require('../kit/uuid'),
-  tools = require('../service/tools');
+  tools = require('../service/tools'),
+  easemob = require('../service/easemob.js');
 
 
 
@@ -83,6 +84,11 @@ exports.createCompany = function(req, res) {
     }
     else {
       return res.send(company);
+      easemob.user.create({username:company._id, password:company._id},function (error,data) {
+        if(error){
+          console.log(error);
+        }
+      });
     }
   });
 };
