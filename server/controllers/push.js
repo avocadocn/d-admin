@@ -131,28 +131,26 @@ exports.initIOS = function (req, res, next) {
 
 var clientAndroid = new PushAndroid(optionsAndroid);
 
-
 /**
- * 推荐消息给用户
- * example:
- *  pushToUsers(users, {
- *    title: '',
- *    body: '',
- *    description: ''
- *  })
- * @param {Array} users 包含_id和设备信息的用户数据
- * @param {Object} pushMsg 要推送的消息
+ * [pushToUser description]
+ * @param  {object} user    
+ * @param  {object} pushMsg {
+ *                            title: '',
+ *                            body: '',
+ *                            description: ''
+ *                          }
+ * @param  {object} options: {savePushLogs: boolean}
  */
-var pushToUsers = function (users, pushMsg, options) {
+var pushToUser = function(user, pushMsg, options) {
   if (options.savePushLogs === undefined) {
     options.savePushLogs = true;
   }
+
   var savePushLogs = function(user, device) {
     if (!options.savePushLogs) { return; }
     var pushLog = new PushLog({
       user: user._id,
       device: device,
-      campaign: options.campaignId,
       push_title: pushMsg.title,
       push_msg: pushMsg.body
     });
@@ -165,7 +163,6 @@ var pushToUsers = function (users, pushMsg, options) {
 
   var setFailStatusWhenAndroidPushFail = function(pushUserId) {
     PushLog.update({
-      campaign: options.campaignId,
       'device.user_id': pushUserId
     }, {status: 'fail'}, function(err) {
       if (err) { console.log(err); }
@@ -173,112 +170,87 @@ var pushToUsers = function (users, pushMsg, options) {
   };
 
   var iosTokens = [],androidUserIds =[];
-  users.forEach(function (user) {
-    user.device.forEach(function(device){
-      if(!device.platform){
-      }
-      else if (device.platform=='iOS' && device.ios_token) {
-        iosTokens.push(device.ios_token);
-        savePushLogs(user, device);
-      }
-      else if(device.platform=='Android' && device.channel_id) {
-        androidUserIds.push(device.channel_id);
-        savePushLogs(user, device);
-      }
-    });
+  var device = user.device;
+  if(!device.platform){
+  }
+  else if (device.platform=='iOS' && device.ios_token) {
+    iosTokens.push(device.ios_token);
+    savePushLogs(user, device);
+  }
+  else if(device.platform=='Android' && device.channel_id) {
+    androidUserIds.push(device.channel_id);
+    savePushLogs(user, device);
+  }
 
-  });
   if (iosTokens.length > 0) {
     clientIOS.pushNotificationToMany({
       alertText: pushMsg.body,
       badge: 1,
       payload: {
-        messageFrom: 'Donler',
-        campaignId: options.campaignId
+        messageFrom: 'Warm'
       }
     }, iosTokens);
   }
   if (androidUserIds.length > 0) {
-    // var opt = {
-    //   message_type:1,
-    //   push_type: 1,
-    //   messages: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
-    //   msg_keys: 'donler'
-    // }
-
-    // androidUserIds.forEach(function(androidUserId){
-    //   opt.user_id = androidUserId;
-    //   clientAndroid.pushMsg(opt, function(err, result) {
-    //     if (err) {
-    //       console.log(err);
-    //     }
-    //   });
-    // });
     var opt = {
-      msg: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2,custom_content: {campaignId:options.campaignId}}),
-      topic_id: 'donler',
+      msg: JSON.stringify({'title':pushMsg.title,'description':pushMsg.body,open_type:2}),
+      topic_id: 'warm',
       channel_ids:JSON.stringify(androidUserIds)
     }
-    clientAndroid.pushMsg(4,opt, function(err, result) {
+    clientAndroid.pushMsg(4, opt, function(err, result) {
       if (err) {
         console.log(err);
         setFailStatusWhenAndroidPushFail(androidUserId);
       }
     });
   }
+}
 
-};
-
-exports.push = function (req, res) {
-  // 权限验证，只允许本地请求
+/**
+ * [push description]
+ * @param  req.body: {
+ *           userId: string,
+ *           msg: {
+ *             title: string,
+ *             body: string,
+ *             description: string
+ *           }
+ *         }
+ */
+exports.push = function(req, res) {
   if (req.ip !== '127.0.0.1') {
     res.send(403);
     return;
   }
 
-  var query = {push_toggle: { $ne: true }};
-  var pushMsg = req.body.msg;
-  var campaignId = req.body.campaignId;
-  switch (req.body.name) {
-  case 'companyCampaign':
-    // todo 参数合法性验证
-    query.cid = { $in: req.body.target.cid };
-    break;
-  case 'teamCampaign':
-    // todo 参数合法性验证
-    query['team._id'] = { $in: req.body.target.tid };
-    break;
-  case 'users':
-    // todo 参数合法性验证
-    query._id = { $in: req.body.target.uid };
-    break;
-  default:
-    res.send(400);
-    return;
-  }
-  User.find(query, {
-    '_id': 1,
-    'device': 1
-  }).exec()
-    .then(function (users) {
-      pushToUsers(users, pushMsg, {
-        campaignId: campaignId
-      });
-      res.send(200, {
-        success: true
-      });
-    })
-    .then(null, function (err) {
-      console.log(err);
-      console.log(err.stack);
-      res.send(500, {
-        success: false
-      });
+  User.findOne({_id:req.body.userId}).exec()
+  .then(function (user) {
+    if(!user.push_toggle) {
+      pushToUser(user, req.body.msg);
+    }
+    res.send(200, {success: true});
+  })
+  .then(null, function(err) {
+    console.log(err);
+    console.log(err.stack);
+    res.send(500, {
+      success: false
     });
+  })
 
-};
+}
 
-
+/**
+ * [repush description]
+ * @param  req.body: {
+ *           userId: string,
+ *           msg: {
+ *             title: string,
+ *             body: string,
+ *             description: string
+ *           }
+ *         }
+ */
 exports.repush = function(req, res) {
   PushLog.findById(req.body.pushLogId)
     .populate('user', '_id device')
@@ -288,11 +260,11 @@ exports.repush = function(req, res) {
         var pushUser = [{
           device: [log.device]
         }];
-        pushToUsers(pushUser, {
+        pushToUser(pushUser, {
           title: log.push_title,
           body: log.push_msg
         }, {
-          campaignId: log.campaign,
+          // campaignId: log.campaign,
           savePushLogs: false
         });
         log.status = 'success';

@@ -39,29 +39,16 @@ var _team = new Schema({ // 群组组件
     default: true
   }
 });
-
-var chatroom = new Schema({
-  _id: Schema.Types.ObjectId,
-  join_time:{
-    type: Date,
-    default: Date.now
-  },
-  read_time: {
-    type: Date,
-    default: Date.now
-  }
-});
 /**
  * User Schema
  */
 var UserSchema = new Schema({
-  username: {
+  username: { //2.0版改为phone
     type: String,
     unique: true
-  }, //登录用的用户名=email
+  }, 
   email: {
-    type: String,
-    unique: true
+    type: String
   },
   //HR是否关闭此人
   active: {
@@ -69,10 +56,10 @@ var UserSchema = new Schema({
     default: true
   },
   //邮件激活
-  mail_active: {
-    type: Boolean,
-    default: false
-  },
+  // mail_active: {
+  //   type: Boolean,
+  //   default: false
+  // },
   invited: Boolean, // 是否是通过hr发邀请来注册的
 
   hashed_password: String,
@@ -87,18 +74,22 @@ var UserSchema = new Schema({
     type: String,
     default: '/img/icons/default_user_photo.png'
   },
-
   nickname: String,
   realname: String,
-  // department: {
-  //   name: String,
-  //   _id: Schema.Types.ObjectId
-  // },
-  major: String, //专业/学院
-  position: String, //职位？已不用
-  gender: Boolean,//0:女，1：男
+  //todo
+  department: {
+    name: String,
+    _id: Schema.Types.ObjectId
+  },
+  //0:女，1：男
+  gender: {
+    type: Boolean,
+    require: true
+  },
+  //默认值1990年1月1日
   birthday: {
-    type: Date
+    type: Date,
+    default: new Date('01.01.1990')
   },
   bloodType: {
     type: String,
@@ -123,7 +114,8 @@ var UserSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ['SuperAdmin', 'Student'] //大使, 学生
+    enum: ['SuperAdmin', 'Student'], //大使, 学生
+    default: 'Student'
   },
   //公司_id
   cid: {
@@ -139,7 +131,22 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  device: [_device],
+  device: {
+    platform: String,
+    version: String,
+    device_id: String,
+    device_type: String, //同一platform设备的类型(比如ios系统有iPhone和iPad)
+    access_token: String, //每次登录时生成
+    ios_token: String, //只有iosd的APN推送才会用到
+    user_id: String, //只有Android的百度云推送才会用到
+    channel_id: String, //只有Android的百度云推送才会用到
+    app_id: String,
+    api_key: String,
+    update_date: {
+      type: Date,
+      default: Date.now
+    }
+  },
   push_toggle: { //免打扰开关 false为接收push
     type: Boolean,
     default: false
@@ -160,6 +167,12 @@ var UserSchema = new Schema({
 
   //修改个人基本资料时更新
   timeHash: {
+    type: Date,
+    default: Date.now
+  },
+
+  //有动态更新的时间戳
+  interactionTime: {
     type: Date,
     default: Date.now
   },
@@ -339,7 +352,13 @@ UserSchema.methods = {
     }
     return false;
   },
-
+  isAdmin: function() {
+    for (var i = 0; i < this.team.length; i++) {
+      if(this.team[i].leader || this.team[i].admin)
+        return true;
+    }
+    return false;
+  },
   isTeamAdmin: function(tid) {
     tid = tid.toString();
     for (var i = 0; i < this.team.length; i++) {
@@ -351,6 +370,7 @@ UserSchema.methods = {
   },
 
   isSuperAdmin: function(cid) {
+    if(!cid) return false;
     return this.role === 'SuperAdmin' && cid.toString() === this.cid.toString() ;
   },
 
@@ -383,6 +403,7 @@ UserSchema.methods = {
    * @param {Object} pushData push的相关数据
    */
   addDevice: function(headers, access_token, pushData) {
+    pushData = pushData || {};
     var headersKeys = ['x-app-id', 'x-api-key', 'x-device-id', 'x-device-type', 'x-platform', 'x-version'];
     var modelKeys = ['app_id', 'api_key', 'device_id', 'device_type', 'platform', 'version'];
     var device = {};
@@ -405,17 +426,7 @@ UserSchema.methods = {
       device.user_id = pushData.user_id;
       device.channel_id = pushData.channel_id;
     }
-    if (!this.device) {
-      this.device = [];
-    }
-    for (var i = 0; i < this.device.length; i++) {
-      var historyDevice = this.device[i];
-      if (historyDevice.platform === device.platform) {
-        this.device.splice(i, 1);
-        break;
-      }
-    }
-    this.device.push(device);
+    this.device = device;
   },
 
   /**
@@ -425,12 +436,9 @@ UserSchema.methods = {
    * @return {Boolean} 如果有找到匹配的token，则返回true，否则返回false
    */
   updateDeviceToken: function (oldToken, newToken) {
-    for (var i = 0, deviceLen = this.device.length; i < deviceLen; i++) {
-      var device = this.device[i];
-      if (device.access_token === oldToken) {
-        device.access_token = newToken;
-        return true;
-      }
+    if (this.device&&this.device.access_token === oldToken) {
+      this.device.access_token = newToken;
+      return true;
     }
     return false;
   },
@@ -456,12 +464,9 @@ UserSchema.methods = {
     if (!this.device) {
       this.device = [];
     }
-    for (var i = 0; i < this.device.length; i++) {
-      var historyDevice = this.device[i];
-      if (historyDevice.platform === device.platform && historyDevice.device_id === device.device_id) {
-        this.device.splice(i, 1);
-        break;
-      }
+    var historyDevice = this.device;
+    if (historyDevice.platform === device.platform && historyDevice.device_id === device.device_id) {
+      this.device = null;
     }
   }
 };
