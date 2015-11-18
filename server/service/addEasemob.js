@@ -24,7 +24,7 @@ var getGroup= function (group) {
 }
 exports.resetToken = easemob.resetToken;
 exports.addUsers = function (callback) {
-  var pageSize = 10;
+  var pageSize = 30;
   var nowResultLength = 0;
   var totalCount = 0, successCount = 0, failedCount = 0;
   var nextQueryId;
@@ -76,7 +76,7 @@ exports.addUsers = function (callback) {
   });
 }
 exports.addHrUsers = function (callback) {
-  var pageSize = 20;
+  var pageSize = 30;
   var nowResultLength = 0;
   var totalCount = 0, successCount = 0, failedCount = 0;
   var nextQueryId;

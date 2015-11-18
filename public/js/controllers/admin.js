@@ -1973,7 +1973,10 @@ adminApp.controller('ReportController', ['$http','$scope',
                             {name:'inactive',view:'已忽略'}
                           ];
     $scope.report_types = [ {name:'user',view:'用户'},
-                            {name:'comment',view:'评论'}
+                            {name:'activity',view:'活动'},
+                            {name:'poll',view:'投票'},
+                            {name:'question',view:'求助'},
+                            {name:'circle',view:'同事圈'}
                           ];
     $scope.select_status = $scope.report_statuses[0].name;
     $scope.select_type = $scope.report_types[0];

@@ -38,14 +38,20 @@ exports.dealReport = function  (req, res) {
     _status = 'inactive';
   }
   var hostModel;
-  if(req.body.host_type==='comment'){
-    hostModel ='Comment';
-  }
-  else if(req.body.host_type==='user'){
-    hostModel ='User';
-  }
-  else{
-    return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+  switch(req.body.host_type) {
+    case 'user':
+      hostModel = 'User';
+      break;
+    case 'circle':
+      hostModel = 'CircleContent';
+      break;
+    case 'activity':
+    case 'poll':
+    case 'question':
+      hostModel = 'Interaction';
+      break;
+    default:
+      return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
   }
   Report.update({'status':'verifying','host_type': req.body.host_type,'host_id':req.body.host_id},{$set:{'status':_status}},{multi: true},function(err,num){
     if(err){
@@ -58,11 +64,20 @@ exports.dealReport = function  (req, res) {
     }).exec()
     .then(function (reportModel) {
       if (reportModel) {
-        if(req.body.host_type==='comment'){
-          reportModel.status = 'shield';
-        }
-        else if(req.body.host_type==='user'){
-          reportModel.disabled = true;
+        switch(req.body.host_type) {
+          case 'user':
+            reportModel.disabled = true;
+            break;
+          case 'circle':
+            reportModel.status = 'shield';
+            break;
+          case 'activity':
+          case 'poll':
+          case 'question':
+            reportModel.status = 4;
+            break;
+          default:
+            return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
         }
         reportModel.save(function (err) {
             if (err) {
@@ -90,14 +105,20 @@ exports.dealReport = function  (req, res) {
 }
 exports.getReportDetail = function(req, res){
   var hostModel;
-  if(req.body.host_type==='comment'){
-    hostModel ='Comment';
-  }
-  else if(req.body.host_type==='user'){
-    hostModel ='User';
-  }
-  else{
-    return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
+  switch(req.body.host_type) {
+    case 'user':
+      hostModel = 'User';
+      break;
+    case 'circle':
+      hostModel = 'CircleContent';
+      break;
+    case 'activity':
+    case 'poll':
+    case 'question':
+      hostModel = 'Interaction';
+      break;
+    default:
+      return res.send({'msg':'ERROR_FETCH_FAILED','result':0});
   }
   mongoose.model(hostModel).findOne({
       _id: req.body.host_id
